@@ -18,12 +18,20 @@ import { ContactView } from './components/ContactView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
-  const [blogs] = useState<BlogPost[]>(INITIAL_BLOGS);
+  const [blogs, setBlogs] = useState<BlogPost[]>(INITIAL_BLOGS);
   const [categories] = useState<Category[]>(INITIAL_CATEGORIES);
   const [comments, setComments] = useState<BlogComment[]>(INITIAL_COMMENTS);
 
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+  const handleAddBlog = (newBlog: BlogPost) => {
+    setBlogs((prev) => [newBlog, ...prev]);
+  };
+
+  const handleDeleteBlog = (blogId: string) => {
+    setBlogs((prev) => prev.filter((b) => b.id !== blogId));
+  };
 
   const handleSelectBlog = (blog: BlogPost) => {
     setSelectedBlog(blog);

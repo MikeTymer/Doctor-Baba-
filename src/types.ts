@@ -23,6 +23,10 @@ export interface BlogPost {
   views: number;
   description: string;
   mini_description: string;
+  content_sections?: {
+    heading: string;
+    body: string;
+  }[];
   post_date: string;
   feature_image: string;
   category_slug: string;
@@ -54,5 +58,4 @@ export type ActiveTab =
   | 'videos' 
   | 'gallery' 
   | 'about' 
-  | 'contact'
-  | 'admin';
+  | 'contact';

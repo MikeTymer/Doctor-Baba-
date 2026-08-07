@@ -18,7 +18,7 @@ async function startServer() {
 
   // API Endpoints
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", app: "Dr. Zilaba Spiritual Website" });
+    res.json({ status: "ok", app: "Doctor Baba Mukisa Spiritual Website" });
   });
 
   app.post("/api/contact", (req, res) => {
@@ -36,7 +36,7 @@ async function startServer() {
     };
     contactMessages.push(newMessage);
     console.log("New contact query received:", newMessage);
-    return res.json({ success: true, message: "Your query has been submitted successfully. Dr. Zilaba will contact you soon!" });
+    return res.json({ success: true, message: "Your query has been submitted successfully. Doctor Baba Mukisa will contact you soon!" });
   });
 
   app.post("/api/subscribe", (req, res) => {
@@ -46,7 +46,7 @@ async function startServer() {
     }
     subscriptions.push(email);
     console.log("New subscriber:", email);
-    return res.json({ success: true, message: "Thank you for subscribing to Dr. Zilaba's newsletter!" });
+    return res.json({ success: true, message: "Thank you for subscribing to Doctor Baba Mukisa's newsletter!" });
   });
 
   // Vite middleware for development vs static production build

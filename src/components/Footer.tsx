@@ -151,12 +151,6 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
         {/* Bottom Copyright */}
         <div className="text-center text-xs text-amber-500/70 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-900">
           <p>© {new Date().getFullYear()} Doctor Baba Mukisa. All Rights Reserved. Sacred African spiritual wisdom.</p>
-          <button 
-            onClick={() => handleNavClick('admin')} 
-            className="text-amber-500/50 hover:text-amber-400 text-[11px] underline underline-offset-2 transition-colors"
-          >
-            Admin Access
-          </button>
         </div>
 
       </div>

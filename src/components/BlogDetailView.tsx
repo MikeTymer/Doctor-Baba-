@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BlogPost, BlogComment, Category } from '../types';
 import { Sidebar } from './Sidebar';
 import { SITE_INFO } from '../data/initialData';
-import { Calendar, User, Eye, Share2, Facebook, Twitter, MessageSquare, Send, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Calendar, User, Eye, Share2, Facebook, Twitter, MessageSquare, Send, ArrowLeft, CheckCircle2, Phone, Sparkles, ShieldCheck } from 'lucide-react';
 
 interface BlogDetailViewProps {
   blog: BlogPost;
@@ -131,11 +131,58 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
           </div>
 
           {/* Main Content Body */}
-          <div className="text-amber-100/90 text-sm sm:text-base leading-relaxed space-y-4 font-sans">
-            <p>{blog.description}</p>
-            <p>
-              Doctor Baba Mukisa’s traditional spiritual practices combine sacred herbs gathered from coastal Kenya with traditional meditation in Kampala, Uganda. Each situation is examined thoroughly to deliver tailored spiritual guidance and long-lasting peace.
+          <div className="text-amber-100/90 text-sm sm:text-base leading-relaxed space-y-6 font-sans">
+            <p className="text-base sm:text-lg text-amber-200 font-medium border-l-2 border-amber-500 pl-4 py-1">
+              {blog.description}
             </p>
+
+            {blog.content_sections && blog.content_sections.length > 0 ? (
+              blog.content_sections.map((section, idx) => (
+                <div key={idx} className="space-y-3 pt-3">
+                  <h3 className="text-lg sm:text-xl font-bold font-serif text-amber-300 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                    {section.heading}
+                  </h3>
+                  <p className="text-slate-300 leading-relaxed text-sm sm:text-base">
+                    {section.body}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>
+                Doctor Baba Mukisa’s traditional spiritual practices combine sacred herbs gathered from coastal Kenya with traditional meditation in Kampala, Uganda. Each situation is examined thoroughly to deliver tailored spiritual guidance and long-lasting peace.
+              </p>
+            )}
+          </div>
+
+          {/* Urgent Consultation Callout Banner */}
+          <div className="bg-gradient-to-r from-amber-950 via-slate-950 to-emerald-950 border border-amber-700/60 rounded-2xl p-6 shadow-xl space-y-4 my-6">
+            <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span>Direct Spiritual Help from Doctor Baba Mukisa</span>
+            </div>
+            <h4 className="text-xl font-bold font-serif text-amber-100">
+              Need Help With This Challenge?
+            </h4>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Do not suffer in silence. Doctor Baba Mukisa provides confidential, immediate spiritual readings and remote meditation. Distance is no barrier to spiritual healing.
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <a
+                href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20read%20your%20article%20'${encodeURIComponent(blog.name)}'%20and%20I%20need%20your%20spiritual%20help`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 shadow transition-all hover:scale-105 active:scale-95 min-h-[44px]"
+              >
+                <MessageSquare className="w-4 h-4" /> Consult via WhatsApp ({SITE_INFO.phone})
+              </a>
+              <a
+                href={`tel:${SITE_INFO.phone}`}
+                className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-3 rounded-xl text-xs flex items-center gap-2 shadow transition-all hover:scale-105 active:scale-95 min-h-[44px]"
+              >
+                <Phone className="w-4 h-4" /> Call Doctor Baba Mukisa
+              </a>
+            </div>
           </div>
 
           {/* Author Box */}
