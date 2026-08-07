@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BlogPost, Category, BlogComment, Subscriber } from '../types';
+import { BlogPost, Category, BlogComment, Subscriber, ContactMessage } from '../types';
 import { 
   Lock, 
   User, 
@@ -16,6 +16,7 @@ import {
   Search, 
   BarChart2, 
   ShieldCheck, 
+  ShieldAlert,
   Mail, 
   Calendar, 
   ArrowLeft,
@@ -25,7 +26,18 @@ import {
   Check,
   Settings,
   Send,
-  Sparkles
+  Sparkles,
+  Globe,
+  MapPin,
+  ExternalLink,
+  Smartphone,
+  Laptop,
+  Tablet,
+  AlertTriangle,
+  Cpu,
+  Wifi,
+  Clock,
+  Filter
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -41,47 +53,114 @@ interface AdminViewProps {
   onBackToSite: () => void;
 }
 
-interface MessageItem {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  service: string;
-  message: string;
-  date: string;
-  status: 'New' | 'Responded' | 'Pending';
-}
-
-const INITIAL_MESSAGES: MessageItem[] = [
+const INITIAL_MESSAGES: ContactMessage[] = [
   {
     id: 'msg-1',
-    name: 'Samuel M.',
+    name: 'Samuel Mukasa',
     email: 'samuel.m@example.com',
     phone: '+256701234567',
     service: 'Love & Marriage Spells',
     message: 'Doctor Baba, I need urgent spiritual consultation regarding my broken marriage. Please guide me.',
-    date: '2026-08-06',
-    status: 'New'
+    date: '2026-08-06 14:22',
+    status: 'New',
+    location: {
+      city: 'Kampala',
+      region: 'Central Region',
+      country: 'Uganda',
+      countryCode: 'UG',
+      ip: '102.218.44.12',
+      isp: 'MTN Uganda Mobile Broadband',
+      timezone: 'Africa/Kampala',
+      latitude: 0.3136,
+      longitude: 32.5811,
+      googleMapsUrl: 'https://www.google.com/maps?q=0.3136,32.5811'
+    },
+    deviceInfo: {
+      browser: 'Google Chrome 127.0',
+      os: 'Android OS (Android 14)',
+      deviceType: 'Mobile',
+      userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S918B) Chrome/127.0.0.0 Mobile',
+      screenResolution: '1080x2340',
+      language: 'en-UG',
+      timezone: 'Africa/Kampala'
+    },
+    securityInfo: {
+      isVpnOrProxy: false,
+      vpnReason: 'Direct Connection: Client device timezone (Africa/Kampala) matches residential ISP IP location (Kampala, Uganda).',
+      ipType: 'Residential / Cellular'
+    }
   },
   {
     id: 'msg-2',
-    name: 'Grace A.',
+    name: 'Grace Akello',
     email: 'grace.a@example.com',
     phone: '+254712345678',
     service: 'Financial & Wealth Recovery',
     message: 'I am requesting a remote business blessing ritual for my hardware shop in Mombasa.',
-    date: '2026-08-05',
-    status: 'Responded'
+    date: '2026-08-05 09:15',
+    status: 'Responded',
+    location: {
+      city: 'Frankfurt',
+      region: 'Hesse',
+      country: 'Germany',
+      countryCode: 'DE',
+      ip: '185.220.101.45',
+      isp: 'M247 Ltd Datacenter / NordVPN Proxy',
+      timezone: 'Europe/Berlin',
+      latitude: 50.1109,
+      longitude: 8.6821,
+      googleMapsUrl: 'https://www.google.com/maps?q=50.1109,8.6821'
+    },
+    deviceInfo: {
+      browser: 'Apple Safari 17.5',
+      os: 'iOS (Apple iPhone 15 Pro)',
+      deviceType: 'Mobile',
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148',
+      screenResolution: '1170x2532',
+      language: 'en-KE',
+      timezone: 'Africa/Nairobi'
+    },
+    securityInfo: {
+      isVpnOrProxy: true,
+      vpnReason: 'VPN / Proxy Detected: Device local timezone (Africa/Nairobi) mismatches IP timezone (Europe/Berlin) & Datacenter ASN (M247 Ltd).',
+      ipType: 'VPN / Proxy / Datacenter'
+    }
   },
   {
     id: 'msg-3',
-    name: 'Patrick K.',
+    name: 'Patrick Kigozi',
     email: 'patrick.k@example.com',
     phone: '+256755889900',
     service: 'Court Cases & Legal Help',
     message: 'I have a land court case on August 20th in Kampala. I need spiritual meditation assistance.',
-    date: '2026-08-04',
-    status: 'Pending'
+    date: '2026-08-04 18:40',
+    status: 'Pending',
+    location: {
+      city: 'London',
+      region: 'Greater London',
+      country: 'United Kingdom',
+      countryCode: 'GB',
+      ip: '82.165.198.110',
+      isp: 'ExpressVPN / DigitalOcean Tunnel',
+      timezone: 'Europe/London',
+      latitude: 51.5074,
+      longitude: -0.1278,
+      googleMapsUrl: 'https://www.google.com/maps?q=51.5074,-0.1278'
+    },
+    deviceInfo: {
+      browser: 'Microsoft Edge 126.0',
+      os: 'Windows 11 Pro',
+      deviceType: 'Desktop',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Edg/126.0.0.0',
+      screenResolution: '1920x1080',
+      language: 'en-GB',
+      timezone: 'Africa/Kampala'
+    },
+    securityInfo: {
+      isVpnOrProxy: true,
+      vpnReason: 'VPN / Proxy Detected: Device timezone (Africa/Kampala) mismatches IP location (Europe/London) & ExpressVPN Exit Node.',
+      ipType: 'VPN / Proxy / Datacenter'
+    }
   }
 ];
 
@@ -110,9 +189,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [loginError, setLoginError] = useState('');
 
   const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'blogs' | 'new-blog' | 'comments' | 'messages' | 'subscribers' | 'security'>('overview');
-  const [messages, setMessages] = useState<MessageItem[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<ContactMessage[]>(INITIAL_MESSAGES);
   const [localComments, setLocalComments] = useState<BlogComment[]>(comments);
   const [searchQuery, setSearchQuery] = useState('');
+  const [inquirySearch, setInquirySearch] = useState('');
+  const [vpnFilter, setVpnFilter] = useState<'all' | 'vpn' | 'direct'>('all');
 
   // Password Change State
   const [currentPassInput, setCurrentPassInput] = useState('');
@@ -143,6 +224,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
   useEffect(() => {
     setLocalComments(comments);
   }, [comments]);
+
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const res = await fetch('/api/inquiries');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.messages) && data.messages.length > 0) {
+            setMessages(data.messages);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch remote inquiries:', err);
+      }
+    };
+
+    fetchInquiries();
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -299,7 +398,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setMessages((prev) =>
       prev.map((msg) => {
         if (msg.id === id) {
-          const nextStatus: MessageItem['status'] =
+          const nextStatus: ContactMessage['status'] =
             msg.status === 'New' ? 'Responded' : msg.status === 'Responded' ? 'Pending' : 'New';
           return { ...msg, status: nextStatus };
         }
@@ -307,6 +406,25 @@ export const AdminView: React.FC<AdminViewProps> = ({
       })
     );
   };
+
+  const filteredMessages = messages.filter((m) => {
+    if (vpnFilter === 'vpn' && !m.securityInfo?.isVpnOrProxy) return false;
+    if (vpnFilter === 'direct' && m.securityInfo?.isVpnOrProxy) return false;
+
+    if (!inquirySearch.trim()) return true;
+    const query = inquirySearch.toLowerCase();
+    return (
+      m.name.toLowerCase().includes(query) ||
+      m.email.toLowerCase().includes(query) ||
+      m.phone.toLowerCase().includes(query) ||
+      (m.service && m.service.toLowerCase().includes(query)) ||
+      (m.location?.city && m.location.city.toLowerCase().includes(query)) ||
+      (m.location?.country && m.location.country.toLowerCase().includes(query)) ||
+      (m.location?.ip && m.location.ip.toLowerCase().includes(query)) ||
+      (m.deviceInfo?.browser && m.deviceInfo.browser.toLowerCase().includes(query)) ||
+      (m.deviceInfo?.os && m.deviceInfo.os.toLowerCase().includes(query))
+    );
+  });
 
   const filteredBlogs = blogs.filter(
     (b) =>

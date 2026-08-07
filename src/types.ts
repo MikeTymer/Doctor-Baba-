@@ -40,13 +40,48 @@ export interface GalleryItem {
   category: string;
 }
 
+export interface ClientLocation {
+  city?: string;
+  region?: string;
+  country?: string;
+  countryCode?: string;
+  ip?: string;
+  isp?: string;
+  timezone?: string;
+  latitude?: number;
+  longitude?: number;
+  googleMapsUrl?: string;
+}
+
+export interface ClientDeviceInfo {
+  browser?: string;
+  os?: string;
+  deviceType?: 'Mobile' | 'Tablet' | 'Desktop' | string;
+  userAgent?: string;
+  screenResolution?: string;
+  language?: string;
+  timezone?: string;
+}
+
+export interface ClientSecurityInfo {
+  isVpnOrProxy: boolean;
+  vpnReason: string;
+  ipType: 'Residential / Cellular' | 'VPN / Proxy / Datacenter' | string;
+  trustScore?: number;
+}
+
 export interface ContactMessage {
   id: string;
   name: string;
   email: string;
   phone: string;
+  service?: string;
   message: string;
   date: string;
+  status?: 'New' | 'Responded' | 'Pending';
+  location?: ClientLocation;
+  deviceInfo?: ClientDeviceInfo;
+  securityInfo?: ClientSecurityInfo;
 }
 
 export interface Subscriber {

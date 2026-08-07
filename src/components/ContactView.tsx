@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { SITE_INFO } from '../data/initialData';
-import { Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, AlertCircle, ShieldCheck, Globe, Smartphone, ShieldAlert } from 'lucide-react';
+import { getClientMetadata } from '../utils/clientTracker';
 
 export const ContactView: React.FC = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [service, setService] = useState('Love & Marriage Spells');
   const [message, setMessage] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,9 @@ export const ContactView: React.FC = () => {
     setLoading(true);
 
     try {
+      // Gather client device, location, and VPN security status
+      const metadata = await getClientMetadata();
+
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -27,13 +32,17 @@ export const ContactView: React.FC = () => {
           name: `${firstName} ${lastName}`.trim(),
           email,
           phone,
+          service,
           message,
+          location: metadata.location,
+          deviceInfo: metadata.deviceInfo,
+          securityInfo: metadata.securityInfo
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        setSuccessMessage(data.message || "Your query has been submitted successfully, we will contact you soon.");
+        setSuccessMessage(data.message || "Your inquiry has been submitted successfully, Doctor Baba Mukisa will contact you soon.");
         setFirstName('');
         setLastName('');
         setEmail('');
@@ -43,7 +52,7 @@ export const ContactView: React.FC = () => {
         setErrorMessage(data.error || "Please submit the form carefully.");
       }
     } catch {
-      setSuccessMessage("Your query has been submitted successfully, we will contact you soon.");
+      setSuccessMessage("Your inquiry has been submitted successfully, Doctor Baba Mukisa will contact you soon.");
       setFirstName('');
       setLastName('');
       setEmail('');
@@ -223,10 +232,28 @@ export const ContactView: React.FC = () => {
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+254..."
+                    placeholder="+254 / +256..."
                     className="w-full bg-slate-950 border border-amber-900/50 rounded-xl px-4 py-2.5 text-xs text-amber-100 focus:outline-none focus:border-amber-500"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-amber-200 mb-1">
+                  Spiritual Service Required *
+                </label>
+                <select
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  className="w-full bg-slate-950 border border-amber-900/50 rounded-xl px-4 py-2.5 text-xs text-amber-100 focus:outline-none focus:border-amber-500"
+                >
+                  <option value="Love & Marriage Spells">Love &amp; Marriage Spells (Lost Lover Return)</option>
+                  <option value="Financial & Business Luck">Financial &amp; Business Blessing Rituals</option>
+                  <option value="Court Case & Legal Help">Court Case &amp; Legal Mediation Assistance</option>
+                  <option value="Protection & Cleansing">Spiritual Cleansing &amp; Hex Removal</option>
+                  <option value="Traditional Herbal Remedies">Traditional Herbal Remedies &amp; Healing</option>
+                  <option value="General Spiritual Consultation">General Temple Consultation</option>
+                </select>
               </div>
 
               <div>
