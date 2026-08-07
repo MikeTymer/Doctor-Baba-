@@ -426,7 +426,7 @@ html.light .site-footer div.bg-slate-900\/90 {
   color: #000000 !important;
 }
 
-/* MOBILE BOTTOM NAV LIGHT MODE */
+/* MOBILE BOTTOM NAV LIGHT MODE (DESKTOP / DEFAULT) */
 html.light .mobile-bottom-nav {
   background-color: #ffffff !important;
   border: 2px solid #f59e0b !important;
@@ -442,6 +442,59 @@ html.light .mobile-bottom-nav span {
 html.light .mobile-bottom-nav button.text-amber-400 {
   background-color: #fef3c7 !important;
   color: #000000 !important;
+}
+
+/* MOBILE SCREEN NAVIGATION BAR OVERRIDES IN LIGHT MODE */
+@media (max-width: 767px) {
+  html.light header {
+    background-color: #020617 !important;
+    border-color: rgba(180, 83, 9, 0.5) !important;
+  }
+
+  html.light header button,
+  html.light header a,
+  html.light header span,
+  html.light header p,
+  html.light header div,
+  html.light header nav button {
+    color: #ffffff !important;
+  }
+
+  html.light header svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  html.light header .text-amber-400,
+  html.light header span.text-amber-400\/80 {
+    color: #fcd34d !important;
+  }
+
+  html.light header button.bg-amber-600 {
+    background-color: #d97706 !important;
+    color: #ffffff !important;
+  }
+
+  html.light .mobile-bottom-nav {
+    background-color: #020617 !important;
+    border: 1px solid rgba(245, 158, 11, 0.6) !important;
+  }
+
+  html.light .mobile-bottom-nav button,
+  html.light .mobile-bottom-nav span {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  html.light .mobile-bottom-nav svg {
+    color: #ffffff !important;
+    stroke: #ffffff !important;
+  }
+
+  html.light .mobile-bottom-nav button.text-amber-400 {
+    background-color: rgba(180, 83, 9, 0.6) !important;
+    color: #ffffff !important;
+  }
 }
 
 
