@@ -293,3 +293,9 @@ export const GALLERY_ITEMS: GalleryItem[] = [
   { id: "g5", title: "Ancestral Ceremony Ritual", image: "https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80", category: "Ceremonies" },
   { id: "g6", title: "Healing Herbs Preparation", image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80", category: "Herbs" }
 ];
+
+export const INITIAL_SUBSCRIBERS = [
+  { id: "sub-1", email: "james.k@example.com", subscribed_date: "2026-08-01", status: "Active" as const, source: "Footer Form" },
+  { id: "sub-2", email: "mercy.w@example.com", subscribed_date: "2026-08-03", status: "Active" as const, source: "Home Section" },
+  { id: "sub-3", email: "david.o@example.com", subscribed_date: "2026-08-05", status: "Active" as const, source: "Footer Form" }
+];

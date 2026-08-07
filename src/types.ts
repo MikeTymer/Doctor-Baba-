@@ -49,6 +49,14 @@ export interface ContactMessage {
   date: string;
 }
 
+export interface Subscriber {
+  id: string;
+  email: string;
+  subscribed_date: string;
+  status: 'Active' | 'Unsubscribed';
+  source?: string;
+}
+
 export type ActiveTab = 
   | 'home' 
   | 'blog' 
@@ -58,4 +66,5 @@ export type ActiveTab =
   | 'videos' 
   | 'gallery' 
   | 'about' 
-  | 'contact';
+  | 'contact'
+  | 'admin';

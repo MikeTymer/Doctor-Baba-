@@ -426,6 +426,44 @@ html.light .site-footer div.bg-slate-900\/90 {
   color: #000000 !important;
 }
 
+/* FOOTER NEWSLETTER SUBSCRIPTION BOX LIGHT MODE TEXT OVERRIDES */
+html.light .newsletter-subscription-box {
+  background-image: linear-gradient(to right, #451a03, #0f172a, #451a03) !important;
+}
+
+html.light .newsletter-subscription-box h3,
+html.light .newsletter-subscription-box .newsletter-heading {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+html.light .newsletter-subscription-box p,
+html.light .newsletter-subscription-box .newsletter-desc {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+html.light .newsletter-subscription-box .newsletter-tag-text,
+html.light .newsletter-subscription-box span.newsletter-tag-text {
+  color: #fcd34d !important;
+  font-weight: 700 !important;
+}
+
+html.light .newsletter-subscription-box svg {
+  color: #f59e0b !important;
+  stroke: #f59e0b !important;
+}
+
+html.light .newsletter-subscription-box input {
+  background-color: #020617 !important;
+  color: #ffffff !important;
+  border-color: #78350f !important;
+}
+
+html.light .newsletter-subscription-box input::placeholder {
+  color: #94a3b8 !important;
+}
+
 /* MOBILE BOTTOM NAV LIGHT MODE (DESKTOP / DEFAULT) */
 html.light .mobile-bottom-nav {
   background-color: #ffffff !important;
@@ -495,6 +533,38 @@ html.light .mobile-bottom-nav button.text-amber-400 {
     background-color: rgba(180, 83, 9, 0.6) !important;
     color: #ffffff !important;
   }
+}
+
+/* ADMIN PANEL LIGHT MODE STYLING */
+html.light .admin-container div.bg-slate-900 {
+  background-color: #ffffff !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 10px 20px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .admin-container h1,
+html.light .admin-container h2,
+html.light .admin-container h3 {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+html.light .admin-container p,
+html.light .admin-container label,
+html.light .admin-container span {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+}
+
+html.light .admin-input {
+  background-color: #f8fafc !important;
+  color: #000000 !important;
+  border: 1px solid #f59e0b !important;
+}
+
+html.light .admin-container div.bg-slate-950 {
+  background-color: #f1f5f9 !important;
+  border: 1px solid #f59e0b !important;
 }
 
 
