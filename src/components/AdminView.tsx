@@ -146,15 +146,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const validEmails = ['admin@doctorbabamukisa.com', 'admin', 'doctor'];
-    const validPasswords = [storedPassword, 'spiritual2026', 'admin123', 'temple2026'];
+    const inputUser = emailInput.trim().toLowerCase();
+    const inputPass = passwordInput.trim();
 
-    if (validEmails.includes(emailInput.trim().toLowerCase()) && validPasswords.includes(passwordInput.trim())) {
+    // Strict authentication against single authorized admin username and stored password
+    const isValidUsername = inputUser === 'admin@doctorbabamukisa.com' || inputUser === 'admin';
+    const isValidPassword = inputPass === storedPassword;
+
+    if (isValidUsername && isValidPassword) {
       setIsLoggedIn(true);
       sessionStorage.setItem('admin_logged_in', 'true');
       setLoginError('');
     } else {
-      setLoginError('Invalid Username or Password. If you changed your password, please use your updated password.');
+      setLoginError('Invalid Username or Password. Please enter authorized credentials.');
     }
   };
 
@@ -168,7 +172,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setPassChangeError('');
     setPassChangeSuccess('');
 
-    if (currentPassInput.trim() !== storedPassword && currentPassInput.trim() !== 'spiritual2026') {
+    if (currentPassInput.trim() !== storedPassword) {
       setPassChangeError('Current password entered is incorrect.');
       return;
     }
@@ -336,17 +340,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </p>
         </div>
 
-        {/* Credentials Box */}
-        <div className="bg-amber-950/70 border border-amber-600/60 rounded-2xl p-4 text-xs text-amber-200 space-y-1">
-          <div className="flex items-center gap-1.5 font-bold text-amber-400">
-            <Lock className="w-4 h-4" />
-            <span>Authorized Admin Credentials</span>
-          </div>
-          <p className="text-slate-200">
-            <strong>Email / Username:</strong> <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300">admin@doctorbabamukisa.com</code>
-          </p>
-          <p className="text-slate-200">
-            <strong>Current Password:</strong> <code className="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300">{storedPassword}</code>
+        {/* Secure Portal Access Banner */}
+        <div className="bg-slate-950 border border-amber-800/50 rounded-2xl p-4 text-xs text-amber-200/90 flex items-center gap-3">
+          <Lock className="w-5 h-5 text-amber-500 shrink-0" />
+          <p className="text-slate-300">
+            Authorized administrator access required. Enter your admin username and password to log in.
           </p>
         </div>
 

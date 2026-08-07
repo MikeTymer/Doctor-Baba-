@@ -485,27 +485,60 @@ html.light .mobile-bottom-nav button.text-amber-400 {
 /* MOBILE SCREEN NAVIGATION BAR OVERRIDES IN LIGHT MODE */
 @media (max-width: 767px) {
   html.light header {
-    background-color: #020617 !important;
-    border-color: rgba(180, 83, 9, 0.5) !important;
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #f59e0b !important;
+    color: #0f172a !important;
+  }
+
+  html.light header .bg-amber-950\/80 {
+    background-color: #fef3c7 !important;
+    border-color: #fcd34d !important;
+    color: #78350f !important;
   }
 
   html.light header button,
   html.light header a,
   html.light header span,
   html.light header p,
-  html.light header div,
-  html.light header nav button {
-    color: #ffffff !important;
+  html.light header div {
+    color: #0f172a !important;
   }
 
   html.light header svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
+    color: #0f172a !important;
+    stroke: #0f172a !important;
   }
 
   html.light header .text-amber-400,
   html.light header span.text-amber-400\/80 {
-    color: #fcd34d !important;
+    color: #b45309 !important;
+  }
+
+  /* Logo Inner Circle in Light Mode */
+  html.light header div.bg-slate-950 {
+    background-color: #78350f !important;
+  }
+
+  html.light header div.bg-slate-950 svg {
+    color: #fef3c7 !important;
+    stroke: #fef3c7 !important;
+  }
+
+  /* Mobile Drawer Menu in Header */
+  html.light header div.md\:hidden {
+    background-color: #ffffff !important;
+    border-bottom: 2px solid #f59e0b !important;
+  }
+
+  html.light header div.md\:hidden button {
+    color: #0f172a !important;
+  }
+
+  html.light header div.md\:hidden button.bg-amber-900\/80 {
+    background-color: #fef3c7 !important;
+    color: #78350f !important;
+    border-left: 4px solid #d97706 !important;
+    font-weight: 800 !important;
   }
 
   html.light header button.bg-amber-600 {
@@ -513,25 +546,70 @@ html.light .mobile-bottom-nav button.text-amber-400 {
     color: #ffffff !important;
   }
 
+  html.light header button.bg-amber-600 span,
+  html.light header button.bg-amber-600 * {
+    color: #ffffff !important;
+  }
+
+  html.light header a.bg-emerald-700 {
+    background-color: #047857 !important;
+    color: #ffffff !important;
+  }
+
+  html.light header a.bg-emerald-700 * {
+    color: #ffffff !important;
+  }
+
+  html.light header a.bg-slate-800 {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  html.light header a.bg-slate-800 * {
+    color: #0f172a !important;
+  }
+
+  /* Bottom Floating Nav Bar on Mobile */
   html.light .mobile-bottom-nav {
-    background-color: #020617 !important;
-    border: 1px solid rgba(245, 158, 11, 0.6) !important;
+    background-color: #ffffff !important;
+    border: 2px solid #f59e0b !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2) !important;
   }
 
   html.light .mobile-bottom-nav button,
-  html.light .mobile-bottom-nav span {
-    color: #ffffff !important;
+  html.light .mobile-bottom-nav span,
+  html.light .mobile-bottom-nav a {
+    color: #0f172a !important;
     font-weight: 700 !important;
   }
 
   html.light .mobile-bottom-nav svg {
-    color: #ffffff !important;
-    stroke: #ffffff !important;
+    color: #0f172a !important;
+    stroke: #0f172a !important;
   }
 
   html.light .mobile-bottom-nav button.text-amber-400 {
-    background-color: rgba(180, 83, 9, 0.6) !important;
-    color: #ffffff !important;
+    background-color: #fef3c7 !important;
+    color: #78350f !important;
+  }
+
+  html.light .mobile-bottom-nav button.text-amber-400 svg,
+  html.light .mobile-bottom-nav button.text-amber-400 span {
+    color: #78350f !important;
+    stroke: #78350f !important;
+  }
+
+  html.light .mobile-bottom-nav a.text-emerald-400,
+  html.light .mobile-bottom-nav a.text-emerald-400 * {
+    color: #059669 !important;
+    stroke: #059669 !important;
+  }
+
+  html.light .mobile-bottom-nav a.text-amber-300,
+  html.light .mobile-bottom-nav a.text-amber-300 * {
+    color: #d97706 !important;
+    stroke: #d97706 !important;
   }
 }
 
