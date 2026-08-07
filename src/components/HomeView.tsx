@@ -28,8 +28,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
         <div className="relative z-10 max-w-4xl mx-auto space-y-6 text-center">
           
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-900/60 border border-amber-700/60 text-amber-300 text-xs font-medium shadow-inner">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+          <div className="welcome-pill inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-900/60 border border-amber-700/60 text-amber-300 text-xs font-medium shadow-inner">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
             <span>Welcome to the Official Temple Website of Doctor Baba Mukisa</span>
           </div>
 
@@ -113,8 +113,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* Services Showcase Preview */}
       <section className="space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-amber-900/40 pb-4">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">Spiritual Offerings</span>
+          <div className="section-heading-box">
+            <span className="text-xs uppercase tracking-widest text-amber-400 font-bold block">Spiritual Offerings</span>
             <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100 mt-1">
               Doctor Baba Mukisa’s Main Services
             </h2>
@@ -132,7 +132,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div
               key={category.id}
               onClick={() => onSelectCategory(category)}
-              className="group bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
+              className="group service-card bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
             >
               <div>
                 <div className="aspect-video relative overflow-hidden bg-slate-950">
@@ -173,8 +173,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* Featured Articles Section */}
       <section className="space-y-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-amber-900/40 pb-4">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-amber-400 font-bold">Spiritual Articles</span>
+          <div className="section-heading-box">
+            <span className="text-xs uppercase tracking-widest text-amber-400 font-bold block">Spiritual Articles</span>
             <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100 mt-1">
               Latest Temple Blog Posts
             </h2>
@@ -192,7 +192,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div
               key={blog.id}
               onClick={() => onSelectBlog(blog)}
-              className="group bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 rounded-2xl p-5 shadow-xl cursor-pointer transition-all hover:-translate-y-1 flex flex-col sm:flex-row gap-4"
+              className="group blog-card bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 rounded-2xl p-5 shadow-xl cursor-pointer transition-all hover:-translate-y-1 flex flex-col sm:flex-row gap-4"
             >
               <div className="w-full sm:w-40 h-40 rounded-xl overflow-hidden shrink-0 bg-slate-950 border border-amber-900/30">
                 <img
@@ -219,7 +219,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
 
                 <div className="flex items-center justify-between text-[11px] text-amber-500/80 pt-2 border-t border-amber-900/30">
-                  <span>{blog.post_date}</span>
+                  <span className="text-slate-400">{blog.post_date}</span>
                   <span className="font-semibold group-hover:text-amber-300">Read Article →</span>
                 </div>
               </div>
@@ -233,7 +233,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100">
           Ready to Change Your Life & Resolve Your Hardships?
         </h2>
-        <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
+        <p className="cta-description text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
           Do not let heartbreaks, debts, legal struggles, or evil omens control your destiny. Connect directly with Doctor Baba Mukisa today for authentic spiritual guidance.
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">

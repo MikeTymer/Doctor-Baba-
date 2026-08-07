@@ -65,7 +65,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
         </div>
 
         {/* Article Container */}
-        <article className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <article className="blog-article-card bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
           
           {/* Title & Metadata */}
           <div className="space-y-3 pb-6 border-b border-amber-900/40">
@@ -77,7 +77,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
               {blog.name}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-amber-300/80 pt-1">
+            <div className="blog-meta-details flex flex-wrap items-center gap-4 text-xs text-amber-300/80 pt-1">
               <span className="flex items-center gap-1">
                 <User className="w-3.5 h-3.5 text-amber-500" /> By {blog.author}
               </span>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
-import { Menu, X, Phone, MessageSquare, Flame, Sparkles } from 'lucide-react';
+import { Menu, X, Phone, MessageSquare, Flame, Sparkles, Sun, Moon } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -11,6 +11,27 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      setIsLightMode(true);
+      document.documentElement.classList.add('light');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextMode = !isLightMode;
+    setIsLightMode(nextMode);
+    if (nextMode) {
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    } else {
+      document.documentElement.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    }
+  };
 
   const navItems: { label: string; tab: ActiveTab }[] = [
     { label: 'Home', tab: 'home' },
@@ -63,19 +84,19 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           {/* Logo / Brand */}
           <div 
             onClick={() => handleNavClick('home')}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group min-w-0 shrink"
           >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-amber-500 via-amber-700 to-amber-950 p-0.5 shadow-md shadow-amber-900/50 flex items-center justify-center">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-amber-500 via-amber-700 to-amber-950 p-0.5 shadow-md shadow-amber-900/50 flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center group-hover:bg-amber-950/40 transition-colors">
-                <Flame className="w-6 h-6 text-amber-400 group-hover:scale-110 transition-transform" />
+                <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 group-hover:scale-110 transition-transform" />
               </div>
             </div>
-            <div>
-              <span className="text-lg sm:text-2xl font-bold tracking-tight text-amber-100 group-hover:text-amber-300 transition-colors font-serif">
+            <div className="min-w-0">
+              <span className="text-sm xs:text-base sm:text-xl lg:text-2xl font-bold tracking-tight text-amber-100 group-hover:text-amber-300 transition-colors font-serif block truncate">
                 Doctor Baba Mukisa
               </span>
-              <span className="block text-[10px] sm:text-xs text-amber-400/80 tracking-wider uppercase font-sans">
-                Spiritual Healer & Temple
+              <span className="block text-[9px] xs:text-[10px] sm:text-xs text-amber-400/80 tracking-wider uppercase font-sans truncate">
+                Spiritual Healer &amp; Temple
               </span>
             </div>
           </div>
@@ -103,8 +124,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             })}
           </nav>
 
-          {/* Start Now CTA Button */}
+          {/* Right Action Controls (Start Now CTA + Light Mode Icon) */}
           <div className="hidden md:flex items-center gap-3">
+            <button
+              onClick={toggleTheme}
+              title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+              aria-label="Toggle Light/Dark Mode"
+              className="p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-700/50 transition-all hover:scale-105 active:scale-95 flex items-center justify-center min-h-[44px] min-w-[44px]"
+            >
+              {isLightMode ? (
+                <Moon className="w-5 h-5 text-amber-300" />
+              ) : (
+                <Sun className="w-5 h-5 text-amber-400" />
+              )}
+            </button>
+
             <button
               onClick={() => handleNavClick('contact')}
               className="bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-bold px-5 py-2.5 rounded-full text-sm shadow-lg shadow-amber-900/40 hover:shadow-amber-600/30 transition-all hover:scale-105 active:scale-95"
@@ -113,14 +147,28 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             </button>
           </div>
 
-          {/* Mobile Hamburger Toggle Button */}
+          {/* Mobile Hamburger & Controls */}
           <div className="flex md:hidden items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              title={isLightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+              aria-label="Toggle Light/Dark Mode"
+              className="p-2 rounded-full bg-slate-900/80 text-amber-300 border border-amber-700/50 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            >
+              {isLightMode ? (
+                <Moon className="w-5 h-5 text-amber-300" />
+              ) : (
+                <Sun className="w-5 h-5 text-amber-400" />
+              )}
+            </button>
+
             <button
               onClick={() => handleNavClick('contact')}
               className="bg-amber-600 text-slate-950 font-bold px-3 py-1.5 rounded-full text-xs shadow"
             >
               Start Now!
             </button>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2.5 rounded-lg text-amber-200 hover:text-white hover:bg-amber-900/40 focus:outline-none min-h-[44px] min-w-[44px] flex items-center justify-center"

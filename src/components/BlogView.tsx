@@ -41,7 +41,7 @@ export const BlogView: React.FC<BlogViewProps> = ({
       <div className="lg:col-span-8 space-y-8">
         
         {/* Header & Search */}
-        <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 shadow-xl space-y-4">
+        <div className="blog-header-box bg-slate-900 border border-amber-900/50 rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100">
@@ -79,10 +79,10 @@ export const BlogView: React.FC<BlogViewProps> = ({
             paginatedBlogs.map((data) => (
               <article
                 key={data.id}
-                className="bg-slate-900 border border-amber-900/50 hover:border-amber-600/60 rounded-2xl p-6 shadow-xl transition-all space-y-4"
+                className="blog-article-card bg-slate-900 border border-amber-900/50 hover:border-amber-600/60 rounded-2xl p-6 shadow-xl transition-all space-y-4"
               >
                 {/* Meta Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-3 text-xs text-amber-300/80">
+                <div className="blog-meta-details flex flex-wrap items-center justify-between gap-2 border-b border-amber-900/40 pb-3 text-xs text-amber-300/80">
                   <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1">
                       <User className="w-3.5 h-3.5 text-amber-500" /> {data.author}

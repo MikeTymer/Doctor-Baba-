@@ -155,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Popular Categories */}
-      <div className="bg-slate-900 border border-amber-900/40 rounded-2xl p-6 shadow-xl">
+      <div className="sidebar-categories-box bg-slate-900 border border-amber-900/40 rounded-2xl p-6 shadow-xl">
         <h3 className="text-lg font-bold font-serif text-amber-200 mb-4 pb-2 border-b border-amber-900/50">
           Spiritual Services & Categories
         </h3>
@@ -164,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat)}
-              className="text-xs bg-slate-950 hover:bg-amber-950 hover:text-amber-300 text-amber-100/90 border border-amber-900/40 px-3 py-2 rounded-xl transition-colors font-medium text-left"
+              className="category-btn text-xs bg-slate-950 hover:bg-amber-950 hover:text-amber-300 text-amber-100/90 border border-amber-900/40 px-3 py-2 rounded-xl transition-colors font-medium text-left"
             >
               {cat.name}
             </button>

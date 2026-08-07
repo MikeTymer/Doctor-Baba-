@@ -16,7 +16,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
   };
 
   return (
-    <footer className="bg-slate-950 border-t border-amber-900/50 text-amber-100/90 pt-12 pb-24 md:pb-12 mt-16">
+    <footer className="site-footer bg-slate-950 border-t border-amber-900/50 text-amber-100/90 pt-12 pb-24 md:pb-12 mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         
         {/* Main Footer Grid */}

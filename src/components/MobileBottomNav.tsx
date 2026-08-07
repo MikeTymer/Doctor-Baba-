@@ -10,7 +10,7 @@ interface MobileBottomNavProps {
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveTab }) => {
   return (
-    <div className="md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-950/95 border border-amber-800/60 shadow-2xl shadow-amber-950 rounded-full backdrop-blur-lg px-2 py-1.5 transition-all">
+    <div className="mobile-bottom-nav md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-950/95 border border-amber-800/60 shadow-2xl shadow-amber-950 rounded-full backdrop-blur-lg px-2 py-1.5 transition-all">
       <div className="flex items-center justify-around">
         {/* Home Button */}
         <button
