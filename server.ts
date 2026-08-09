@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
+import { sendInquiryEmail, sendReplyEmail, checkEmailConfiguration } from "./server/mailer";
 
 async function startServer() {
   const app = express();
@@ -101,11 +102,16 @@ async function startServer() {
     res.json({ status: "ok", app: "Doctor Baba Mukisa Spiritual Website" });
   });
 
+  app.get("/api/email-status", async (req, res) => {
+    const status = await checkEmailConfiguration();
+    return res.json({ success: true, status });
+  });
+
   app.get("/api/inquiries", (req, res) => {
     return res.json({ success: true, messages: contactMessages });
   });
 
-  app.post("/api/contact", (req, res) => {
+  app.post("/api/contact", async (req, res) => {
     const { name, email, phone, service, message, location, deviceInfo, securityInfo } = req.body;
     if (!name || !email || !message) {
       return res.status(400).json({ success: false, error: "Please fill in required fields." });
@@ -148,8 +154,41 @@ async function startServer() {
     };
 
     contactMessages.unshift(newMessage);
-    console.log("New contact inquiry received with client Google metadata & security audit:", newMessage);
-    return res.json({ success: true, message: "Your inquiry has been submitted successfully. Doctor Baba Mukisa will contact you soon!", messageData: newMessage });
+    console.log("New contact inquiry received:", newMessage.id, newMessage.name);
+
+    // Dispatch SMTP email via mail.privateemail.com asynchronously so client doesn't wait
+    let emailDispatch = null;
+    try {
+      emailDispatch = await sendInquiryEmail(newMessage);
+    } catch (err) {
+      console.warn("SMTP email dispatch warning:", err);
+    }
+
+    return res.json({
+      success: true,
+      message: "Your inquiry has been submitted successfully. Doctor Baba Mukisa will contact you soon!",
+      messageData: newMessage,
+      emailStatus: emailDispatch
+    });
+  });
+
+  app.post("/api/reply-email", async (req, res) => {
+    const { messageId, toEmail, clientName, subject, replyMessage } = req.body;
+    if (!toEmail || !replyMessage) {
+      return res.status(400).json({ success: false, error: "Missing required email parameters." });
+    }
+
+    const emailResult = await sendReplyEmail(toEmail, clientName || 'Valued Client', subject, replyMessage);
+
+    // Update message status in contactMessages store
+    if (messageId) {
+      const existing = contactMessages.find((m) => m.id === messageId);
+      if (existing) {
+        existing.status = 'Responded';
+      }
+    }
+
+    return res.json({ success: true, emailResult });
   });
 
   app.post("/api/subscribe", (req, res) => {

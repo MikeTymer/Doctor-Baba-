@@ -40,6 +40,8 @@ import {
   Filter,
   Edit3,
   Save,
+  Server,
+  RefreshCw,
   X
 } from 'lucide-react';
 
@@ -251,6 +253,80 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [subSuccessMsg, setSubSuccessMsg] = useState('');
   const [copiedEmailsMsg, setCopiedEmailsMsg] = useState(false);
 
+  // Email Reply Modal & SMTP Mailer State
+  const [selectedEmailMsg, setSelectedEmailMsg] = useState<ContactMessage | null>(null);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [emailSendStatus, setEmailSendStatus] = useState<{ success?: boolean; msg?: string } | null>(null);
+
+  // Mail server status check state
+  const [mailServerStatus, setMailServerStatus] = useState<{ configured?: boolean; status?: string; host?: string; port?: number; user?: string; notificationEmail?: string } | null>(null);
+  const [checkingMailServer, setCheckingMailServer] = useState(false);
+
+  const handleOpenEmailModal = (msg: ContactMessage) => {
+    setSelectedEmailMsg(msg);
+    setEmailSubject(`Re: Spiritual Consultation - ${msg.service || 'Doctor Baba Mukisa'}`);
+    setEmailBody(`Dear ${msg.name},\n\nThank you for reaching out to Doctor Baba Mukisa regarding ${msg.service || 'your spiritual consultation request'}.\n\nIn response to your message:\n"${msg.message.substring(0, 120)}..."\n\n`);
+    setEmailSendStatus(null);
+  };
+
+  const handleSendEmailReply = async () => {
+    if (!selectedEmailMsg || !emailBody.trim()) return;
+    setSendingEmail(true);
+    setEmailSendStatus(null);
+
+    try {
+      const res = await fetch('/api/reply-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messageId: selectedEmailMsg.id,
+          toEmail: selectedEmailMsg.email,
+          clientName: selectedEmailMsg.name,
+          subject: emailSubject,
+          replyMessage: emailBody,
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setEmailSendStatus({ success: true, msg: 'Email reply sent successfully via PrivateEmail SMTP!' });
+        setMessages((prev) => {
+          const updated = prev.map((msg) => (msg.id === selectedEmailMsg.id ? { ...msg, status: 'Responded' as const } : msg));
+          try {
+            localStorage.setItem('contact_messages', JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+        setTimeout(() => {
+          setSelectedEmailMsg(null);
+        }, 1800);
+      } else {
+        setEmailSendStatus({ success: false, msg: data.error || 'Failed to send email reply via SMTP.' });
+      }
+    } catch (err) {
+      setEmailSendStatus({ success: false, msg: 'Network error sending email.' });
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleCheckMailServer = async () => {
+    setCheckingMailServer(true);
+    try {
+      const res = await fetch('/api/email-status');
+      if (res.ok) {
+        const data = await res.json();
+        setMailServerStatus(data.status);
+      }
+    } catch (e) {
+      console.warn('Mail server check failed:', e);
+    } finally {
+      setCheckingMailServer(false);
+    }
+  };
+
   // New Blog Form state
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('Doctor Baba Mukisa');
@@ -361,7 +437,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     const inputPass = passwordInput.trim();
 
     // Strict authentication against single authorized admin username and stored password
-    const isValidUsername = inputUser === 'admin@doctorbabamukisa.com' || inputUser === 'admin';
+    const isValidUsername = inputUser === 'help@doctorbabamukisa.com' || inputUser === 'admin@doctorbabamukisa.com' || inputUser === 'admin';
     const isValidPassword = inputPass === storedPassword;
 
     if (isValidUsername && isValidPassword) {
@@ -768,7 +844,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               required
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
-              placeholder="admin@doctorbabamukisa.com"
+              placeholder="help@doctorbabamukisa.com"
               className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition-colors"
             />
           </div>
@@ -1749,6 +1825,59 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </div>
           </div>
 
+          {/* PrivateEmail Mail Server Configuration Banner */}
+          <div className="bg-slate-950 border border-amber-900/60 rounded-2xl p-4 shadow-md space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-900/40 pb-2">
+              <div className="flex items-center gap-2">
+                <Server className="w-4 h-4 text-amber-400" />
+                <h4 className="text-xs font-bold text-amber-200">PrivateEmail Mail Server &amp; Routing Configuration</h4>
+              </div>
+              <button
+                type="button"
+                onClick={handleCheckMailServer}
+                disabled={checkingMailServer}
+                className="bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-700/40 px-3 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 self-start sm:self-auto transition-colors"
+              >
+                <RefreshCw className={`w-3 h-3 ${checkingMailServer ? 'animate-spin text-amber-400' : ''}`} />
+                {checkingMailServer ? 'Testing Connection...' : 'Test Mail Server Connection'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-slate-300">
+              <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-amber-400 font-semibold block mb-0.5">📥 Incoming Mail (IMAP / POP3)</span>
+                <p>Host: <code className="text-amber-300">mail.privateemail.com</code></p>
+                <p>IMAP Port: <code className="text-emerald-400">993</code> (SSL)</p>
+                <p>POP3 Port: <code className="text-emerald-400">995</code> (SSL)</p>
+              </div>
+
+              <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-amber-400 font-semibold block mb-0.5">📤 Outgoing Mail (SMTP)</span>
+                <p>Host: <code className="text-amber-300">mail.privateemail.com</code></p>
+                <p>SSL Port: <code className="text-emerald-400">465</code> / TLS: <code className="text-emerald-400">587</code></p>
+                <p>Security: <span className="text-amber-200">SSL / TLS</span></p>
+              </div>
+
+              <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                <span className="text-amber-400 font-semibold block mb-0.5">🔄 Direct Email Replies</span>
+                <p>Website inquiries send notifications with <code className="text-amber-300">Reply-To</code> set to client email.</p>
+                <p className="text-slate-400 mt-1">Directly hit <strong>"Reply"</strong> in your inbox or use <strong>"Reply via SMTP Email"</strong> below.</p>
+              </div>
+            </div>
+
+            {mailServerStatus && (
+              <div className={`p-2.5 rounded-xl border text-xs flex items-center gap-2 ${
+                mailServerStatus.configured ? 'bg-emerald-950/60 border-emerald-800 text-emerald-200' : 'bg-amber-950/60 border-amber-800 text-amber-200'
+              }`}>
+                {mailServerStatus.configured ? <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />}
+                <div>
+                  <p className="font-bold">{mailServerStatus.status}</p>
+                  <p className="text-[10px] opacity-80">Host: {mailServerStatus.host}:{mailServerStatus.port} | Account: {mailServerStatus.user}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Search Bar for Inquiries */}
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-500" />
@@ -1829,14 +1958,30 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         "{m.message}"
                       </p>
                       
-                      {/* WhatsApp Fast Reply & Delete Actions */}
-                      <div className="pt-2 flex items-center justify-end gap-2">
+                      {/* Email, WhatsApp & Delete Actions */}
+                      <div className="pt-2 flex flex-wrap items-center justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => handleDeleteMessage(m.id)}
                           className="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" /> Delete Inquiry
+                        </button>
+
+                        <a
+                          href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: Spiritual Consultation - ${m.service || 'Doctor Baba Mukisa'}`)}&body=${encodeURIComponent(`Hello ${m.name},\n\nThank you for reaching out to Doctor Baba Mukisa regarding ${m.service || 'your request'}.\n\n`)}`}
+                          className="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors"
+                          title="Open in your default email app (PrivateEmail / Outlook / Apple Mail)"
+                        >
+                          <Mail className="w-3.5 h-3.5 text-amber-400" /> Email Client
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEmailModal(m)}
+                          className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow"
+                        >
+                          <Send className="w-3.5 h-3.5 text-slate-950" /> Reply via SMTP Email
                         </button>
 
                         <a
@@ -1965,6 +2110,87 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 );
               })
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Email Reply Modal */}
+      {selectedEmailMsg && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-slate-900 border-2 border-amber-600/60 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative text-slate-100">
+            <button
+              type="button"
+              onClick={() => setSelectedEmailMsg(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-amber-900/40 pb-3">
+              <div className="p-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                <Mail className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold font-serif text-amber-100">Reply via SMTP Email</h3>
+                <p className="text-xs text-amber-300/80">Dispatches from PrivateEmail Mail Server (mail.privateemail.com)</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1">
+                <p><strong className="text-amber-400">To Client:</strong> {selectedEmailMsg.name} (&lt;{selectedEmailMsg.email}&gt;)</p>
+                <p><strong className="text-amber-400">Service:</strong> {selectedEmailMsg.service}</p>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 text-[11px] font-semibold mb-1">Email Subject:</label>
+                <input
+                  type="text"
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  className="w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 text-[11px] font-semibold mb-1">Reply Message Content:</label>
+                <textarea
+                  rows={6}
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  className="w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl p-3 text-xs text-slate-100 focus:outline-none leading-relaxed"
+                  placeholder="Type your response to the client..."
+                />
+              </div>
+
+              {emailSendStatus && (
+                <div className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
+                  emailSendStatus.success ? 'bg-emerald-950/80 border border-emerald-700 text-emerald-200' : 'bg-rose-950/80 border border-rose-700 text-rose-200'
+                }`}>
+                  {emailSendStatus.success ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-rose-400" />}
+                  <span>{emailSendStatus.msg}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedEmailMsg(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSendEmailReply}
+                  disabled={sendingEmail || !emailBody.trim()}
+                  className="bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs flex items-center gap-2 transition-colors shadow-lg"
+                >
+                  <Send className={`w-3.5 h-3.5 ${sendingEmail ? 'animate-bounce' : ''}`} />
+                  {sendingEmail ? 'Sending Email...' : 'Send Email Reply'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

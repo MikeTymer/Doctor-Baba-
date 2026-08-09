@@ -5,7 +5,7 @@ export const SITE_INFO = {
   tagline: "Top African Traditional Herbalist & Spiritual Spell Caster",
   phone: "+256767062834",
   whatsapp: "256767062834",
-  email: "contact@doctorbabamukisa.com",
+  email: "help@doctorbabamukisa.com",
   address: "Plot 24 Buganda Street, Kampala, Uganda",
   templeLocation: "Kampala Temple, Uganda (Origin: Digo Land, Coastal Kenya)",
   aboutShort: "Meet Doctor Baba Mukisa, a renowned African traditional healer and witch doctor, possessing sacred spiritual powers passed down through generations from the Digo land in coastal Kenya.",
