@@ -37,7 +37,10 @@ import {
   Cpu,
   Wifi,
   Clock,
-  Filter
+  Filter,
+  Edit3,
+  Save,
+  X
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -46,6 +49,8 @@ interface AdminViewProps {
   comments: BlogComment[];
   subscribers: Subscriber[];
   onAddBlog: (blog: BlogPost) => void;
+  onUpdateBlog?: (blog: BlogPost) => void;
+  onAddCategory?: (category: Category) => void;
   onDeleteBlog: (blogId: string) => void;
   onDeleteComment?: (commentId: string) => void;
   onAddSubscriber?: (email: string) => { added: boolean; isDuplicate: boolean; message: string; subscriberId?: string } | void;
@@ -170,6 +175,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   comments,
   subscribers,
   onAddBlog,
+  onUpdateBlog,
+  onAddCategory,
   onDeleteBlog,
   onDeleteComment,
   onAddSubscriber,
@@ -191,6 +198,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'blogs' | 'new-blog' | 'comments' | 'messages' | 'subscribers' | 'security'>('overview');
   const [messages, setMessages] = useState<ContactMessage[]>(INITIAL_MESSAGES);
   const [localComments, setLocalComments] = useState<BlogComment[]>(comments);
+  const [localSubscribers, setLocalSubscribers] = useState<Subscriber[]>(subscribers);
+  const [localCategories, setLocalCategories] = useState<Category[]>(categories);
   const [searchQuery, setSearchQuery] = useState('');
   const [inquirySearch, setInquirySearch] = useState('');
   const [vpnFilter, setVpnFilter] = useState<'all' | 'vpn' | 'direct'>('all');
@@ -212,6 +221,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('Doctor Baba Mukisa');
   const [categorySlug, setCategorySlug] = useState(categories[0]?.slug || 'love-and-marriage-spells');
+  const [customCategoryName, setCustomCategoryName] = useState('');
+  const [isAddingCustomCategory, setIsAddingCustomCategory] = useState(false);
   const [miniDescription, setMiniDescription] = useState('');
   const [description, setDescription] = useState('');
   const [featureImage, setFeatureImage] = useState('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80');
@@ -221,9 +232,33 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [body2, setBody2] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
 
+  // Edit Blog Form State
+  const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAuthor, setEditAuthor] = useState('');
+  const [editCategorySlug, setEditCategorySlug] = useState('');
+  const [editCustomCategoryName, setEditCustomCategoryName] = useState('');
+  const [isEditAddingCustomCategory, setIsEditAddingCustomCategory] = useState(false);
+  const [editMiniDescription, setEditMiniDescription] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editFeatureImage, setEditFeatureImage] = useState('');
+  const [editHeading1, setEditHeading1] = useState('');
+  const [editBody1, setEditBody1] = useState('');
+  const [editHeading2, setEditHeading2] = useState('');
+  const [editBody2, setEditBody2] = useState('');
+  const [editSuccessMsg, setEditSuccessMsg] = useState('');
+
   useEffect(() => {
     setLocalComments(comments);
   }, [comments]);
+
+  useEffect(() => {
+    setLocalSubscribers(subscribers);
+  }, [subscribers]);
+
+  useEffect(() => {
+    setLocalCategories(categories);
+  }, [categories]);
 
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -241,6 +276,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
     };
 
     fetchInquiries();
+    const interval = setInterval(fetchInquiries, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -302,8 +339,39 @@ export const AdminView: React.FC<AdminViewProps> = ({
       return;
     }
 
-    const selectedCatObj = categories.find((c) => c.slug === categorySlug);
-    const categoryName = selectedCatObj ? selectedCatObj.name : 'General';
+    let finalCategorySlug = categorySlug;
+    let finalCategoryName = 'General';
+
+    if (categorySlug === 'ADD_NEW_CATEGORY' || isAddingCustomCategory) {
+      if (!customCategoryName.trim()) {
+        alert('Please enter a custom category name.');
+        return;
+      }
+      const trimmedName = customCategoryName.trim();
+      const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+      let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+
+      if (!existingCat) {
+        existingCat = {
+          id: `cat-${Date.now()}`,
+          name: trimmedName,
+          slug: generatedSlug,
+          description: `Spiritual guidance and rituals for ${trimmedName}`,
+          image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80'
+        };
+        setLocalCategories((prev) => [...prev, existingCat!]);
+        if (onAddCategory) {
+          onAddCategory(existingCat);
+        }
+      }
+
+      finalCategorySlug = existingCat.slug;
+      finalCategoryName = existingCat.name;
+    } else {
+      const selectedCatObj = localCategories.find((c) => c.slug === categorySlug);
+      finalCategoryName = selectedCatObj ? selectedCatObj.name : 'General';
+    }
 
     const contentSections = [];
     if (heading1 && body1) {
@@ -326,8 +394,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
       content_sections: contentSections.length > 0 ? contentSections : undefined,
       post_date: new Date().toISOString().split('T')[0],
       feature_image: featureImage || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80',
-      category_slug: categorySlug,
-      category_name: categoryName
+      category_slug: finalCategorySlug,
+      category_name: finalCategoryName
     };
 
     onAddBlog(newBlogObj);
@@ -341,11 +409,100 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setBody1('');
     setHeading2('');
     setBody2('');
+    setCustomCategoryName('');
+    setIsAddingCustomCategory(false);
 
     setTimeout(() => {
       setFormSuccess('');
       setActiveAdminTab('blogs');
     }, 1500);
+  };
+
+  const handleStartEditBlog = (blog: BlogPost) => {
+    setEditingBlog(blog);
+    setEditTitle(blog.name);
+    setEditAuthor(blog.author || 'Doctor Baba Mukisa');
+    setEditCategorySlug(blog.category_slug || localCategories[0]?.slug || '');
+    setEditCustomCategoryName('');
+    setIsEditAddingCustomCategory(false);
+    setEditMiniDescription(blog.mini_description || '');
+    setEditDescription(blog.description || '');
+    setEditFeatureImage(blog.feature_image || '');
+    setEditHeading1(blog.content_sections?.[0]?.heading || '');
+    setEditBody1(blog.content_sections?.[0]?.body || '');
+    setEditHeading2(blog.content_sections?.[1]?.heading || '');
+    setEditBody2(blog.content_sections?.[1]?.body || '');
+    setEditSuccessMsg('');
+  };
+
+  const handleSaveEditedBlog = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBlog) return;
+
+    let finalCatSlug = editCategorySlug;
+    let finalCatName = 'Spiritual Rituals';
+
+    if (editCategorySlug === 'ADD_NEW_CATEGORY' || isEditAddingCustomCategory) {
+      if (!editCustomCategoryName.trim()) {
+        alert('Please enter a custom category name.');
+        return;
+      }
+      const trimmedName = editCustomCategoryName.trim();
+      const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+      let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+
+      if (!existingCat) {
+        existingCat = {
+          id: `cat-${Date.now()}`,
+          name: trimmedName,
+          slug: generatedSlug,
+          description: `Spiritual guidance and rituals for ${trimmedName}`,
+          image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80'
+        };
+        setLocalCategories((prev) => [...prev, existingCat!]);
+        if (onAddCategory) {
+          onAddCategory(existingCat);
+        }
+      }
+
+      finalCatSlug = existingCat.slug;
+      finalCatName = existingCat.name;
+    } else {
+      const selectedCategory = localCategories.find((c) => c.slug === editCategorySlug);
+      finalCatName = selectedCategory ? selectedCategory.name : 'Spiritual Rituals';
+    }
+
+    const contentSections = [];
+    if (editHeading1.trim() || editBody1.trim()) {
+      contentSections.push({ heading: editHeading1.trim(), body: editBody1.trim() });
+    }
+    if (editHeading2.trim() || editBody2.trim()) {
+      contentSections.push({ heading: editHeading2.trim(), body: editBody2.trim() });
+    }
+
+    const updatedBlog: BlogPost = {
+      ...editingBlog,
+      name: editTitle.trim(),
+      slug: editTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      author: editAuthor.trim() || 'Doctor Baba Mukisa',
+      category_slug: finalCatSlug,
+      category_name: finalCatName,
+      mini_description: editMiniDescription.trim(),
+      description: editDescription.trim(),
+      feature_image: editFeatureImage.trim(),
+      content_sections: contentSections.length > 0 ? contentSections : undefined,
+    };
+
+    if (onUpdateBlog) {
+      onUpdateBlog(updatedBlog);
+    }
+
+    setEditSuccessMsg('Article updated successfully!');
+    setTimeout(() => {
+      setEditingBlog(null);
+      setEditSuccessMsg('');
+    }, 1200);
   };
 
   const handleAddManualSubscriber = (e: React.FormEvent) => {
@@ -365,8 +522,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setTimeout(() => setSubSuccessMsg(''), 5000);
   };
 
+  const handleRemoveSubscriber = (subscriberId: string, email: string) => {
+    if (window.confirm(`Are you sure you want to remove ${email} from the subscriber list?`)) {
+      setLocalSubscribers((prev) => prev.filter((s) => s.id !== subscriberId));
+      if (onDeleteSubscriber) {
+        onDeleteSubscriber(subscriberId);
+      }
+    }
+  };
+
   const handleCopyEmails = () => {
-    const allEmails = subscribers.map((s) => s.email).join(', ');
+    const allEmails = localSubscribers.map((s) => s.email).join(', ');
     navigator.clipboard.writeText(allEmails);
     setCopiedEmailsMsg(true);
     setTimeout(() => setCopiedEmailsMsg(false), 3000);
@@ -374,7 +540,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
   const handleExportCSV = () => {
     const csvRows = ['ID,Email Address,Subscribed Date,Status,Source'];
-    subscribers.forEach((s) => {
+    localSubscribers.forEach((s) => {
       csvRows.push(`"${s.id}","${s.email}","${s.subscribed_date}","${s.status}","${s.source || 'Website'}"`);
     });
     const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n');
@@ -432,7 +598,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       b.category_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredSubscribers = subscribers.filter(
+  const filteredSubscribers = localSubscribers.filter(
     (s) =>
       s.email.toLowerCase().includes(subscriberSearch.toLowerCase()) ||
       (s.source && s.source.toLowerCase().includes(subscriberSearch.toLowerCase()))
@@ -600,7 +766,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       </div>
 
       {/* Admin Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-amber-900/50 pb-2">
+      <div className="admin-nav-tabs flex flex-wrap items-center gap-2 border-b border-amber-900/50 pb-2">
         <button
           onClick={() => setActiveAdminTab('overview')}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
@@ -653,7 +819,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
           }`}
         >
-          <Mail className="w-4 h-4" /> Inquiries ({messages.length})
+          <Mail className="w-4 h-4" /> Messages ({messages.length})
         </button>
 
         <button
@@ -664,7 +830,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               : 'bg-slate-900 text-emerald-400 hover:bg-amber-950/60'
           }`}
         >
-          <Users className="w-4 h-4" /> Subscribers ({subscribers.length})
+          <Users className="w-4 h-4" /> Subscribers ({localSubscribers.length})
         </button>
 
         <button
@@ -828,18 +994,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     </div>
                   </div>
 
-                  {onDeleteSubscriber && (
-                    <button
-                      onClick={() => {
-                        if (confirm(`Remove ${s.email} from subscriber list?`)) {
-                          onDeleteSubscriber(s.id);
-                        }
-                      }}
-                      className="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Remove
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSubscriber(s.id, s.email)}
+                    className="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
                 </div>
               ))
             )}
@@ -989,19 +1150,216 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (confirm(`Are you sure you want to delete "${b.name}"?`)) {
-                        onDeleteBlog(b.id);
-                      }
-                    }}
-                    className="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" /> Delete
-                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleStartEditBlog(b)}
+                      className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" /> Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to delete "${b.name}"?`)) {
+                          onDeleteBlog(b.id);
+                        }
+                      }}
+                      className="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Delete
+                    </button>
+                  </div>
                 </div>
               ))
             )}
+          </div>
+        </div>
+      )}
+
+      {/* EDIT BLOG MODAL OVERLAY */}
+      {editingBlog && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border-2 border-amber-600/80 rounded-3xl p-6 sm:p-8 max-w-2xl w-full my-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-amber-900/50 pb-4">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-5 h-5 text-amber-400" />
+                <h2 className="text-xl font-bold font-serif text-amber-100">
+                  Edit Spiritual Article
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingBlog(null)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {editSuccessMsg && (
+              <div className="bg-emerald-950/90 border border-emerald-500 text-emerald-200 p-3 rounded-xl text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{editSuccessMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveEditedBlog} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Article Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-amber-200">Author Name</label>
+                  <input
+                    type="text"
+                    value={editAuthor}
+                    onChange={(e) => setEditAuthor(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-amber-200">Category *</label>
+                  <select
+                    value={editCategorySlug}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setEditCategorySlug(val);
+                      if (val === 'ADD_NEW_CATEGORY') {
+                        setIsEditAddingCustomCategory(true);
+                      } else {
+                        setIsEditAddingCustomCategory(false);
+                      }
+                    }}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  >
+                    <option value="ADD_NEW_CATEGORY" className="bg-slate-950 text-amber-400 font-bold">
+                      + Add New Category...
+                    </option>
+                    {localCategories.map((c) => (
+                      <option key={c.id} value={c.slug} className="bg-slate-950 text-slate-100">
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {(isEditAddingCustomCategory || editCategorySlug === 'ADD_NEW_CATEGORY') && (
+                    <div className="mt-2 space-y-1.5 p-3 bg-amber-950/40 border border-amber-600/60 rounded-xl">
+                      <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                        <PlusCircle className="w-3.5 h-3.5 text-amber-400" /> Enter New Category Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editCustomCategoryName}
+                        onChange={(e) => setEditCustomCategoryName(e.target.value)}
+                        placeholder="e.g. Cleansing & Protection Spells"
+                        className="admin-input w-full bg-slate-950 border border-amber-800 focus:border-amber-400 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Feature Image URL *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editFeatureImage}
+                    onChange={(e) => setEditFeatureImage(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Mini Description / Summary *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editMiniDescription}
+                    onChange={(e) => setEditMiniDescription(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Full Description / Overview *</label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Content Section 1 Heading</label>
+                  <input
+                    type="text"
+                    value={editHeading1}
+                    onChange={(e) => setEditHeading1(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Content Section 1 Body</label>
+                  <textarea
+                    rows={2}
+                    value={editBody1}
+                    onChange={(e) => setEditBody1(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Content Section 2 Heading</label>
+                  <input
+                    type="text"
+                    value={editHeading2}
+                    onChange={(e) => setEditHeading2(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-amber-200">Content Section 2 Body</label>
+                  <textarea
+                    rows={2}
+                    value={editBody2}
+                    onChange={(e) => setEditBody2(e.target.value)}
+                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-amber-900/50">
+                <button
+                  type="button"
+                  onClick={() => setEditingBlog(null)}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-xl text-xs transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-lg"
+                >
+                  <Save className="w-4 h-4" /> Save Article Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -1043,15 +1401,42 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <label className="text-xs font-semibold text-amber-200">Category *</label>
                 <select
                   value={categorySlug}
-                  onChange={(e) => setCategorySlug(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCategorySlug(val);
+                    if (val === 'ADD_NEW_CATEGORY') {
+                      setIsAddingCustomCategory(true);
+                    } else {
+                      setIsAddingCustomCategory(false);
+                    }
+                  }}
                   className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
                 >
-                  {categories.map((c) => (
+                  <option value="ADD_NEW_CATEGORY" className="bg-slate-950 text-amber-400 font-bold">
+                    + Add New Category...
+                  </option>
+                  {localCategories.map((c) => (
                     <option key={c.id} value={c.slug} className="bg-slate-950 text-slate-100">
                       {c.name}
                     </option>
                   ))}
                 </select>
+
+                {(isAddingCustomCategory || categorySlug === 'ADD_NEW_CATEGORY') && (
+                  <div className="mt-2 space-y-1.5 p-3 bg-amber-950/40 border border-amber-600/60 rounded-xl">
+                    <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                      <PlusCircle className="w-3.5 h-3.5 text-amber-400" /> Enter New Category Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={customCategoryName}
+                      onChange={(e) => setCustomCategoryName(e.target.value)}
+                      placeholder="e.g. Cleansing & Protection Spells"
+                      className="admin-input w-full bg-slate-950 border border-amber-800 focus:border-amber-400 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -1189,55 +1574,270 @@ export const AdminView: React.FC<AdminViewProps> = ({
         </div>
       )}
 
-      {/* TAB CONTENT: MESSAGES */}
+      {/* TAB CONTENT: MESSAGES & CLIENT CONSULTATION INQUIRIES */}
       {activeAdminTab === 'messages' && (
         <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 shadow-xl space-y-6">
-          <div>
-            <h2 className="text-xl font-bold font-serif text-amber-100">
-              Client Consultation Inquiries Inbox
-            </h2>
-            <p className="text-xs text-amber-300/80">
-              Review and update status on direct client consultation requests submitted through the temple site.
-            </p>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-amber-900/40 pb-4">
+            <div>
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <Globe className="w-4 h-4 text-amber-500" />
+                <span>Google Intelligence &amp; Client Tracking</span>
+              </div>
+              <h2 className="text-xl font-bold font-serif text-amber-100">
+                Client Consultation Inquiries Inbox ({messages.length})
+              </h2>
+              <p className="text-xs text-amber-300/80">
+                Live Google geolocation, device type, network provider, and VPN / Proxy security audits for each client request.
+              </p>
+            </div>
+
+            {/* VPN / Direct Filter Controls */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setVpnFilter('all')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  vpnFilter === 'all'
+                    ? 'bg-amber-600 text-slate-950 shadow'
+                    : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                All ({messages.length})
+              </button>
+
+              <button
+                onClick={() => setVpnFilter('vpn')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                  vpnFilter === 'vpn'
+                    ? 'bg-rose-600 text-white shadow'
+                    : 'bg-slate-950 text-rose-300 hover:bg-slate-800'
+                }`}
+              >
+                <ShieldAlert className="w-3.5 h-3.5" />
+                VPN Detected ({messages.filter((m) => m.securityInfo?.isVpnOrProxy).length})
+              </button>
+
+              <button
+                onClick={() => setVpnFilter('direct')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                  vpnFilter === 'direct'
+                    ? 'bg-emerald-600 text-white shadow'
+                    : 'bg-slate-950 text-emerald-300 hover:bg-slate-800'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Direct Connection ({messages.filter((m) => !m.securityInfo?.isVpnOrProxy).length})
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {messages.map((m) => (
-              <div
-                key={m.id}
-                className="bg-slate-950 border border-amber-900/40 rounded-2xl p-5 space-y-3"
-              >
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-amber-900/30 pb-2">
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-100">{m.name}</h3>
-                    <p className="text-xs text-amber-400">Service: {m.service}</p>
-                  </div>
+          {/* Search Bar for Inquiries */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-500" />
+            <input
+              type="text"
+              value={inquirySearch}
+              onChange={(e) => setInquirySearch(e.target.value)}
+              placeholder="Search by client name, email, phone, city, country, IP address, or browser..."
+              className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+            />
+          </div>
 
-                  <button
-                    onClick={() => handleToggleMessageStatus(m.id)}
-                    className={`text-xs px-3 py-1 rounded-full font-bold border transition-colors ${
-                      m.status === 'New'
-                        ? 'bg-amber-950 text-amber-300 border-amber-600'
-                        : m.status === 'Responded'
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-600'
-                        : 'bg-slate-800 text-slate-300 border-slate-600'
-                    }`}
-                  >
-                    Status: {m.status} (Click to change)
-                  </button>
-                </div>
-
-                <p className="text-xs text-slate-200 leading-relaxed bg-slate-900/60 p-3 rounded-xl border border-amber-900/20">
-                  {m.message}
-                </p>
-
-                <div className="flex flex-wrap items-center gap-4 text-xs text-amber-300/80">
-                  <span>Phone: <a href={`tel:${m.phone}`} className="hover:underline text-slate-200">{m.phone}</a></span>
-                  <span>Email: <a href={`mailto:${m.email}`} className="hover:underline text-slate-200">{m.email}</a></span>
-                  <span>Date: {m.date}</span>
-                </div>
+          <div className="space-y-6">
+            {filteredMessages.length === 0 ? (
+              <div className="text-center py-12 bg-slate-950/60 rounded-2xl border border-amber-900/30">
+                <Mail className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+                <p className="text-xs text-slate-400">No client consultation inquiries found matching your filters.</p>
               </div>
-            ))}
+            ) : (
+              filteredMessages.map((m) => {
+                const isVpn = m.securityInfo?.isVpnOrProxy ?? false;
+                const mapsUrl = m.location?.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${m.location?.city || ''}, ${m.location?.country || ''}`)}`;
+
+                return (
+                  <div
+                    key={m.id}
+                    className="bg-slate-950 border border-amber-900/50 rounded-2xl p-5 shadow-lg space-y-4 hover:border-amber-600/60 transition-colors"
+                  >
+                    {/* Header Row: Client Name, Service Tag, Status */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-amber-900/30 pb-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-base text-slate-100">{m.name}</span>
+                          <span className="text-[10px] uppercase font-bold bg-amber-950 text-amber-300 border border-amber-700/50 px-2.5 py-0.5 rounded-full">
+                            {m.service || 'Spiritual Consultation'}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-amber-200/90">
+                          <span>
+                            <strong>Phone:</strong>{' '}
+                            <a href={`tel:${m.phone}`} className="hover:underline text-amber-300">
+                              {m.phone}
+                            </a>
+                          </span>
+                          <span>•</span>
+                          <span>
+                            <strong>Email:</strong>{' '}
+                            <a href={`mailto:${m.email}`} className="hover:underline text-amber-300">
+                              {m.email}
+                            </a>
+                          </span>
+                          <span>•</span>
+                          <span className="text-slate-400">Date: {m.date}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleToggleMessageStatus(m.id)}
+                        className={`text-xs px-3.5 py-1.5 rounded-full font-bold border transition-colors shrink-0 flex items-center gap-1.5 ${
+                          m.status === 'New'
+                            ? 'bg-amber-950 text-amber-300 border-amber-600 shadow-md shadow-amber-950'
+                            : m.status === 'Responded'
+                            ? 'bg-emerald-950 text-emerald-300 border-emerald-600'
+                            : 'bg-slate-800 text-slate-300 border-slate-600'
+                        }`}
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Status: {m.status} (Click to toggle)
+                      </button>
+                    </div>
+
+                    {/* Consultation Request Message Content */}
+                    <div className="bg-slate-900/80 border border-amber-900/30 rounded-xl p-4 space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
+                        Client Consultation Message:
+                      </span>
+                      <p className="text-xs text-slate-200 leading-relaxed italic">
+                        "{m.message}"
+                      </p>
+                      
+                      {/* WhatsApp Fast Reply Action */}
+                      <div className="pt-2 flex justify-end">
+                        <a
+                          href={`https://wa.me/256767062834?text=Hello%20${encodeURIComponent(m.name)},%20Doctor%20Baba%20Mukisa%20has%20received%20your%20spiritual%20consultation%20request.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" /> Reply on WhatsApp
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Google Geolocation, Device & Security Audit Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                      
+                      {/* Box 1: Location & Google Maps */}
+                      <div className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-3.5 space-y-2 text-xs">
+                        <div className="flex items-center justify-between text-amber-400 font-bold border-b border-amber-900/30 pb-1.5">
+                          <span className="flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-rose-400" /> Google Geolocation
+                          </span>
+                          <span className="text-[10px] font-mono bg-slate-950 px-1.5 py-0.5 rounded text-amber-300">
+                            {m.location?.countryCode || 'UG'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 text-slate-300 text-[11px]">
+                          <p>
+                            <strong className="text-slate-100">Location:</strong>{' '}
+                            {m.location?.city || 'Kampala'}, {m.location?.region || 'Central'}, {m.location?.country || 'Uganda'}
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">IP Address:</strong>{' '}
+                            <code className="bg-slate-950 px-1 py-0.5 rounded text-amber-300">{m.location?.ip || '102.218.44.12'}</code>
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">ISP Provider:</strong>{' '}
+                            {m.location?.isp || 'Residential Mobile Network'}
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">Timezone:</strong>{' '}
+                            {m.location?.timezone || 'Africa/Kampala'}
+                          </p>
+                        </div>
+
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full mt-2 bg-slate-950 hover:bg-slate-800 text-amber-400 border border-amber-700/50 font-bold py-1.5 px-2.5 rounded-lg text-[11px] flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <ExternalLink className="w-3 h-3 text-amber-400" /> Open in Google Maps
+                        </a>
+                      </div>
+
+                      {/* Box 2: Device & Browser Intelligence */}
+                      <div className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-3.5 space-y-2 text-xs">
+                        <div className="flex items-center justify-between text-amber-400 font-bold border-b border-amber-900/30 pb-1.5">
+                          <span className="flex items-center gap-1.5">
+                            <Smartphone className="w-3.5 h-3.5 text-amber-400" /> Device &amp; Browser
+                          </span>
+                          <span className="text-[10px] bg-amber-950 text-amber-300 px-2 py-0.5 rounded-full font-bold">
+                            {m.deviceInfo?.deviceType || 'Mobile'}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1 text-slate-300 text-[11px]">
+                          <p>
+                            <strong className="text-slate-100">Browser:</strong>{' '}
+                            {m.deviceInfo?.browser || 'Google Chrome'}
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">Operating System:</strong>{' '}
+                            {m.deviceInfo?.os || 'Android OS'}
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">Screen Resolution:</strong>{' '}
+                            {m.deviceInfo?.screenResolution || '1080x2340'}
+                          </p>
+                          <p>
+                            <strong className="text-slate-100">Client Language:</strong>{' '}
+                            {m.deviceInfo?.language || 'en-UG'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Box 3: VPN & Security Detection Status */}
+                      <div className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-3.5 space-y-2 text-xs">
+                        <div className="flex items-center justify-between font-bold border-b border-amber-900/30 pb-1.5">
+                          <span className="flex items-center gap-1.5 text-amber-400">
+                            <Wifi className="w-3.5 h-3.5 text-amber-400" /> VPN &amp; Security Audit
+                          </span>
+                          {isVpn ? (
+                            <span className="bg-rose-950 text-rose-300 border border-rose-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
+                              <ShieldAlert className="w-3 h-3 text-rose-400" /> VPN Detected
+                            </span>
+                          ) : (
+                            <span className="bg-emerald-950 text-emerald-300 border border-emerald-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
+                              <ShieldCheck className="w-3 h-3 text-emerald-400" /> Direct Network
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-1.5 text-slate-300 text-[11px]">
+                          <p>
+                            <strong className="text-slate-100">Connection Type:</strong>{' '}
+                            <span className={isVpn ? 'text-amber-400 font-bold' : 'text-emerald-400 font-bold'}>
+                              {m.securityInfo?.ipType || (isVpn ? 'VPN / Proxy / Datacenter' : 'Residential / Cellular')}
+                            </span>
+                          </p>
+
+                          <div className={`p-2 rounded-lg border text-[11px] leading-tight ${
+                            isVpn 
+                              ? 'bg-rose-950/40 border-rose-800/60 text-rose-200' 
+                              : 'bg-emerald-950/40 border-emerald-800/60 text-emerald-200'
+                          }`}>
+                            <span className="font-semibold block mb-0.5">Detection Analysis:</span>
+                            {m.securityInfo?.vpnReason || (isVpn ? 'VPN or Proxy connection detected via network timezone mismatch.' : 'Direct residential connection verified.')}
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       )}

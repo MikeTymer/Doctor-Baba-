@@ -219,6 +219,37 @@ html.light textarea::placeholder {
   color: #64748b !important;
 }
 
+/* ADMIN PLATFORM LIGHT MODE TABS VISIBILITY */
+html.light .admin-nav-tabs button {
+  color: #000000 !important;
+  font-weight: 800 !important;
+  background-color: #f1f5f9 !important;
+  border: 1.5px solid #94a3b8 !important;
+}
+
+html.light .admin-nav-tabs button:hover {
+  background-color: #e2e8f0 !important;
+  color: #000000 !important;
+}
+
+html.light .admin-nav-tabs button.bg-amber-600 {
+  background-color: #d97706 !important;
+  color: #000000 !important;
+  border: 2px solid #b45309 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light .admin-nav-tabs button svg {
+  color: #000000 !important;
+  stroke-width: 2.2px !important;
+}
+
+html.light .admin-container button.bg-slate-900,
+html.light .admin-container button.bg-slate-950 {
+  color: #000000 !important;
+  font-weight: 700 !important;
+}
+
 /* LIGHT MODE SPECIFIC OVERRIDES FOR HOME PAGE COMPONENTS */
 
 /* Welcome Pill Badge */

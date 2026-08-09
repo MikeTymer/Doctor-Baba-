@@ -20,7 +20,14 @@ import { AdminView } from './components/AdminView';
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [blogs, setBlogs] = useState<BlogPost[]>(INITIAL_BLOGS);
-  const [categories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+
+  const handleAddCategory = (newCategory: Category) => {
+    setCategories((prev) => {
+      if (prev.some((c) => c.slug === newCategory.slug)) return prev;
+      return [...prev, newCategory];
+    });
+  };
   const [comments, setComments] = useState<BlogComment[]>(INITIAL_COMMENTS);
   const [subscribers, setSubscribers] = useState<Subscriber[]>(INITIAL_SUBSCRIBERS);
 
@@ -54,6 +61,13 @@ export default function App() {
 
   const handleAddBlog = (newBlog: BlogPost) => {
     setBlogs((prev) => [newBlog, ...prev]);
+  };
+
+  const handleUpdateBlog = (updatedBlog: BlogPost) => {
+    setBlogs((prev) => prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
+    if (selectedBlog && selectedBlog.id === updatedBlog.id) {
+      setSelectedBlog(updatedBlog);
+    }
   };
 
   const handleDeleteBlog = (blogId: string) => {
@@ -204,9 +218,11 @@ export default function App() {
           <AdminView
             blogs={blogs}
             categories={categories}
+            onAddCategory={handleAddCategory}
             comments={comments}
             subscribers={subscribers}
             onAddBlog={handleAddBlog}
+            onUpdateBlog={handleUpdateBlog}
             onDeleteBlog={handleDeleteBlog}
             onDeleteComment={handleDeleteComment}
             onAddSubscriber={(email) => handleAddSubscriber(email, 'Admin Added')}

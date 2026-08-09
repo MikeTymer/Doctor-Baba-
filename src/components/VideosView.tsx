@@ -25,7 +25,7 @@ export const VideosView: React.FC = () => {
         <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 border border-amber-900/40 shadow-inner">
           <iframe
             className="w-full h-full border-0"
-            src="https://www.youtube.com/embed/-BSQlJxCDcI?rel=0&mute=1&showinfo=0&autoplay=1&loop=1&playlist=-BSQlJxCDcI"
+            src="https://www.youtube.com/embed/qpfckdgXQnw?rel=0&mute=1&showinfo=0&autoplay=1&loop=1&playlist=qpfckdgXQnw"
             title="Doctor Baba Mukisa Spiritual Healer Video"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
