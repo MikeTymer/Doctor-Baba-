@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
 import { Navbar } from './components/Navbar';
@@ -240,6 +241,9 @@ export default function App() {
 
       {/* Floating Desktop WhatsApp Button */}
       <FloatingWhatsApp />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
 
     </div>
   );
