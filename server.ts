@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import fs from "fs";
 import { createServer as createViteServer } from "vite";
 
 async function startServer() {
@@ -9,8 +10,14 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Static files route for images and assets
+  // Static files route for images and public assets (including ads.txt)
+  app.use(express.static(path.join(process.cwd(), 'public')));
   app.use('/static', express.static(path.join(process.cwd(), 'public', 'static')));
+
+  app.get('/ads.txt', (req, res) => {
+    res.type('text/plain');
+    res.send('google.com, pub-9439344424124933, DIRECT, f08c47fec0942fa0\n');
+  });
 
   // In-memory contact & subscription storage
   const contactMessages: Array<any> = [
@@ -162,6 +169,22 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
+
+    // Serve index.html for all non-API GET requests in development mode
+    app.use('*', async (req, res, next) => {
+      if (req.originalUrl.startsWith('/api')) {
+        return next();
+      }
+      try {
+        const templatePath = path.resolve(process.cwd(), 'index.html');
+        let template = fs.readFileSync(templatePath, 'utf-8');
+        template = await vite.transformIndexHtml(req.originalUrl, template);
+        res.status(200).set({ 'Content-Type': 'text/html' }).send(template);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));

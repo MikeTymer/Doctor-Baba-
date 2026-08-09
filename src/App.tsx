@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
 import { Navbar } from './components/Navbar';
@@ -19,7 +18,12 @@ import { ContactView } from './components/ContactView';
 import { AdminView } from './components/AdminView';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/admin') {
+      return 'admin';
+    }
+    return 'home';
+  });
   const [blogs, setBlogs] = useState<BlogPost[]>(INITIAL_BLOGS);
   const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
 
@@ -37,13 +41,11 @@ export default function App() {
 
   // Sync route /admin if user navigates directly or clicks Admin facilities
   useEffect(() => {
-    if (window.location.pathname === '/admin') {
-      setActiveTab('admin');
-    }
-
     const handlePopState = () => {
       if (window.location.pathname === '/admin') {
         setActiveTab('admin');
+      } else {
+        setActiveTab('home');
       }
     };
 
@@ -241,9 +243,6 @@ export default function App() {
 
       {/* Floating Desktop WhatsApp Button */}
       <FloatingWhatsApp />
-
-      {/* Vercel Web Analytics */}
-      <Analytics />
 
     </div>
   );

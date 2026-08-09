@@ -169,6 +169,21 @@ const INITIAL_MESSAGES: ContactMessage[] = [
   }
 ];
 
+const formatWhatsAppPhone = (phone?: string): string => {
+  if (!phone || phone === 'Not provided' || phone.trim() === '') {
+    return '256767062834';
+  }
+  let cleaned = phone.replace(/[^0-9]/g, '');
+  if (!cleaned) return '256767062834';
+
+  if (cleaned.length === 10 && cleaned.startsWith('0')) {
+    cleaned = '256' + cleaned.slice(1);
+  } else if (cleaned.length === 9 && !cleaned.startsWith('256')) {
+    cleaned = '256' + cleaned;
+  }
+  return cleaned;
+};
+
 export const AdminView: React.FC<AdminViewProps> = ({
   blogs,
   categories,
@@ -196,7 +211,26 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [loginError, setLoginError] = useState('');
 
   const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'blogs' | 'new-blog' | 'comments' | 'messages' | 'subscribers' | 'security'>('overview');
-  const [messages, setMessages] = useState<ContactMessage[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<ContactMessage[]>(() => {
+    try {
+      const stored = localStorage.getItem('contact_messages');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge local stored messages with INITIAL_MESSAGES avoiding duplicate IDs
+          const map = new Map<string, ContactMessage>();
+          INITIAL_MESSAGES.forEach((m) => map.set(m.id, m));
+          parsed.forEach((m: ContactMessage) => {
+            if (m && m.id) map.set(m.id, m);
+          });
+          return Array.from(map.values());
+        }
+      }
+    } catch (e) {
+      console.warn('LocalStorage initial message parse error:', e);
+    }
+    return INITIAL_MESSAGES;
+  });
   const [localComments, setLocalComments] = useState<BlogComment[]>(comments);
   const [localSubscribers, setLocalSubscribers] = useState<Subscriber[]>(subscribers);
   const [localCategories, setLocalCategories] = useState<Category[]>(categories);
@@ -262,22 +296,63 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
   useEffect(() => {
     const fetchInquiries = async () => {
+      let serverMsgs: ContactMessage[] = [];
       try {
         const res = await fetch('/api/inquiries');
         if (res.ok) {
           const data = await res.json();
-          if (data.success && Array.isArray(data.messages) && data.messages.length > 0) {
-            setMessages(data.messages);
+          if (data.success && Array.isArray(data.messages)) {
+            serverMsgs = data.messages;
           }
         }
       } catch (err) {
         console.warn('Could not fetch remote inquiries:', err);
       }
+
+      let localMsgs: ContactMessage[] = [];
+      try {
+        const stored = localStorage.getItem('contact_messages');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) localMsgs = parsed;
+        }
+      } catch (e) {
+        console.warn('LocalStorage parse error:', e);
+      }
+
+      // Merge serverMsgs, localMsgs, and INITIAL_MESSAGES avoiding duplicate IDs
+      const map = new Map<string, ContactMessage>();
+      INITIAL_MESSAGES.forEach((m) => map.set(m.id, m));
+      localMsgs.forEach((m) => {
+        if (m && m.id) map.set(m.id, m);
+      });
+      serverMsgs.forEach((m) => {
+        if (m && m.id) map.set(m.id, m);
+      });
+
+      const merged = Array.from(map.values());
+      if (merged.length > 0) {
+        setMessages(merged);
+        try {
+          localStorage.setItem('contact_messages', JSON.stringify(merged));
+        } catch (e) {
+          console.warn('LocalStorage save error:', e);
+        }
+      }
     };
 
     fetchInquiries();
-    const interval = setInterval(fetchInquiries, 3000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchInquiries, 2000);
+
+    const handleStorageUpdate = () => {
+      fetchInquiries();
+    };
+    window.addEventListener('contact_messages_updated', handleStorageUpdate);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('contact_messages_updated', handleStorageUpdate);
+    };
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -561,50 +636,94 @@ export const AdminView: React.FC<AdminViewProps> = ({
   };
 
   const handleToggleMessageStatus = (id: string) => {
-    setMessages((prev) =>
-      prev.map((msg) => {
+    setMessages((prev) => {
+      const updated = prev.map((msg) => {
         if (msg.id === id) {
           const nextStatus: ContactMessage['status'] =
             msg.status === 'New' ? 'Responded' : msg.status === 'Responded' ? 'Pending' : 'New';
           return { ...msg, status: nextStatus };
         }
         return msg;
-      })
-    );
+      });
+      try {
+        localStorage.setItem('contact_messages', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('LocalStorage status save error:', e);
+      }
+      return updated;
+    });
   };
 
-  const filteredMessages = messages.filter((m) => {
-    if (vpnFilter === 'vpn' && !m.securityInfo?.isVpnOrProxy) return false;
-    if (vpnFilter === 'direct' && m.securityInfo?.isVpnOrProxy) return false;
+  const handleDeleteMessage = (id: string) => {
+    setMessages((prev) => {
+      const updated = prev.filter((m) => m.id !== id);
+      try {
+        localStorage.setItem('contact_messages', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('LocalStorage delete save error:', e);
+      }
+      return updated;
+    });
+  };
 
-    if (!inquirySearch.trim()) return true;
-    const query = inquirySearch.toLowerCase();
-    return (
-      m.name.toLowerCase().includes(query) ||
-      m.email.toLowerCase().includes(query) ||
-      m.phone.toLowerCase().includes(query) ||
-      (m.service && m.service.toLowerCase().includes(query)) ||
-      (m.location?.city && m.location.city.toLowerCase().includes(query)) ||
-      (m.location?.country && m.location.country.toLowerCase().includes(query)) ||
-      (m.location?.ip && m.location.ip.toLowerCase().includes(query)) ||
-      (m.deviceInfo?.browser && m.deviceInfo.browser.toLowerCase().includes(query)) ||
-      (m.deviceInfo?.os && m.deviceInfo.os.toLowerCase().includes(query))
-    );
-  });
+  const filteredMessages = (messages || [])
+    .filter((m) => {
+      if (!m) return false;
+      if (vpnFilter === 'vpn' && !m.securityInfo?.isVpnOrProxy) return false;
+      if (vpnFilter === 'direct' && m.securityInfo?.isVpnOrProxy) return false;
 
-  const filteredBlogs = blogs.filter(
+      if (!inquirySearch.trim()) return true;
+      const query = inquirySearch.toLowerCase();
+      return (
+        (m.name && m.name.toLowerCase().includes(query)) ||
+        (m.email && m.email.toLowerCase().includes(query)) ||
+        (m.phone && m.phone.toLowerCase().includes(query)) ||
+        (m.service && m.service.toLowerCase().includes(query)) ||
+        (m.location?.city && m.location.city.toLowerCase().includes(query)) ||
+        (m.location?.country && m.location.country.toLowerCase().includes(query)) ||
+        (m.location?.ip && m.location.ip.toLowerCase().includes(query)) ||
+        (m.deviceInfo?.browser && m.deviceInfo.browser.toLowerCase().includes(query)) ||
+        (m.deviceInfo?.os && m.deviceInfo.os.toLowerCase().includes(query))
+      );
+    })
+    .sort((a, b) => {
+      if (!a || !b) return 0;
+      // 1. Prioritize status 'New' over 'Pending' and 'Responded'
+      const getStatusWeight = (status: string) => {
+        if (status === 'New') return 3;
+        if (status === 'Pending') return 2;
+        return 1;
+      };
+      const statusDiff = getStatusWeight(b.status || '') - getStatusWeight(a.status || '');
+      if (statusDiff !== 0) return statusDiff;
+
+      // 2. Sort by timestamp / date descending (newest first)
+      const getTimestamp = (m: ContactMessage) => {
+        if (!m) return 0;
+        if (m.id && m.id.startsWith('msg-')) {
+          const num = Number(m.id.replace('msg-', ''));
+          if (!isNaN(num) && num > 100000) return num;
+        }
+        const time = Date.parse(m.date || '');
+        return isNaN(time) ? 0 : time;
+      };
+
+      return getTimestamp(b) - getTimestamp(a);
+    });
+
+  const filteredBlogs = (blogs || []).filter(
     (b) =>
-      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      b.category_name.toLowerCase().includes(searchQuery.toLowerCase())
+      (b?.name && b.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (b?.category_name && b.category_name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const filteredSubscribers = localSubscribers.filter(
+  const filteredSubscribers = (localSubscribers || []).filter(
     (s) =>
-      s.email.toLowerCase().includes(subscriberSearch.toLowerCase()) ||
-      (s.source && s.source.toLowerCase().includes(subscriberSearch.toLowerCase()))
+      (s?.email && s.email.toLowerCase().includes(subscriberSearch.toLowerCase())) ||
+      (s?.source && s.source.toLowerCase().includes(subscriberSearch.toLowerCase()))
   );
 
-  const totalViews = blogs.reduce((acc, b) => acc + b.views, 0);
+  const totalViews = (blogs || []).reduce((acc, b) => acc + (b?.views || 0), 0);
 
   // LOGIN SCREEN
   if (!isLoggedIn) {
@@ -1710,10 +1829,18 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         "{m.message}"
                       </p>
                       
-                      {/* WhatsApp Fast Reply Action */}
-                      <div className="pt-2 flex justify-end">
+                      {/* WhatsApp Fast Reply & Delete Actions */}
+                      <div className="pt-2 flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMessage(m.id)}
+                          className="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Delete Inquiry
+                        </button>
+
                         <a
-                          href={`https://wa.me/256767062834?text=Hello%20${encodeURIComponent(m.name)},%20Doctor%20Baba%20Mukisa%20has%20received%20your%20spiritual%20consultation%20request.`}
+                          href={`https://wa.me/${formatWhatsAppPhone(m.phone)}?text=Hello%20${encodeURIComponent(m.name)},%20Doctor%20Baba%20Mukisa%20has%20received%20your%20spiritual%20consultation%20request.`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3.5 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow"
