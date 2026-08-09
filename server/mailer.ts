@@ -15,7 +15,7 @@ export interface MessageData {
 
 export function createTransporter(customPort?: number, customSecure?: boolean) {
   const host = process.env.SMTP_HOST || 'mail.privateemail.com';
-  const port = customPort ?? parseInt(process.env.SMTP_PORT || '465', 10);
+  const port = customPort ?? parseInt(process.env.SMTP_PORT || '587', 10);
   const secureEnv = process.env.SMTP_SECURE;
   const secure = customSecure ?? (secureEnv !== undefined ? (secureEnv === 'true' || secureEnv === 'SSL' || secureEnv === 'ssl') : (port === 465));
   const user = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
@@ -36,15 +36,15 @@ export function createTransporter(customPort?: number, customSecure?: boolean) {
     tls: {
       rejectUnauthorized: false
     },
-    connectionTimeout: 8000,
-    greetingTimeout: 8000,
-    socketTimeout: 10000,
+    connectionTimeout: 4000,
+    greetingTimeout: 4000,
+    socketTimeout: 8000,
   });
 }
 
 export async function checkEmailConfiguration() {
   const host = process.env.SMTP_HOST || 'mail.privateemail.com';
-  const port = parseInt(process.env.SMTP_PORT || '465', 10);
+  const port = parseInt(process.env.SMTP_PORT || '587', 10);
   const user = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
   const notificationEmail = process.env.NOTIFICATION_EMAIL || user;
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS;
@@ -124,10 +124,19 @@ export async function checkEmailConfiguration() {
   }
 }
 
-export async function sendInquiryEmail(msgData: MessageData) {
+export async function sendInquiryEmail(msgData: MessageData, customRecipient?: string) {
   const transporter = createTransporter();
-  const recipient = process.env.NOTIFICATION_EMAIL || process.env.SMTP_USER || 'help@doctorbabamukisa.com';
   const sender = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
+  const notificationEnv = process.env.NOTIFICATION_EMAIL;
+
+  const recipientsList = Array.from(new Set([
+    'help@doctorbabamukisa.com',
+    sender,
+    notificationEnv,
+    customRecipient
+  ].filter((e): e is string => Boolean(e) && typeof e === 'string' && e.includes('@'))));
+
+  const recipient = recipientsList.join(', ');
 
   const cleanPhone = (msgData.phone || '').replace(/[^0-9]/g, '');
   const whatsappUrl = cleanPhone ? `https://wa.me/${cleanPhone}` : 'https://wa.me/256767062834';
@@ -228,8 +237,8 @@ export async function sendInquiryEmail(msgData: MessageData) {
     return { success: true, delivered: true, messageId: info.messageId };
   } catch (error) {
     console.warn('[Mailer] Primary port send failed, attempting fallback port:', (error as Error).message);
-    const primaryPort = parseInt(process.env.SMTP_PORT || '465', 10);
-    const fallbackPort = primaryPort === 465 ? 587 : 465;
+    const primaryPort = parseInt(process.env.SMTP_PORT || '587', 10);
+    const fallbackPort = primaryPort === 587 ? 465 : 587;
     const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
 
     if (fallbackTransporter) {
@@ -308,8 +317,8 @@ export async function sendReplyEmail(toEmail: string, clientName: string, subjec
     return { success: true, delivered: true, messageId: info.messageId };
   } catch (error) {
     console.warn('[Mailer Reply] Primary port failed, trying fallback port:', (error as Error).message);
-    const primaryPort = parseInt(process.env.SMTP_PORT || '465', 10);
-    const fallbackPort = primaryPort === 465 ? 587 : 465;
+    const primaryPort = parseInt(process.env.SMTP_PORT || '587', 10);
+    const fallbackPort = primaryPort === 587 ? 465 : 587;
     const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
 
     if (fallbackTransporter) {
