@@ -107,11 +107,35 @@ export default function App() {
 
     setSubscribers((prev) => [newSub, ...prev]);
 
+    // Send backend subscription request to record inbox message & send email alert
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), source })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.messageData) {
+          try {
+            const stored = localStorage.getItem('contact_messages');
+            const msgs = stored ? JSON.parse(stored) : [];
+            msgs.unshift(data.messageData);
+            localStorage.setItem('contact_messages', JSON.stringify(msgs));
+            window.dispatchEvent(new Event('contact_messages_updated'));
+          } catch (e) {
+            console.warn('LocalStorage subscription sync notice:', e);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Backend subscribe notice:', err);
+      });
+
     return {
       added: true,
       isDuplicate: false,
       subscriberId: uniqueId,
-      message: 'Thank you for subscribing! Your email has been registered for weekly spiritual updates.'
+      message: 'Thank you for subscribing! Your email has been registered for weekly spiritual updates and recorded in Doctor Baba Mukisa\'s inbox.'
     };
   };
 

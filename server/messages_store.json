@@ -1,5 +1,38 @@
 [
   {
+    "id": "msg-sub-1786319335312",
+    "name": "Subscriber (newsubscriber)",
+    "email": "newsubscriber@example.com",
+    "phone": "N/A (Newsletter)",
+    "service": "Newsletter Subscription",
+    "message": "New email subscription request received from newsubscriber@example.com (Source: Footer Form Test). Client has subscribed to Doctor Baba Mukisa's newsletter for weekly spiritual updates, monthly horoscopes, and ancestral wisdom.",
+    "date": "2026-08-09 23:48",
+    "status": "New",
+    "location": {
+      "city": "Kampala",
+      "region": "Central Region",
+      "country": "Uganda",
+      "countryCode": "UG",
+      "ip": "127.0.0.1",
+      "isp": "Residential ISP / Mobile Network",
+      "timezone": "Africa/Kampala",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Kampala,+Uganda"
+    },
+    "deviceInfo": {
+      "browser": "Web Browser",
+      "os": "Desktop / Mobile OS",
+      "deviceType": "Mobile",
+      "userAgent": "curl/7.88.1",
+      "screenResolution": "Responsive View",
+      "language": "en-US"
+    },
+    "securityInfo": {
+      "isVpnOrProxy": false,
+      "vpnReason": "Direct Connection: Verified newsletter subscriber session.",
+      "ipType": "Residential / Cellular"
+    }
+  },
+  {
     "id": "msg-1786318087324",
     "name": "End-to-End Test Client",
     "email": "sakwamikes@gmail.com",

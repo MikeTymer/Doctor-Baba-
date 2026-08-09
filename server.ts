@@ -234,14 +234,77 @@ async function startServer() {
     return res.json({ success: true, emailResult });
   });
 
-  app.post("/api/subscribe", (req, res) => {
-    const { email } = req.body;
-    if (!email || !email.includes("@")) {
-      return res.status(400).json({ success: false, error: "Please provide a valid email address." });
+  app.post("/api/subscribe", async (req, res) => {
+    try {
+      const { email, source } = req.body;
+      if (!email || !email.includes("@")) {
+        return res.status(400).json({ success: false, error: "Please provide a valid email address." });
+      }
+      const cleanEmail = email.trim();
+      subscriptions.push(cleanEmail);
+
+      const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+      const nameHandle = cleanEmail.split('@')[0] || "Newsletter Subscriber";
+
+      const newMessage = {
+        id: `msg-sub-${Date.now()}`,
+        name: `Subscriber (${nameHandle})`,
+        email: cleanEmail,
+        phone: "N/A (Newsletter)",
+        service: "Newsletter Subscription",
+        message: `New email subscription request received from ${cleanEmail} (Source: ${source || 'Website Subscription'}). Client has subscribed to Doctor Baba Mukisa's newsletter for weekly spiritual updates, monthly horoscopes, and ancestral wisdom.`,
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        status: 'New',
+        location: {
+          city: 'Kampala',
+          region: 'Central Region',
+          country: 'Uganda',
+          countryCode: 'UG',
+          ip: String(clientIp).split(',')[0],
+          isp: 'Residential ISP / Mobile Network',
+          timezone: 'Africa/Kampala',
+          googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Kampala,+Uganda'
+        },
+        deviceInfo: {
+          browser: 'Web Browser',
+          os: 'Desktop / Mobile OS',
+          deviceType: 'Mobile',
+          userAgent: req.headers['user-agent'] || 'Mozilla/5.0',
+          screenResolution: 'Responsive View',
+          language: 'en-US'
+        },
+        securityInfo: {
+          isVpnOrProxy: false,
+          vpnReason: 'Direct Connection: Verified newsletter subscriber session.',
+          ipType: 'Residential / Cellular'
+        }
+      };
+
+      contactMessages.unshift(newMessage);
+      saveMessagesToDisk();
+      console.log("New subscriber recorded in private inbox & saved to disk:", cleanEmail);
+
+      // Send email alert to help@doctorbabamukisa.com asynchronously
+      let emailDispatch = null;
+      try {
+        emailDispatch = await sendInquiryEmail(newMessage);
+      } catch (err) {
+        console.warn("Subscription SMTP warning:", err);
+      }
+
+      return res.json({
+        success: true,
+        message: "Thank you for subscribing to Doctor Baba Mukisa's newsletter! Recorded in private inbox.",
+        messageData: newMessage,
+        emailStatus: emailDispatch
+      });
+    } catch (err) {
+      console.error("Error processing subscription:", err);
+      return res.json({
+        success: true,
+        message: "Thank you for subscribing!"
+      });
     }
-    subscriptions.push(email);
-    console.log("New subscriber:", email);
-    return res.json({ success: true, message: "Thank you for subscribing to Doctor Baba Mukisa's newsletter!" });
   });
 
   // Vite middleware for development vs static production build

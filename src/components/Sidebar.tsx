@@ -29,12 +29,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, source: 'Sidebar Widget' })
       });
       const data = await res.json();
       if (data.success) {
         setSubscribed(true);
         setEmail('');
+        if (data.messageData) {
+          try {
+            const stored = localStorage.getItem('contact_messages');
+            const msgs = stored ? JSON.parse(stored) : [];
+            msgs.unshift(data.messageData);
+            localStorage.setItem('contact_messages', JSON.stringify(msgs));
+            window.dispatchEvent(new Event('contact_messages_updated'));
+          } catch (err) {
+            console.warn('Sidebar storage update warning:', err);
+          }
+        }
       }
     } catch {
       setSubscribed(true);
