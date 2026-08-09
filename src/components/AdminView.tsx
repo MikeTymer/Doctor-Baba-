@@ -730,7 +730,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
     });
   };
 
-  const handleDeleteMessage = (id: string) => {
+  const handleDeleteMessage = async (id: string) => {
+    try {
+      await fetch(`/api/inquiries/${id}`, { method: 'DELETE' });
+    } catch (e) {
+      console.warn('Backend delete inquiry failed:', e);
+    }
+
     setMessages((prev) => {
       const updated = prev.filter((m) => m.id !== id);
       try {

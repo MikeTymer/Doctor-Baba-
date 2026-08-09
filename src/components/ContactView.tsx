@@ -116,7 +116,7 @@ export const ContactView: React.FC = () => {
         console.warn('LocalStorage write warning:', err);
       }
 
-      setSuccessMessage("Your inquiry has been submitted successfully, Doctor Baba Mukisa will contact you soon.");
+      setSuccessMessage("Your message has been sent to Doctor Baba Mukisa and recorded in the temple admin inbox! You will receive a response at " + (payload.email || "your email address") + " soon.");
       setFirstName('');
       setLastName('');
       setEmail('');

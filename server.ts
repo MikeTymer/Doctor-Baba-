@@ -20,81 +20,111 @@ async function startServer() {
     res.send('google.com, pub-9439344424124933, DIRECT, f08c47fec0942fa0\n');
   });
 
-  // In-memory contact & subscription storage
-  const contactMessages: Array<any> = [
-    {
-      id: 'msg-1',
-      name: 'Samuel Mukasa',
-      email: 'samuel.m@example.com',
-      phone: '+256701234567',
-      service: 'Love & Marriage Spells',
-      message: 'Doctor Baba, I need urgent spiritual consultation regarding my broken marriage. Please guide me.',
-      date: '2026-08-06 14:22',
-      status: 'New',
-      location: {
-        city: 'Kampala',
-        region: 'Central Region',
-        country: 'Uganda',
-        countryCode: 'UG',
-        ip: '102.218.44.12',
-        isp: 'MTN Uganda Mobile Broadband',
-        timezone: 'Africa/Kampala',
-        latitude: 0.3136,
-        longitude: 32.5811,
-        googleMapsUrl: 'https://www.google.com/maps?q=0.3136,32.5811'
-      },
-      deviceInfo: {
-        browser: 'Google Chrome 127.0',
-        os: 'Android OS',
-        deviceType: 'Mobile',
-        userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Mobile Safari/537.36',
-        screenResolution: '1080x2340',
-        language: 'en-UG',
-        timezone: 'Africa/Kampala'
-      },
-      securityInfo: {
-        isVpnOrProxy: false,
-        vpnReason: 'Direct Connection: Client device timezone (Africa/Kampala) matches residential ISP IP location (Uganda).',
-        ipType: 'Residential / Cellular'
+  // File store helper functions
+  const messagesFilePath = path.join(process.cwd(), 'server', 'messages_store.json');
+
+  const loadMessagesFromDisk = (): Array<any> => {
+    try {
+      if (fs.existsSync(messagesFilePath)) {
+        const raw = fs.readFileSync(messagesFilePath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
       }
-    },
-    {
-      id: 'msg-2',
-      name: 'Grace Akello',
-      email: 'grace.a@example.com',
-      phone: '+254712345678',
-      service: 'Financial & Wealth Recovery',
-      message: 'I am requesting a remote business blessing ritual for my hardware shop in Mombasa.',
-      date: '2026-08-05 09:15',
-      status: 'Responded',
-      location: {
-        city: 'Frankfurt',
-        region: 'Hesse',
-        country: 'Germany',
-        countryCode: 'DE',
-        ip: '185.220.101.45',
-        isp: 'M247 Ltd Datacenter / NordVPN Proxy',
-        timezone: 'Europe/Berlin',
-        latitude: 50.1109,
-        longitude: 8.6821,
-        googleMapsUrl: 'https://www.google.com/maps?q=50.1109,8.6821'
-      },
-      deviceInfo: {
-        browser: 'Apple Safari 17.5',
-        os: 'iOS (Apple iPhone)',
-        deviceType: 'Mobile',
-        userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148',
-        screenResolution: '1170x2532',
-        language: 'en-KE',
-        timezone: 'Africa/Nairobi'
-      },
-      securityInfo: {
-        isVpnOrProxy: true,
-        vpnReason: 'VPN / Proxy Detected: Device timezone (Africa/Nairobi) mismatches IP location timezone (Europe/Berlin) & Datacenter ISP (M247 Ltd).',
-        ipType: 'VPN / Proxy / Datacenter'
-      }
+    } catch (e) {
+      console.warn('Could not read messages_store.json:', e);
     }
-  ];
+    return [
+      {
+        id: 'msg-1',
+        name: 'Samuel Mukasa',
+        email: 'samuel.m@example.com',
+        phone: '+256701234567',
+        service: 'Love & Marriage Spells',
+        message: 'Doctor Baba, I need urgent spiritual consultation regarding my broken marriage. Please guide me.',
+        date: '2026-08-06 14:22',
+        status: 'New',
+        location: {
+          city: 'Kampala',
+          region: 'Central Region',
+          country: 'Uganda',
+          countryCode: 'UG',
+          ip: '102.218.44.12',
+          isp: 'MTN Uganda Mobile Broadband',
+          timezone: 'Africa/Kampala',
+          latitude: 0.3136,
+          longitude: 32.5811,
+          googleMapsUrl: 'https://www.google.com/maps?q=0.3136,32.5811'
+        },
+        deviceInfo: {
+          browser: 'Google Chrome 127.0',
+          os: 'Android OS',
+          deviceType: 'Mobile',
+          userAgent: 'Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Mobile Safari/537.36',
+          screenResolution: '1080x2340',
+          language: 'en-UG',
+          timezone: 'Africa/Kampala'
+        },
+        securityInfo: {
+          isVpnOrProxy: false,
+          vpnReason: 'Direct Connection: Client device timezone (Africa/Kampala) matches residential ISP IP location (Uganda).',
+          ipType: 'Residential / Cellular'
+        }
+      },
+      {
+        id: 'msg-2',
+        name: 'Grace Akello',
+        email: 'grace.a@example.com',
+        phone: '+254712345678',
+        service: 'Financial & Wealth Recovery',
+        message: 'I am requesting a remote business blessing ritual for my hardware shop in Mombasa.',
+        date: '2026-08-05 09:15',
+        status: 'Responded',
+        location: {
+          city: 'Frankfurt',
+          region: 'Hesse',
+          country: 'Germany',
+          countryCode: 'DE',
+          ip: '185.220.101.45',
+          isp: 'M247 Ltd Datacenter / NordVPN Proxy',
+          timezone: 'Europe/Berlin',
+          latitude: 50.1109,
+          longitude: 8.6821,
+          googleMapsUrl: 'https://www.google.com/maps?q=50.1109,8.6821'
+        },
+        deviceInfo: {
+          browser: 'Apple Safari 17.5',
+          os: 'iOS (Apple iPhone)',
+          deviceType: 'Mobile',
+          userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148',
+          screenResolution: '1170x2532',
+          language: 'en-KE',
+          timezone: 'Africa/Nairobi'
+        },
+        securityInfo: {
+          isVpnOrProxy: true,
+          vpnReason: 'VPN / Proxy Detected: Device timezone (Africa/Nairobi) mismatches IP location timezone (Europe/Berlin) & Datacenter ISP (M247 Ltd).',
+          ipType: 'VPN / Proxy / Datacenter'
+        }
+      }
+    ];
+  };
+
+  const contactMessages: Array<any> = loadMessagesFromDisk();
+
+  const saveMessagesToDisk = () => {
+    try {
+      const dir = path.dirname(messagesFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(messagesFilePath, JSON.stringify(contactMessages, null, 2));
+    } catch (e) {
+      console.warn('Could not save messages_store.json:', e);
+    }
+  };
+
   const subscriptions: string[] = [];
 
   // API Endpoints
@@ -154,7 +184,8 @@ async function startServer() {
     };
 
     contactMessages.unshift(newMessage);
-    console.log("New contact inquiry received:", newMessage.id, newMessage.name);
+    saveMessagesToDisk();
+    console.log("New contact inquiry received and saved to disk:", newMessage.id, newMessage.name);
 
     // Dispatch SMTP email via mail.privateemail.com asynchronously so client doesn't wait
     let emailDispatch = null;
@@ -172,6 +203,17 @@ async function startServer() {
     });
   });
 
+  app.delete("/api/inquiries/:id", (req, res) => {
+    const { id } = req.params;
+    const index = contactMessages.findIndex((m) => m.id === id);
+    if (index !== -1) {
+      contactMessages.splice(index, 1);
+      saveMessagesToDisk();
+      return res.json({ success: true, message: "Inquiry deleted successfully." });
+    }
+    return res.status(404).json({ success: false, error: "Inquiry not found." });
+  });
+
   app.post("/api/reply-email", async (req, res) => {
     const { messageId, toEmail, clientName, subject, replyMessage } = req.body;
     if (!toEmail || !replyMessage) {
@@ -185,6 +227,7 @@ async function startServer() {
       const existing = contactMessages.find((m) => m.id === messageId);
       if (existing) {
         existing.status = 'Responded';
+        saveMessagesToDisk();
       }
     }
 
