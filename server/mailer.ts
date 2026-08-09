@@ -13,11 +13,11 @@ export interface MessageData {
   securityInfo?: any;
 }
 
-export function createTransporter() {
+export function createTransporter(customPort?: number, customSecure?: boolean) {
   const host = process.env.SMTP_HOST || 'mail.privateemail.com';
-  const port = parseInt(process.env.SMTP_PORT || '465', 10);
+  const port = customPort ?? parseInt(process.env.SMTP_PORT || '465', 10);
   const secureEnv = process.env.SMTP_SECURE;
-  const secure = secureEnv !== undefined ? (secureEnv === 'true' || secureEnv === 'SSL' || secureEnv === 'ssl') : (port === 465);
+  const secure = customSecure ?? (secureEnv !== undefined ? (secureEnv === 'true' || secureEnv === 'SSL' || secureEnv === 'ssl') : (port === 465));
   const user = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS;
 
@@ -35,7 +35,10 @@ export function createTransporter() {
     },
     tls: {
       rejectUnauthorized: false
-    }
+    },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 10000,
   });
 }
 
@@ -46,8 +49,19 @@ export async function checkEmailConfiguration() {
   const notificationEmail = process.env.NOTIFICATION_EMAIL || user;
   const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS;
 
-  const transporter = createTransporter();
+  if (!pass) {
+    return {
+      configured: false,
+      host,
+      port,
+      user,
+      notificationEmail,
+      status: 'Pending SMTP Password: Please set SMTP_PASS (or EMAIL_PASS) secret in App Settings.'
+    };
+  }
 
+  // Primary attempt
+  let transporter = createTransporter(port);
   if (!transporter) {
     return {
       configured: false,
@@ -55,7 +69,7 @@ export async function checkEmailConfiguration() {
       port,
       user,
       notificationEmail,
-      status: 'Pending Password (Add SMTP_PASS secret variable in App Settings)'
+      status: 'Missing SMTP authentication credentials.'
     };
   }
 
@@ -67,9 +81,38 @@ export async function checkEmailConfiguration() {
       port,
       user,
       notificationEmail,
-      status: 'Connected & Verified (mail.privateemail.com Ready)'
+      status: `Connected & Verified (${host}:${port} Ready)`
     };
   } catch (err) {
+    // Try fallback port (587 STARTTLS if 465 failed, or 465 if 587 failed)
+    const fallbackPort = port === 465 ? 587 : 465;
+    const fallbackSecure = fallbackPort === 465;
+    const fallbackTransporter = createTransporter(fallbackPort, fallbackSecure);
+
+    if (fallbackTransporter) {
+      try {
+        await fallbackTransporter.verify();
+        return {
+          configured: true,
+          host,
+          port: fallbackPort,
+          user,
+          notificationEmail,
+          status: `Connected & Verified via fallback port (${host}:${fallbackPort})`
+        };
+      } catch (fallbackErr) {
+        // Return clear diagnostic message
+        return {
+          configured: false,
+          host,
+          port,
+          user,
+          notificationEmail,
+          status: `SMTP Auth/Connection error: ${(err as Error).message}`
+        };
+      }
+    }
+
     return {
       configured: false,
       host,
@@ -184,7 +227,28 @@ export async function sendInquiryEmail(msgData: MessageData) {
     console.log(`[Mailer] Inquiry email dispatched via PrivateEmail SMTP to ${recipient}:`, info.messageId);
     return { success: true, delivered: true, messageId: info.messageId };
   } catch (error) {
-    console.error('[Mailer] Failed to send email via SMTP:', error);
+    console.warn('[Mailer] Primary port send failed, attempting fallback port:', (error as Error).message);
+    const primaryPort = parseInt(process.env.SMTP_PORT || '465', 10);
+    const fallbackPort = primaryPort === 465 ? 587 : 465;
+    const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
+
+    if (fallbackTransporter) {
+      try {
+        const fallbackInfo = await fallbackTransporter.sendMail({
+          from: `"Doctor Baba Mukisa Temple" <${sender}>`,
+          to: recipient,
+          replyTo: `"${msgData.name}" <${msgData.email}>`,
+          subject: `New Inquiry (${msgData.service}) - ${msgData.name}`,
+          text: `New Website Inquiry from ${msgData.name} (${msgData.email}, ${msgData.phone})\nService: ${msgData.service}\n\nMessage:\n${msgData.message}`,
+          html: htmlContent,
+        });
+        console.log(`[Mailer] Inquiry email dispatched via fallback port ${fallbackPort} to ${recipient}:`, fallbackInfo.messageId);
+        return { success: true, delivered: true, messageId: fallbackInfo.messageId };
+      } catch (fbErr) {
+        console.error('[Mailer] Fallback port send also failed:', (fbErr as Error).message);
+      }
+    }
+
     return { success: false, error: (error as Error).message };
   }
 }
@@ -243,7 +307,27 @@ export async function sendReplyEmail(toEmail: string, clientName: string, subjec
     console.log(`[Mailer] Direct reply email delivered to ${toEmail}:`, info.messageId);
     return { success: true, delivered: true, messageId: info.messageId };
   } catch (error) {
-    console.error('[Mailer] Failed to send reply email:', error);
+    console.warn('[Mailer Reply] Primary port failed, trying fallback port:', (error as Error).message);
+    const primaryPort = parseInt(process.env.SMTP_PORT || '465', 10);
+    const fallbackPort = primaryPort === 465 ? 587 : 465;
+    const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
+
+    if (fallbackTransporter) {
+      try {
+        const fallbackInfo = await fallbackTransporter.sendMail({
+          from: `"Doctor Baba Mukisa" <${sender}>`,
+          to: toEmail,
+          subject: subject || 'Response to your spiritual inquiry - Doctor Baba Mukisa',
+          text: replyMessage,
+          html: htmlContent,
+        });
+        console.log(`[Mailer Reply] Direct reply email delivered via fallback port ${fallbackPort} to ${toEmail}:`, fallbackInfo.messageId);
+        return { success: true, delivered: true, messageId: fallbackInfo.messageId };
+      } catch (fbErr) {
+        console.error('[Mailer Reply] Fallback port send failed:', (fbErr as Error).message);
+      }
+    }
+
     return { success: false, error: (error as Error).message };
   }
 }
