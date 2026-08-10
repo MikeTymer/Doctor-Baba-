@@ -286,7 +286,7 @@ export const INITIAL_COMMENTS: BlogComment[] = [
 ];
 
 export const GALLERY_ITEMS: GalleryItem[] = [
-  { id: "g1", title: "Sacred Temple Shrine", image: "https://images.unsplash.com/photo-1545232979-fbfd42e0188d?auto=format&fit=crop&w=800&q=80", category: "Temple" },
+  { id: "g1", title: "Sacred Temple Shrine", image: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=800&q=80", category: "Temple" },
   { id: "g2", title: "Traditional Herbal Herbs & Oils", image: "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80", category: "Herbs" },
   { id: "g3", title: "Spiritual Meditation Space", image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80", category: "Temple" },
   { id: "g4", title: "Protection Charms & Amulets", image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80", category: "Charms" },
