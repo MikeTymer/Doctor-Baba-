@@ -11,6 +11,17 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // Security Headers Middleware for enhanced protection & Google search trust
+  app.use((req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-XSS-Protection", "1; mode=block");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader("X-DNS-Prefetch-Control", "on");
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    next();
+  });
+
   // Static files route for images and public assets (including ads.txt)
   app.use(express.static(path.join(process.cwd(), 'public')));
   app.use('/static', express.static(path.join(process.cwd(), 'public', 'static')));
@@ -18,6 +29,25 @@ async function startServer() {
   app.get('/ads.txt', (req, res) => {
     res.type('text/plain');
     res.send('google.com, pub-9439344424124933, DIRECT, f08c47fec0942fa0\n');
+  });
+
+  app.get('/robots.txt', (req, res) => {
+    const robotsPath = path.join(process.cwd(), 'public', 'robots.txt');
+    if (fs.existsSync(robotsPath)) {
+      res.type('text/plain');
+      return res.sendFile(robotsPath);
+    }
+    res.type('text/plain');
+    res.send("User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: https://doctorbabamukisa.com/sitemap.xml\n");
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
+    if (fs.existsSync(sitemapPath)) {
+      res.type('application/xml');
+      return res.sendFile(sitemapPath);
+    }
+    res.status(404).send('Sitemap not found');
   });
 
   // File store helper functions

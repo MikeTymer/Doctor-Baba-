@@ -1,6 +1,6 @@
 {
-  "name": "Doctor Baba Mukisa - Spiritual Healer & Blog",
-  "description": "Official spiritual healer and blog website for Doctor Baba Mukisa with services, videos, gallery, contact, and admin management.",
+  "name": "Doctor Baba Mukisa - Traditional Herbalist & Spiritual Guidance",
+  "description": "Official traditional herbalist and spiritual guidance sanctuary website for Doctor Baba Mukisa with services, articles, gallery, and client contact portal.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
