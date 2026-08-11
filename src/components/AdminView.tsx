@@ -66,7 +66,7 @@ const INITIAL_MESSAGES: ContactMessage[] = [
     name: 'Samuel Mukasa',
     email: 'samuel.m@example.com',
     phone: '+256701234567',
-    service: 'Love & Marriage Spells',
+    service: 'Love & Relationship Guidance',
     message: 'Doctor Baba, I need urgent spiritual consultation regarding my broken marriage. Please guide me.',
     date: '2026-08-06 14:22',
     status: 'New',
@@ -330,7 +330,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
   // New Blog Form state
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('Doctor Baba Mukisa');
-  const [categorySlug, setCategorySlug] = useState(categories[0]?.slug || 'love-and-marriage-spells');
+  const [categorySlug, setCategorySlug] = useState(categories[0]?.slug || 'love-and-relationship-guidance');
   const [customCategoryName, setCustomCategoryName] = useState('');
   const [isAddingCustomCategory, setIsAddingCustomCategory] = useState(false);
   const [miniDescription, setMiniDescription] = useState('');
@@ -1464,7 +1464,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         required
                         value={editCustomCategoryName}
                         onChange={(e) => setEditCustomCategoryName(e.target.value)}
-                        placeholder="e.g. Cleansing & Protection Spells"
+                        placeholder="e.g. Cleansing & Protection Guidance"
                         className="admin-input w-full bg-slate-950 border border-amber-800 focus:border-amber-400 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -1633,7 +1633,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       required
                       value={customCategoryName}
                       onChange={(e) => setCustomCategoryName(e.target.value)}
-                      placeholder="e.g. Cleansing & Protection Spells"
+                      placeholder="e.g. Cleansing & Protection Guidance"
                       className="admin-input w-full bg-slate-950 border border-amber-800 focus:border-amber-400 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
                     />
                   </div>

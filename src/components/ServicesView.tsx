@@ -30,13 +30,13 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 shadow-xl text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950 border border-amber-800/40 text-amber-400 text-xs font-semibold">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Sacred Traditional Healing & Spell Casting</span>
+          <span>Traditional Herbal & Spiritual Guidance</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-amber-100">
           Our Spiritual Services
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Doctor Baba Mukisa provides authentic spiritual guidance, distance meditation, herbal solutions, and traditional spell casting for love, financial growth, protection, legal victory, and family peace.
+          Doctor Baba Mukisa provides authentic spiritual guidance, distance meditation, traditional herbal solutions, and cultural reflections for emotional harmony, business clarity, protection, legal stress relief, and family peace.
         </p>
       </div>
 

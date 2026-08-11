@@ -19,7 +19,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
           About Doctor Baba Mukisa
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Renowned African traditional healer and witch doctor, possessing sacred spiritual powers passed down through generations.
+          African traditional herbalist and spiritual practitioner sharing ancestral guidance and cultural herbal heritage.
         </p>
       </div>
 
@@ -32,10 +32,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
             <Award className="w-5 h-5" /> Who We Are
           </div>
           <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
-            Meet <strong>Doctor Baba Mukisa</strong>, a renowned African traditional healer and witch doctor possessing sacred spiritual powers passed down through generations from the Digo land in coastal Kenya.
+            Meet <strong>Doctor Baba Mukisa</strong>, a traditional African herbalist and spiritual guidance practitioner sharing sacred ancestral knowledge passed down through generations from coastal Digo heritage.
           </p>
           <p className="text-xs text-slate-300 leading-relaxed">
-            With decades of dedicated traditional practice, Doctor Baba Mukisa has assisted thousands of individuals across East Africa and internationally. His temple in Kampala, Uganda, serves as a sanctuary for those seeking love restoration, business luck, spiritual cleansing, and freedom from negative forces.
+            With decades of practice, Doctor Baba Mukisa assists individuals seeking relationship harmony, personal reflection, spiritual cleansing, and emotional peace.
           </p>
         </div>
 
@@ -45,10 +45,10 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
             <Heart className="w-5 h-5" /> How We Help
           </div>
           <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
-            Whether you are struggling with a broken relationship, stagnant career, financial debt, court cases, or unexplained bad luck, Doctor Baba Mukisa provides personal spiritual readings and remote meditation.
+            Doctor Baba Mukisa provides personal spiritual readings, traditional herbal consultation, and guided meditation for those seeking internal balance and spiritual clarity.
           </p>
           <p className="text-xs text-slate-300 leading-relaxed">
-            You do not need to travel to Kampala if distance is a barrier. Through remote spiritual meditation, feelings and thoughts are harmonized across any distance.
+            Consultations are available both in-person at the Kampala sanctuary and via phone/WhatsApp for remote spiritual reflection.
           </p>
         </div>
 

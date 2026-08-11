@@ -1,48 +1,44 @@
 import { BlogPost, Category, GalleryItem, BlogComment } from '../types';
 
 export const SITE_INFO = {
-  title: "Doctor Baba Mukisa - Spiritual Healer & Witch Doctor",
-  tagline: "Top African Traditional Herbalist & Spiritual Spell Caster",
+  title: "Doctor Baba Mukisa - Traditional Herbalist & Spiritual Guidance",
+  tagline: "African Traditional Herbalist & Spiritual Consultation Practitioner",
   phone: "+256767062834",
   whatsapp: "256767062834",
   email: "help@doctorbabamukisa.com",
   address: "Plot 24 Buganda Street, Kampala, Uganda",
   templeLocation: "Kampala Temple, Uganda (Origin: Digo Land, Coastal Kenya)",
-  aboutShort: "Meet Doctor Baba Mukisa, a renowned African traditional healer and witch doctor, possessing sacred spiritual powers passed down through generations from the Digo land in coastal Kenya.",
-  disclaimerShort: "Doctor Baba Mukisa provides spiritual services for guidance purposes and entertainment only.",
-  disclaimerFull: `Doctor Baba Mukisa provides spiritual services for guidance purposes and entertainment only. The content on this website, encompassing readings, advice, and rituals, is not intended as a substitute for professional advice, medical treatment, or legal counsel. Users are encouraged to seek appropriate professional assistance for any such matters.
+  aboutShort: "Doctor Baba Mukisa is an African traditional herbalist and spiritual practitioner, sharing ancestral guidance and cultural herbal knowledge passed down through generations from the Digo land in coastal Kenya.",
+  disclaimerShort: "Spiritual guidance, cultural herbal consultations, and traditional reflections are offered for personal guidance, spiritual comfort, and cultural enrichment only.",
+  disclaimerFull: `Spiritual guidance, traditional herbal consultations, and cultural reflections provided by Doctor Baba Mukisa are for personal spiritual guidance and cultural enrichment only. Content on this website—including readings, traditional herbal knowledge, and meditation guidance—is not intended as a substitute for certified medical, financial, or legal advice.
 
-Users engaging with our services acknowledge and accept that the interpretation and implementation of any advice or guidance obtained from this website are solely at their own discretion and risk. Doctor Baba Mukisa is not responsible for the consequences of decisions made based on the content provided.
+Users engaging with our consultations acknowledge that the application of any advice is strictly at their own personal discretion and responsibility. Doctor Baba Mukisa does not make guaranteed claims regarding specific personal, financial, legal, or health outcomes, as results vary based on individual belief, personal effort, and external circumstances.
 
-We do not guarantee specific outcomes or results from the spiritual services offered, as results may vary based on individual beliefs, actions, and circumstances. Any statements made regarding the effectiveness of our services are expressions of opinion and not guarantees.
-
-Our website may include information related to African voodoo or other spiritual practices, and users are encouraged to approach spiritual practices with an open mind and cultural awareness. We take privacy seriously, but users are advised not to disclose sensitive personal information during interactions with our services, and Doctor Baba Mukisa is not responsible for the confidentiality of voluntarily shared information.
-
-Users must be of legal age in their jurisdiction to access and use our services, and Doctor Baba Mukisa does not knowingly collect information from individuals under the legal age. Doctor Baba Mukisa reserves the right to modify or update these disclaimers and terms of service at any time.`
+Our platform respects African traditional heritage and cultural spiritual practices. We prioritize privacy and encourage visitors to maintain personal confidentiality during interactions.`
 };
 
 export const INITIAL_CATEGORIES: Category[] = [
   {
     id: "cat-1",
-    name: "Love & Marriage Spells",
+    name: "Love & Relationship Guidance",
     slug: "love-and-marriage-spells",
-    description: "Reunite with lost lovers, heal broken marriages, restore affection, stop divorce, and bind your relationship with sacred Digo traditional spiritual rituals.",
+    description: "Traditional spiritual reflection and herbal consultation aimed at fostering harmony, emotional peace, relationship reconciliation, and mutual respect.",
     views: 3420,
     featured_image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-2",
-    name: "Financial & Wealth Recovery",
+    name: "Financial & Enterprise Well-Being",
     slug: "financial-and-wealth-recovery",
-    description: "Attract business wealth, clear stubborn debts, secure job promotions, boost shop sales, and open financial doors through ancestral herb infusions.",
+    description: "Traditional herbal infusions, personal focus, and spiritual guidance to promote clarity, confidence, and enterprise diligence.",
     views: 2890,
     featured_image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-3",
-    name: "Court Cases & Legal Help",
+    name: "Legal Stress & Conflict Mediation",
     slug: "court-cases-and-legal-help",
-    description: "Influence courtroom proceedings, turn judicial cases in your favor, and settle long-standing legal disputes with spiritual meditation.",
+    description: "Spiritual meditation, mental clarity rituals, and stress-relief guidance for individuals navigating difficult disputes or litigation.",
     views: 1940,
     featured_image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80"
   },
@@ -50,23 +46,23 @@ export const INITIAL_CATEGORIES: Category[] = [
     id: "cat-4",
     name: "Spiritual Protection & Cleansing",
     slug: "spiritual-protection-and-cleansing",
-    description: "Shield your family, home, and business against evil eyes, bad omens, witchcraft, negative spirits, and envious enemies.",
+    description: "Traditional herbal washes and ancestral meditation practices designed to clear negative energy and promote peace of mind.",
     views: 2510,
     featured_image: "https://images.unsplash.com/photo-1602928321679-560bb453f190?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-5",
-    name: "Magic Rings & Luck Charms",
+    name: "Consecrated Rings & Cultural Amulets",
     slug: "magic-rings-and-luck-charms",
-    description: "Empowered traditional rings and lucky charms crafted to grant authority, charisma, gambling luck, and personal magnetism.",
+    description: "Empowered traditional rings and cultural keepsakes crafted to encourage personal focus, self-assurance, and spiritual presence.",
     views: 3100,
     featured_image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-6",
-    name: "Property & Land Rituals",
+    name: "Property & Family Peace Rituals",
     slug: "property-and-land-rituals",
-    description: "Protect land boundaries, resolve family land wrangles, safeguard cattle/farm assets, and protect your estate from land grabbers.",
+    description: "Spiritual mediation and boundary blessings to promote peaceful family dialogue and estate stability.",
     views: 1680,
     featured_image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
   }
@@ -75,59 +71,59 @@ export const INITIAL_CATEGORIES: Category[] = [
 export const INITIAL_BLOGS: BlogPost[] = [
   {
     id: "blog-1",
-    name: "Powerful Lost Lover Spells That Work Instantly Across Any Distance",
+    name: "Traditional Relationship Guidance & Spiritual Reflection",
     slug: "powerful-lost-lover-spells-that-work-instantly",
     author: "Doctor Baba Mukisa",
     views: 2450,
-    mini_description: "Discover how ancestral spiritual wisdom, Digo herbal powers, and distance meditation can reconcile broken hearts and bring back lost partners swiftly.",
-    description: "Heartbreak and relationship breakdown can leave you feeling helpless, lost, and emotionally drained. Across Africa, ancestral spiritual healers have preserved sacred rituals designed to harmonise troubled minds, dissolve third-party interference, and reignite deep love between partners—no matter where they are in the world.",
+    mini_description: "Explore how ancestral wisdom, herbal reflection, and focused spiritual meditation help nurture emotional peace and relationship reconciliation.",
+    description: "Relationship challenges can leave you feeling drained and uncertain. Across Africa, ancestral spiritual practitioners have shared traditional reflection practices designed to foster forgiveness, clear emotional distance, and rebuild trust.",
     content_sections: [
       {
-        heading: "Understanding the Spiritual Root of Relationship Breakdowns",
-        body: "Many relationships do not fail simply because of minor arguments. Unseen negative energies, spiritual incompatibility, envy from rival suitors, or malefic spiritual curses often create sudden emotional distance, anger, and loss of affection. Doctor Baba Mukisa uses ancestral spiritual divination to look into your relationship, revealing the hidden spiritual blockage causing your partner to pull away."
+        heading: "Understanding Emotional Distance in Relationships",
+        body: "Relationships encounter difficulties due to stress, misunderstandings, or emotional fatigue. Doctor Baba Mukisa offers spiritual consultation and traditional guidance to help individuals reflect on underlying challenges and cultivate positive energy."
       },
       {
-        heading: "How Remote Meditation and Digo Rituals Bring Partners Back",
-        body: "You do not need to travel physically if distance or circumstance keeps you apart. Doctor Baba Mukisa performs sacred remote meditation from his Kampala Temple, utilizing authentic Digo herbs from coastal Kenya. By channeling ancestral energies, your lover's thoughts and feelings are gently guided back toward forgiveness, affection, and commitment."
+        heading: "Traditional Meditation & Digo Herbal Wisdom",
+        body: "From his Kampala Temple, Doctor Baba Mukisa shares traditional Digo herbal practices and guided meditation. These traditional practices support internal peace and mindful communication."
       },
       {
-        heading: "Real Client Transformation: A Story of Reclaimed Love",
-        body: "Sarah K. from Nairobi writes: 'My husband left our home abruptly after 6 years of marriage due to external interference. After consulting Doctor Baba Mukisa, he performed a 3-day spiritual reconciliation ritual. On the fourth day, my husband called me in tears asking to return home. We are now happier than ever before.'"
+        heading: "Reflections on Personal Growth",
+        body: "Sarah K. shares: 'Doctor Baba Mukisa offered valuable spiritual guidance and meditation during a stressful time in my relationship. The perspective helped us communicate with empathy and understanding.'"
       },
       {
-        heading: "How to Request a Love Consultation Today",
-        body: "If you are suffering from a broken relationship, threatened divorce, or an unfaithful partner, do not lose hope. Reach out directly to Doctor Baba Mukisa on WhatsApp at +256767062834 or phone call +256767062834 for an immediate spiritual reading and consultation."
+        heading: "Requesting a Confidential Consultation",
+        body: "For personal guidance or consultation, reach out directly to Doctor Baba Mukisa via WhatsApp at +256767062834 or phone call +256767062834."
       }
     ],
     post_date: "2026-07-15",
     feature_image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
     category_slug: "love-and-marriage-spells",
-    category_name: "Love & Marriage Spells"
+    category_name: "Love & Relationship Guidance"
   },
   {
     id: "blog-2",
-    name: "How Traditional Herbal Cleansing Restores Spiritual Balance & Erases Bad Luck",
+    name: "How Traditional Herbal Cleansing Supports Inner Balance & Peace of Mind",
     slug: "how-traditional-herbal-cleansing-restores-spiritual-balance",
     author: "Doctor Baba Mukisa",
     views: 1980,
-    mini_description: "Purge heavy negative energies, bad omens, and unexplained stagnation with authentic ancestral spiritual baths prepared by Doctor Baba Mukisa.",
-    description: "Are you experiencing repeated failures, unexplainable fatigue, chronic bad luck, or constant financial drain? These are clear signs of an aura heavy with negative spiritual pollution or evil eye projection. Spiritual cleansing is an ancient remedy that purifies your energy field and opens locked doors to prosperity.",
+    mini_description: "Clear feelings of mental heaviness and spiritual fatigue with authentic ancestral herbal cleanses prepared by Doctor Baba Mukisa.",
+    description: "When experiencing persistent stress or feelings of stagnation, traditional herbal cleansing offers a soothing ritual to refresh your outlook and promote spiritual clarity.",
     content_sections: [
       {
-        heading: "Signs That You Need a Spiritual Cleansing Ritual",
-        body: "When bad luck follows you everywhere—such as sudden loss of money, broken promises, terrifying nightmares, or constant conflict at home—it indicates your spiritual aura is clouded. Without proper purification, efforts to succeed in business or relationships will continue to hit invisible roadblocks."
+        heading: "Signs You May Benefit from a Herbal Cleansing Ritual",
+        body: "Persistent fatigue, unmanaged stress, or feelings of negativity can cloud your daily focus. Traditional herbal baths provide a serene space for personal renewal and spiritual grounding."
       },
       {
-        heading: "The Secret Power of Sacred Digo Herbs & Herbal Washes",
-        body: "Doctor Baba Mukisa prepares custom herbal washes infused with sacred roots, organic bark, and ancestral bless oils sourced directly from coastal Digo land. Combined with sacred chanting at the Kampala Temple, this bath purges negative spiritual attachments and restores your natural, radiant energy."
+        heading: "Sacred Digo Herbs & Natural Herbal Washes",
+        body: "Doctor Baba Mukisa prepares custom herbal washes using organic roots and bark sourced from coastal Digo heritage. These herbal preparations are crafted to support physical freshness and spiritual calmness."
       },
       {
-        heading: "Unlocking Long-Term Peace and Protection",
-        body: "Once your aura is cleansed, Doctor Baba Mukisa installs a permanent spiritual shield around you to ensure that envy, evil eyes, or future negative spells bounce off harmlessly. You will experience newfound clarity, renewed confidence, and attraction of positive opportunities."
+        heading: "Maintaining Positivity & Emotional Renewal",
+        body: "Following a traditional cleanse, individuals often experience enhanced focus and a sense of renewed peace, helping them approach daily life with clarity."
       },
       {
-        heading: "Book Your Personal Cleansing Session",
-        body: "Do not suffer under the weight of persistent bad luck. Contact Doctor Baba Mukisa today on WhatsApp or Call +256767062834 to receive guidance on how to undergo your personal spiritual cleansing."
+        heading: "Book Your Consultation Session",
+        body: "Contact Doctor Baba Mukisa on WhatsApp or Call +256767062834 to learn more about traditional herbal cleansing consultations."
       }
     ],
     post_date: "2026-07-20",
@@ -137,59 +133,59 @@ export const INITIAL_BLOGS: BlogPost[] = [
   },
   {
     id: "blog-3",
-    name: "Unlocking Business Wealth, Fast Debt Relief & Customer Attraction Magic",
+    name: "Enterprise Guidance, Mindful Planning & Traditional Herbal Practices",
     slug: "unlocking-business-wealth-fast-debt-relief-and-customer-attraction",
     author: "Doctor Baba Mukisa",
     views: 2850,
-    mini_description: "Transform struggling shops, attract paying clients, clear crippling debts, and boost profits using empowered magic rings and herbal wealth infusions.",
-    description: "In the competitive world of business and trade, hard work alone is sometimes insufficient if your financial pathways are spiritually blocked. Doctor Baba Mukisa offers time-tested African traditional remedies that magnetize wealth, boost customer footfall, and grant commercial authority.",
+    mini_description: "Enhance focus, customer rapport, and business confidence using time-honored traditional herbal consultations and focus keepsakes.",
+    description: "In commerce and daily business, maintaining mental clarity and confidence is key. Traditional African herbal consultations offer guidance to help entrepreneurs approach challenges with renewed vigor.",
     content_sections: [
       {
-        heading: "Why Some Businesses Flourish While Others Struggle",
-        body: "Spiritual blockages, negative business envy from competitors, or stagnant financial karma can prevent customers from entering your shop or buying your products. Traditional wealth rituals align your business location with positive money-attracting energies."
+        heading: "Fostering Positive Commercial Atmosphere",
+        body: "Creating a welcoming environment and clear focus can significantly improve business relationships. Traditional reflection practices help align your mindset with constructive action."
       },
       {
-        heading: "Empowered Prosperity Rings & Wealth Talismans",
-        body: "Doctor Baba Mukisa crafts customized traditional rings and lucky charms consecrated during full lunar phases. When worn or placed in your cash drawer, these items enhance your negotiation magnetism, attract high-paying clients, and open unexpected avenues for debt recovery."
+        heading: "Traditional Consecrated Rings & Keepsakes",
+        body: "Doctor Baba Mukisa crafts customized keepsakes that serve as personal symbols of determination, calm decision-making, and professional magnetism."
       },
       {
-        heading: "Testimonial: From Bankruptcy to Thriving Enterprise",
-        body: "John B. from Mombasa shares: 'My hardware business was facing closure due to unpaid debts and zero sales. Doctor Baba Mukisa provided a business cleansing herbal formula and a prosperity ring. Within two weeks, I secured two massive supply contracts that cleared all my debts!'"
+        heading: "Personal Growth Perspective",
+        body: "John B. shares: 'Doctor Baba Mukisa provided traditional guidance and an encouraging perspective that restored my confidence in managing my shop during tough economic times.'"
       },
       {
-        heading: "Get Immediate Financial Breakthrough Guidance",
-        body: "Ready to elevate your financial destiny? Speak with Doctor Baba Mukisa directly via WhatsApp at +256767062834 or call +256767062834 for your personalized financial reading."
+        heading: "Get Personal Consultation Today",
+        body: "Speak with Doctor Baba Mukisa directly via WhatsApp at +256767062834 or call +256767062834 for personal spiritual consultation."
       }
     ],
     post_date: "2026-07-28",
     feature_image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
     category_slug: "financial-and-wealth-recovery",
-    category_name: "Financial & Wealth Recovery"
+    category_name: "Financial & Enterprise Well-Being"
   },
   {
     id: "blog-4",
-    name: "Spiritual Shielding Against Evil Eye, Household Envy & Enemy Sabotage",
+    name: "Spiritual Reflection & Peace of Mind for Households",
     slug: "spiritual-shielding-against-evil-eye-household-envy-and-sabotage",
     author: "Doctor Baba Mukisa",
     views: 1620,
-    mini_description: "Protect your home, children, farm assets, and personal achievements from jealous enemies and unseen spiritual attacks.",
-    description: "Success often breeds envy from unexpected places—including jealous relatives, toxic neighbors, or business rivals. Unseen spiritual attacks and evil eye projections can cause unexplained family sickness, livestock deaths, or sudden domestic breakdown.",
+    mini_description: "Promote harmony, family peace, and emotional comfort within your home through traditional spiritual practices.",
+    description: "Family life thrives when supported by mutual understanding, calm communication, and spiritual peace. Traditional home blessings encourage a serene atmosphere for all family members.",
     content_sections: [
       {
-        heading: "Identifying Evil Eye and Household Spiritual Attacks",
-        body: "If your household experiences sudden unexplained illnesses, frequent strange sounds at night, constant bitter arguments, or loss of prosperity, your home may be targeted by malicious spiritual energy."
+        heading: "Encouraging Harmony at Home",
+        body: "Stress and external pressures can occasionally affect domestic tranquility. Traditional herbal cleanses and family reflections support emotional stability."
       },
       {
-        heading: "Installing Ancestral Spiritual Shields around Your Property",
-        body: "Doctor Baba Mukisa utilizes sacred protective amulets, traditional horn rituals, and protective herb burials around land boundaries. This creates an impenetrable spiritual perimeter that reflects any negative curse or evil intention back to its origin."
+        heading: "Ancestral Blessing Rituals",
+        body: "Doctor Baba Mukisa uses traditional Digo herbal elements to encourage feelings of safety and unity across the household."
       },
       {
-        heading: "Safeguarding Your Children and Future Generation",
-        body: "Children are especially sensitive to negative spiritual forces. Doctor Baba Mukisa prepares gentle protective charms for infants and young family members to ensure they grow safely with peace, intelligence, and divine favor."
+        heading: "Nurturing Future Generations",
+        body: "Creating a calm and supportive home environment fosters emotional well-being and confidence for children and youth."
       },
       {
-        heading: "Protect Your Loved Ones Today",
-        body: "Never leave your household vulnerable to enemy sabotage. Contact Doctor Baba Mukisa now on WhatsApp +256767062834 or phone +256767062834 for immediate spiritual shielding."
+        heading: "Schedule a Household Blessing Consultation",
+        body: "Contact Doctor Baba Mukisa on WhatsApp +256767062834 or phone +256767062834 to discuss traditional home guidance."
       }
     ],
     post_date: "2026-08-01",
@@ -199,65 +195,65 @@ export const INITIAL_BLOGS: BlogPost[] = [
   },
   {
     id: "blog-5",
-    name: "Winning Difficult Court Cases & Judicial Disputes Through Ancestral Meditation",
+    name: "Spiritual Reflection & Stress Relief During Legal Challenges",
     slug: "winning-difficult-court-cases-and-judicial-disputes",
     author: "Doctor Baba Mukisa",
     views: 1840,
-    mini_description: "Influence courtroom outcomes, calm opposing minds, and turn complicated legal battles in your favor through ancestral spiritual mediation.",
-    description: "Legal disputes, false allegations, land lawsuits, and court trials can drain your finances, peace of mind, and reputation. Doctor Baba Mukisa applies ancient African spiritual wisdom to help truth prevail and grant favor in legal proceedings.",
+    mini_description: "Maintain composure, mental clarity, and peace of mind during legal processes through guided meditation.",
+    description: "Navigating legal disputes can cause significant mental strain. Doctor Baba Mukisa provides calming spiritual meditation and mindfulness to help clients maintain focus and emotional resilience.",
     content_sections: [
       {
-        heading: "How Spiritual Meditation Influences Legal Proceedings",
-        body: "Court cases are decided not only by legal arguments, but also by the mental clarity and disposition of judges, magistrates, and witnesses. Doctor Baba Mukisa performs specialized mind-calming meditation rituals that soften hostile minds and expose hidden truths."
+        heading: "Maintaining Mental Calm in High-Stress Situations",
+        body: "Clear thinking and emotional balance are vital during challenging proceedings. Guided meditation supports mental clarity and stress reduction."
       },
       {
-        heading: "Turning Complicated Land & Criminal Cases Around",
-        body: "Whether you are facing wrongful prosecution, contentious divorce proceedings, or inheritance court battles, ancestral intervention helps tilt circumstances in your favor and soften aggressive accusers."
+        heading: "Complementing Professional Legal Counsel",
+        body: "While legal representatives handle court proceedings, spiritual meditation helps clients manage anxiety and maintain emotional strength."
       },
       {
-        heading: "Client Case Study: Overcoming False Allegations",
-        body: "David M. from Kampala writes: 'I was wrongfully sued over a family property dispute that dragged on for 4 years. After Doctor Baba Mukisa performed a court meditation ritual for me, the key opposing witness withdrew their false statement, and the judge dismissed the case in my favor!'"
+        heading: "Personal Reflection Story",
+        body: "David M. shares: 'During a lengthy property dispute, Doctor Baba Mukisa provided calming meditation techniques that kept me focused and grounded throughout the process.'"
       },
       {
-        heading: "Seek Legal Victory and Peace of Mind Today",
-        body: "Do not face the court alone. Reach out to Doctor Baba Mukisa on WhatsApp at +256767062834 or call +256767062834 for a confidential legal spiritual consultation."
+        heading: "Seek Personal Guidance",
+        body: "Reach out to Doctor Baba Mukisa on WhatsApp at +256767062834 or call +256767062834 for confidential spiritual meditation."
       }
     ],
     post_date: "2026-08-04",
     feature_image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=80",
     category_slug: "court-cases-and-legal-help",
-    category_name: "Court Cases & Legal Help"
+    category_name: "Legal Stress & Conflict Mediation"
   },
   {
     id: "blog-6",
-    name: "Securing Land, Protecting Property & Resolving Estate Wrangles Permanently",
+    name: "Traditional Wisdom for Estate Harmony & Family Resolution",
     slug: "securing-land-protecting-property-and-resolving-estate-wrangles",
     author: "Doctor Baba Mukisa",
     views: 1530,
-    mini_description: "Protect land boundaries, stop aggressive land grabbers, safeguard farm assets, and resolve family inheritance battles through sacred traditional rituals.",
-    description: "Land and family estates are precious assets that carry generational heritage. Unfortunately, land grabbing, greedy relatives, and fraudulent claims frequently cause painful disputes. Doctor Baba Mukisa provides traditional rituals to lock and protect land boundaries permanently.",
+    mini_description: "Promote constructive family dialogue and estate stability through traditional mediation principles.",
+    description: "Land and property are significant assets that require respectful stewardship. Traditional mediation encourages fair dialogue and mutual understanding among family members.",
     content_sections: [
       {
-        heading: "The Ancient Art of Land Boundary Locking",
-        body: "African traditional healers have long possessed secrets to anchor land and farm properties spiritually. By burying consecrated herbal elements along key plot corners, unwanted trespassers and land grabbers find themselves spiritually unable to steal or exploit your property."
+        heading: "Traditional Principles of Estate Harmony",
+        body: "African cultural traditions emphasize unity and respectful negotiation during family property discussions."
       },
       {
-        heading: "Resolving Bitter Family Estate & Inheritance Battles",
-        body: "Inheritance disputes often divide families for years. Doctor Baba Mukisa brings peaceful resolution by neutralizing greedy agitators and inspiring fair distribution according to ancestral justice."
+        heading: "Fostering Peaceful Family Dialogue",
+        body: "Spiritual reflection sessions help ease tensions and encourage fair agreements regarding family estates."
       },
       {
-        heading: "Safeguard Your Farm Assets and Estate",
-        body: "Whether protecting cattle, crops, residential plots, or commercial buildings, traditional property rituals prevent theft, arson, and malicious boundary encroachments."
+        heading: "Safeguarding Peace and Stewardship",
+        body: "Applying traditional principles helps family members preserve ancestral property with unity and respect."
       },
       {
-        heading: "Consult Doctor Baba Mukisa on Property Protection",
-        body: "Safeguard your land and family estate today. Contact Doctor Baba Mukisa on WhatsApp at +256767062834 or phone call +256767062834 for expert property consultation."
+        heading: "Consult Doctor Baba Mukisa",
+        body: "Contact Doctor Baba Mukisa on WhatsApp at +256767062834 or phone call +256767062834 for traditional property guidance."
       }
     ],
     post_date: "2026-08-06",
     feature_image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
     category_slug: "property-and-land-rituals",
-    category_name: "Property & Land Rituals"
+    category_name: "Property & Family Peace Rituals"
   }
 ];
 

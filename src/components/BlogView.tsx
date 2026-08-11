@@ -48,7 +48,7 @@ export const BlogView: React.FC<BlogViewProps> = ({
                 Spiritual Temple Blog
               </h1>
               <p className="text-xs text-slate-300 mt-1">
-                Articles, spell casting guides, and traditional wisdom from Doctor Baba Mukisa.
+                Articles, traditional herbal guides, and spiritual wisdom from Doctor Baba Mukisa.
               </p>
             </div>
             

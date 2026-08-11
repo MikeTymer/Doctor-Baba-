@@ -148,7 +148,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => 
               </li>
               <li>
                 <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
-                  Services & Spells
+                  Services & Guidance
                 </button>
               </li>
               <li>

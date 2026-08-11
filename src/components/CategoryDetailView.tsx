@@ -81,7 +81,7 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
             </h3>
             <p>{category.description}</p>
             <p className="text-xs text-slate-300">
-              Doctor Baba Mukisa performs personalized rituals for {category.name}. For immediate guidance or to discuss your specific needs, connect directly with his temple.
+              Doctor Baba Mukisa provides personalized spiritual consultation and herbal advice regarding {category.name}. For guidance or to discuss your specific situation, connect directly with his sanctuary.
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
         {/* Blogs under this Category */}
         <div className="space-y-4">
           <h3 className="text-xl font-bold font-serif text-amber-100 border-b border-amber-900/40 pb-2">
-            Articles & Spell Guides Under {category.name} ({categoryBlogs.length})
+            Articles & Guides Under {category.name} ({categoryBlogs.length})
           </h3>
 
           {categoryBlogs.length === 0 ? (

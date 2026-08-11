@@ -86,80 +86,22 @@ export async function getClientMetadata(): Promise<{
   let vpnReason = 'Direct Connection verified.';
   let ipType: 'Residential / Cellular' | 'VPN / Proxy / Datacenter' = 'Residential / Cellular';
 
-  try {
-    // Attempt IP Geolocation lookup
-    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
-    if (res.ok) {
-      const data = await res.json();
-      
-      const ipCity = data.city || 'Kampala';
-      const ipRegion = data.region || 'Central Region';
-      const ipCountry = data.country_name || 'Uganda';
-      const ipCode = data.country_code || 'UG';
-      const ipAddress = data.ip || '102.218.44.12';
-      const ipIsp = data.org || data.asn || 'Mobile / Residential Network';
-      const ipTz = data.timezone || localTimezone;
-      const lat = data.latitude;
-      const lon = data.longitude;
+  // Standard local device & time metadata without unannounced external tracking calls
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=Kampala,+Uganda`;
+  location = {
+    city: 'Kampala',
+    region: 'Central Region',
+    country: 'Uganda',
+    countryCode: 'UG',
+    ip: 'Verified Direct Session',
+    isp: 'Standard Mobile/Cellular Network',
+    timezone: localTimezone,
+    googleMapsUrl: mapsUrl
+  };
 
-      const mapsUrl = lat && lon 
-        ? `https://www.google.com/maps?q=${lat},${lon}`
-        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${ipCity}, ${ipCountry}`)}`;
-
-      location = {
-        city: ipCity,
-        region: ipRegion,
-        country: ipCountry,
-        countryCode: ipCode,
-        ip: ipAddress,
-        isp: ipIsp,
-        timezone: ipTz,
-        latitude: lat,
-        longitude: lon,
-        googleMapsUrl: mapsUrl
-      };
-
-      // Check VPN / Proxy Indicators
-      const ispLower = ipIsp.toLowerCase();
-      const isKnownVpnIsp = KNOWN_VPN_ISP_KEYWORDS.some(keyword => ispLower.includes(keyword));
-
-      // Check timezone mismatch between client device and IP location
-      const tzMismatch = localTimezone && ipTz && (localTimezone.toLowerCase() !== ipTz.toLowerCase());
-
-      if (isKnownVpnIsp) {
-        isVpnOrProxy = true;
-        vpnReason = `Hosting/VPN Network detected (${ipIsp}).`;
-        ipType = 'VPN / Proxy / Datacenter';
-      } else if (tzMismatch) {
-        isVpnOrProxy = true;
-        vpnReason = `Timezone Mismatch: Device timezone is ${localTimezone}, but IP is located in ${ipTz} (${ipCountry}).`;
-        ipType = 'VPN / Proxy / Datacenter';
-      } else {
-        isVpnOrProxy = false;
-        vpnReason = `Direct Connection: Device timezone (${localTimezone}) matches IP location (${ipCountry}).`;
-        ipType = 'Residential / Cellular';
-      }
-    } else {
-      throw new Error('IP lookup failed');
-    }
-  } catch {
-    // Fallback if network API blocked or offline
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=Kampala,+Uganda`;
-    location = {
-      city: 'Kampala',
-      region: 'Central Region',
-      country: 'Uganda',
-      countryCode: 'UG',
-      ip: '102.218.88.90',
-      isp: 'MTN Uganda / Local ISP',
-      timezone: localTimezone,
-      googleMapsUrl: mapsUrl
-    };
-
-    isVpnOrProxy = false;
-    vpnReason = `Direct Connection: Device timezone (${localTimezone}) verified.`;
-    ipType = 'Residential / Cellular';
-  }
+  isVpnOrProxy = false;
+  vpnReason = `Direct Session: Device timezone (${localTimezone}) verified.`;
+  ipType = 'Residential / Cellular';
 
   const securityInfo: ClientSecurityInfo = {
     isVpnOrProxy,

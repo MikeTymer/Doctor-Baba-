@@ -114,11 +114,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center gap-3 mb-3">
           <Sparkles className="w-5 h-5 text-emerald-400" />
           <h4 className="font-bold text-emerald-100 text-sm font-serif">
-            Instant Spiritual Consultation
+            Direct Spiritual Guidance
           </h4>
         </div>
         <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-          Need urgent spiritual advice or spell casting? Speak directly with Doctor Baba Mukisa on WhatsApp.
+          Need spiritual advice or traditional herbal consultation? Speak directly with Doctor Baba Mukisa on WhatsApp.
         </p>
         <a
           href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20need%20a%20spiritual%20consultation`}

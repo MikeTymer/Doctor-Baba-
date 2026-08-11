@@ -38,8 +38,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </h1>
 
           <p className="text-sm sm:text-base lg:text-lg text-amber-100/90 leading-relaxed max-w-3xl mx-auto font-sans">
-            In Africa is where you can find a traditional doctor who can cast spells to anyone using spiritual powers and local herbs. 
-            <strong> Doctor Baba Mukisa</strong> is among the top ten traditional herbalists in spell casting and traditional healing using local medicines—without you even needing to meet him physically. He can meditate your thoughts, feelings, and emotions in just seconds.
+            Welcome to the spiritual consultation sanctuary of <strong>Doctor Baba Mukisa</strong>, a respected African traditional herbalist providing spiritual guidance, mindfulness meditation, and traditional herbal practices to support emotional well-being, personal clarity, and cultural heritage.
           </p>
 
           <p className="text-xs sm:text-sm text-amber-300/80 max-w-2xl mx-auto italic">
@@ -234,7 +233,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           Ready to Change Your Life & Resolve Your Hardships?
         </h2>
         <p className="cta-description text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Do not let heartbreaks, debts, legal struggles, or evil omens control your destiny. Connect directly with Doctor Baba Mukisa today for authentic spiritual guidance.
+          Seek personal peace of mind, traditional herbal consultations, and spiritual guidance. Connect directly with Doctor Baba Mukisa today.
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">
           <button

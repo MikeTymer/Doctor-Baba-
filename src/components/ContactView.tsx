@@ -8,7 +8,7 @@ export const ContactView: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [service, setService] = useState('Love & Marriage Spells');
+  const [service, setService] = useState('Love & Relationship Guidance');
   const [message, setMessage] = useState('');
 
   const [loading, setLoading] = useState(false);
@@ -143,7 +143,7 @@ export const ContactView: React.FC = () => {
           Contact Doctor Baba Mukisa
         </h1>
         <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Reach out for spiritual spell casting, marriage restoration, financial luck, or traditional herbal healing.
+          Reach out for spiritual relationship consultation, personal reflection, financial wisdom, or traditional herbal advice.
         </p>
       </div>
 
@@ -314,11 +314,11 @@ export const ContactView: React.FC = () => {
                   onChange={(e) => setService(e.target.value)}
                   className="w-full bg-slate-950 border border-amber-900/50 rounded-xl px-4 py-2.5 text-xs text-amber-100 focus:outline-none focus:border-amber-500"
                 >
-                  <option value="Love & Marriage Spells">Love &amp; Marriage Spells (Lost Lover Return)</option>
-                  <option value="Financial & Business Luck">Financial &amp; Business Blessing Rituals</option>
-                  <option value="Court Case & Legal Help">Court Case &amp; Legal Mediation Assistance</option>
-                  <option value="Protection & Cleansing">Spiritual Cleansing &amp; Hex Removal</option>
-                  <option value="Traditional Herbal Remedies">Traditional Herbal Remedies &amp; Healing</option>
+                  <option value="Love & Relationship Guidance">Love &amp; Relationship Guidance (Harmony &amp; Communication)</option>
+                  <option value="Financial & Business Wisdom">Financial &amp; Business Consultation</option>
+                  <option value="Court Case & Legal Mediation">Court Case &amp; Legal Stress Support</option>
+                  <option value="Protection & Cleansing">Spiritual Cleansing &amp; Harmony Practice</option>
+                  <option value="Traditional Herbal Remedies">Traditional Herbal Consultations</option>
                   <option value="General Spiritual Consultation">General Temple Consultation</option>
                 </select>
               </div>
