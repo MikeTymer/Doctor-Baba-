@@ -676,5 +676,34 @@ html.light .admin-container div.bg-slate-950 {
   border: 1px solid #f59e0b !important;
 }
 
+/* ABOUT SECTION LIGHT MODE TEXT READABILITY OVERRIDES */
+html.light .about-card p,
+html.light .about-card p *,
+html.light .about-card strong,
+html.light .about-card span {
+  color: #000000 !important;
+}
+
+html.light .about-card .text-amber-400 {
+  color: #78350f !important;
+}
+
+/* CUSTOM ASSISTANCE BANNER IN SERVICES LIGHT MODE TEXT OVERRIDES */
+html.light .custom-assistance-banner,
+html.light .custom-assistance-banner h3,
+html.light .custom-assistance-banner p,
+html.light .custom-assistance-banner button,
+html.light .custom-assistance-banner span {
+  color: #ffffff !important;
+}
+
+html.light .custom-assistance-banner a {
+  color: #fcd34d !important;
+}
+
+html.light .custom-assistance-banner {
+  background: linear-gradient(to right, #451a03, #0f172a) !important;
+}
+
 
 

@@ -147,7 +147,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       )}
 
       {/* Bottom Contact Banner */}
-      <div className="bg-gradient-to-r from-amber-950 to-slate-950 border border-amber-800/60 rounded-2xl p-6 sm:p-8 text-center space-y-3">
+      <div className="custom-assistance-banner bg-gradient-to-r from-amber-950 to-slate-950 border border-amber-800/60 rounded-2xl p-6 sm:p-8 text-center space-y-3">
         <h3 className="text-xl font-bold font-serif text-amber-100">
           Need Custom Spiritual Assistance?
         </h3>
@@ -157,15 +157,15 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
         <div className="pt-2 flex justify-center gap-3">
           <button
             onClick={onContact}
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-full text-xs shadow min-h-[44px]"
+            className="bg-amber-600 hover:bg-amber-500 text-white font-bold px-6 py-2.5 rounded-full text-xs shadow min-h-[44px]"
           >
             Contact Temple Now
           </button>
           <a
             href={`tel:${SITE_INFO.phone}`}
-            className="bg-slate-900 border border-amber-700/60 text-amber-200 px-5 py-2.5 rounded-full text-xs font-semibold flex items-center gap-1.5 min-h-[44px]"
+            className="bg-slate-900 border border-amber-700/60 text-amber-300 hover:text-amber-200 px-5 py-2.5 rounded-full text-xs font-semibold flex items-center gap-1.5 min-h-[44px]"
           >
-            <Phone className="w-3.5 h-3.5" /> Call Doctor Baba Mukisa
+            <Phone className="w-3.5 h-3.5 text-amber-400" /> Call Doctor Baba Mukisa
           </a>
         </div>
       </div>

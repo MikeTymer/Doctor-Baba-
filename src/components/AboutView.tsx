@@ -27,27 +27,27 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         
         {/* Who We Are */}
-        <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
+        <div className="about-card bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
           <div className="flex items-center gap-2 text-amber-400 font-bold font-serif text-xl border-b border-amber-900/40 pb-3">
             <Award className="w-5 h-5" /> Who We Are
           </div>
-          <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
+          <p className="text-xs sm:text-sm text-slate-900 dark:text-amber-100/90 leading-relaxed font-sans">
             Meet <strong>Doctor Baba Mukisa</strong>, a traditional African herbalist and spiritual guidance practitioner sharing sacred ancestral knowledge passed down through generations from coastal Digo heritage.
           </p>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-900 dark:text-slate-300 leading-relaxed">
             With decades of practice, Doctor Baba Mukisa assists individuals seeking relationship harmony, personal reflection, spiritual cleansing, and emotional peace.
           </p>
         </div>
 
         {/* How We Help */}
-        <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
+        <div className="about-card bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 space-y-4 shadow-xl">
           <div className="flex items-center gap-2 text-amber-400 font-bold font-serif text-xl border-b border-amber-900/40 pb-3">
             <Heart className="w-5 h-5" /> How We Help
           </div>
-          <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
+          <p className="text-xs sm:text-sm text-slate-900 dark:text-amber-100/90 leading-relaxed font-sans">
             Doctor Baba Mukisa provides personal spiritual readings, traditional herbal consultation, and guided meditation for those seeking internal balance and spiritual clarity.
           </p>
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-900 dark:text-slate-300 leading-relaxed">
             Consultations are available both in-person at the Kampala sanctuary and via phone/WhatsApp for remote spiritual reflection.
           </p>
         </div>
