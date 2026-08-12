@@ -92,6 +92,31 @@ export interface Subscriber {
   source?: string;
 }
 
+export interface AdminAuditLog {
+  id: string;
+  timestamp: string;
+  action: 
+    | 'LOGIN_SUCCESS' 
+    | 'LOGIN_FAILED' 
+    | 'LOGOUT' 
+    | 'PASSWORD_CHANGE' 
+    | 'CREATE_BLOG' 
+    | 'UPDATE_BLOG' 
+    | 'DELETE_BLOG' 
+    | 'DELETE_COMMENT' 
+    | 'ADD_SUBSCRIBER' 
+    | 'DELETE_SUBSCRIBER' 
+    | 'EMAIL_REPLY' 
+    | 'DELETE_MESSAGE'
+    | 'CLEAR_LOGS';
+  status: 'SUCCESS' | 'FAILED' | 'WARNING' | 'INFO';
+  userOrEmail: string;
+  ipAddress?: string;
+  location?: string;
+  deviceInfo?: string;
+  details: string;
+}
+
 export type ActiveTab = 
   | 'home' 
   | 'blog' 

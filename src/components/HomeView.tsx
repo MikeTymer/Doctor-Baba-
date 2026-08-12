@@ -1,6 +1,7 @@
 import React from 'react';
 import { BlogPost, Category } from '../types';
 import { SITE_INFO } from '../data/initialData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Sparkles, Phone, MessageSquare, ArrowRight, ShieldCheck, Heart, Award, Flame } from 'lucide-react';
 
 interface HomeViewProps {
@@ -136,12 +137,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <div>
                 <div className="aspect-video relative overflow-hidden bg-slate-950">
                   <img
-                    src={category.featured_image}
+                    src={normalizeImageUrl(category.featured_image)}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                    }}
+                    onError={handleImageError}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
                   <span className="absolute bottom-2 right-2 bg-slate-950/80 text-amber-300 text-[10px] px-2 py-1 rounded-md border border-amber-800/40">
@@ -195,12 +194,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             >
               <div className="w-full sm:w-40 h-40 rounded-xl overflow-hidden shrink-0 bg-slate-950 border border-amber-900/30">
                 <img
-                  src={blog.feature_image}
+                  src={normalizeImageUrl(blog.feature_image)}
                   alt={blog.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                  }}
+                  onError={handleImageError}
                 />
               </div>
 

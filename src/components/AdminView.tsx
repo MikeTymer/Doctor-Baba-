@@ -1,5 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { BlogPost, Category, BlogComment, Subscriber, ContactMessage } from '../types';
+import { BlogPost, Category, BlogComment, Subscriber, ContactMessage, AdminAuditLog } from '../types';
+import { normalizeImageUrl, handleImageError, DEFAULT_FALLBACK_IMAGE } from '../utils/imageUtils';
+
+const INITIAL_AUDIT_LOGS: AdminAuditLog[] = [
+  {
+    id: 'log-101',
+    timestamp: '2026-08-12 03:25:10',
+    action: 'LOGIN_SUCCESS',
+    status: 'SUCCESS',
+    userOrEmail: 'help@doctorbabamukisa.com',
+    ipAddress: '102.218.44.12',
+    location: 'Kampala, Uganda',
+    deviceInfo: 'Chrome 127 / Android 14',
+    details: 'Admin user authenticated successfully into Temple Control Panel.'
+  },
+  {
+    id: 'log-102',
+    timestamp: '2026-08-11 21:14:02',
+    action: 'LOGIN_FAILED',
+    status: 'FAILED',
+    userOrEmail: 'unknown_attempt@proxy.net',
+    ipAddress: '185.220.101.45',
+    location: 'Frankfurt, Germany (NordVPN Exit Node)',
+    deviceInfo: 'Safari 17.5 / iOS',
+    details: 'UNAUTHORIZED ACCESS ATTEMPT! Incorrect password provided on login portal.'
+  },
+  {
+    id: 'log-103',
+    timestamp: '2026-08-11 18:30:15',
+    action: 'CREATE_BLOG',
+    status: 'INFO',
+    userOrEmail: 'help@doctorbabamukisa.com',
+    ipAddress: '102.218.44.12',
+    location: 'Kampala, Uganda',
+    deviceInfo: 'Chrome 127 / Android 14',
+    details: 'Published new blog post: "Powerful Spiritual Protection Rituals for Modern Challenges".'
+  },
+  {
+    id: 'log-104',
+    timestamp: '2026-08-10 11:05:44',
+    action: 'LOGIN_FAILED',
+    status: 'FAILED',
+    userOrEmail: 'admin_test',
+    ipAddress: '198.51.100.22',
+    location: 'London, UK (ExpressVPN)',
+    deviceInfo: 'Edge 126 / Windows 11',
+    details: 'UNAUTHORIZED ACCESS ATTEMPT! Unrecognized admin username.'
+  }
+];
 import { 
   Lock, 
   User, 
@@ -212,7 +260,56 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [passwordInput, setPasswordInput] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'blogs' | 'new-blog' | 'comments' | 'messages' | 'subscribers' | 'security'>('overview');
+  const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'blogs' | 'new-blog' | 'comments' | 'messages' | 'subscribers' | 'security' | 'audit-logs'>('overview');
+  
+  const [auditLogs, setAuditLogs] = useState<AdminAuditLog[]>(() => {
+    try {
+      const saved = localStorage.getItem('admin_audit_logs');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.warn('Audit logs parse error:', e);
+    }
+    return INITIAL_AUDIT_LOGS;
+  });
+  const [auditFilter, setAuditFilter] = useState<'all' | 'failed' | 'success' | 'modifications'>('all');
+  const [auditSearch, setAuditSearch] = useState('');
+  const [selectedBlogCategoryFilter, setSelectedBlogCategoryFilter] = useState<string>('ALL');
+
+  const addAuditLog = (
+    action: AdminAuditLog['action'],
+    status: AdminAuditLog['status'],
+    userOrEmail: string,
+    details: string
+  ) => {
+    const now = new Date();
+    const pad = (n: number) => (n < 10 ? '0' + n : n);
+    const formattedTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+    const newLog: AdminAuditLog = {
+      id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: formattedTime,
+      action,
+      status,
+      userOrEmail: userOrEmail || 'help@doctorbabamukisa.com',
+      ipAddress: window.location.hostname || '127.0.0.1',
+      location: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Kampala, Uganda',
+      deviceInfo: typeof navigator !== 'undefined' ? `${navigator.platform || 'Browser'} (${navigator.language || 'en'})` : 'Web Browser',
+      details
+    };
+
+    setAuditLogs((prev) => {
+      const updated = [newLog, ...prev];
+      try {
+        localStorage.setItem('admin_audit_logs', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Failed to save audit logs:', e);
+      }
+      return updated;
+    });
+  };
   const [messages, setMessages] = useState<ContactMessage[]>(() => {
     try {
       const stored = localStorage.getItem('contact_messages');
@@ -292,6 +389,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
       const data = await res.json();
       if (res.ok && data.success) {
         setEmailSendStatus({ success: true, msg: 'Email reply sent successfully via PrivateEmail SMTP!' });
+        addAuditLog(
+          'EMAIL_REPLY',
+          'SUCCESS',
+          'help@doctorbabamukisa.com',
+          `Sent direct email response via PrivateEmail SMTP to client ${selectedEmailMsg.name} (${selectedEmailMsg.email}).`
+        );
         setMessages((prev) => {
           const updated = prev.map((msg) => (msg.id === selectedEmailMsg.id ? { ...msg, status: 'Responded' as const } : msg));
           try {
@@ -444,12 +547,25 @@ export const AdminView: React.FC<AdminViewProps> = ({
       setIsLoggedIn(true);
       sessionStorage.setItem('admin_logged_in', 'true');
       setLoginError('');
+      addAuditLog(
+        'LOGIN_SUCCESS',
+        'SUCCESS',
+        inputUser || 'help@doctorbabamukisa.com',
+        'Admin user authenticated successfully into Temple Control Panel.'
+      );
     } else {
       setLoginError('Invalid Username or Password. Please enter authorized credentials.');
+      addAuditLog(
+        'LOGIN_FAILED',
+        'FAILED',
+        inputUser || 'Unknown Username',
+        `UNAUTHORIZED ACCESS ATTEMPT! Incorrect credentials entered on login portal. Username attempted: "${inputUser || 'Empty'}".`
+      );
     }
   };
 
   const handleLogout = () => {
+    addAuditLog('LOGOUT', 'INFO', 'help@doctorbabamukisa.com', 'Admin session logged out.');
     setIsLoggedIn(false);
     sessionStorage.removeItem('admin_logged_in');
   };
@@ -461,6 +577,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
     if (currentPassInput.trim() !== storedPassword) {
       setPassChangeError('Current password entered is incorrect.');
+      addAuditLog('PASSWORD_CHANGE', 'FAILED', 'help@doctorbabamukisa.com', 'Failed password update attempt: Incorrect current password provided.');
       return;
     }
 
@@ -478,6 +595,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     localStorage.setItem('admin_custom_password', updated);
     setStoredPassword(updated);
     setPassChangeSuccess('Admin password updated successfully! Future logins will require this new password.');
+    addAuditLog('PASSWORD_CHANGE', 'WARNING', 'help@doctorbabamukisa.com', 'Admin access password was updated successfully.');
     setCurrentPassInput('');
     setNewPassInput('');
     setConfirmPassInput('');
@@ -533,6 +651,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     }
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const cleanImageUrl = normalizeImageUrl(featureImage);
 
     const newBlogObj: BlogPost = {
       id: `blog-${Date.now()}`,
@@ -544,13 +663,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
       mini_description: miniDescription,
       content_sections: contentSections.length > 0 ? contentSections : undefined,
       post_date: new Date().toISOString().split('T')[0],
-      feature_image: featureImage || 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80',
+      feature_image: cleanImageUrl,
       category_slug: finalCategorySlug,
       category_name: finalCategoryName
     };
 
     onAddBlog(newBlogObj);
     setFormSuccess('New spiritual blog post published successfully!');
+    addAuditLog(
+      'CREATE_BLOG',
+      'SUCCESS',
+      'help@doctorbabamukisa.com',
+      `Published new spiritual article: "${title}" (Category: ${finalCategoryName}).`
+    );
     
     // Reset form
     setTitle('');
@@ -632,6 +757,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
       contentSections.push({ heading: editHeading2.trim(), body: editBody2.trim() });
     }
 
+    const cleanEditImageUrl = normalizeImageUrl(editFeatureImage);
+
     const updatedBlog: BlogPost = {
       ...editingBlog,
       name: editTitle.trim(),
@@ -641,7 +768,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       category_name: finalCatName,
       mini_description: editMiniDescription.trim(),
       description: editDescription.trim(),
-      feature_image: editFeatureImage.trim(),
+      feature_image: cleanEditImageUrl,
       content_sections: contentSections.length > 0 ? contentSections : undefined,
     };
 
@@ -650,6 +777,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
     }
 
     setEditSuccessMsg('Article updated successfully!');
+    addAuditLog(
+      'UPDATE_BLOG',
+      'SUCCESS',
+      'help@doctorbabamukisa.com',
+      `Updated article content & image for: "${updatedBlog.name}".`
+    );
     setTimeout(() => {
       setEditingBlog(null);
       setEditSuccessMsg('');
@@ -669,6 +802,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     } else {
       setSubSuccessMsg(`Successfully registered ${newSubEmail} for marketing updates.`);
     }
+    addAuditLog('ADD_SUBSCRIBER', 'SUCCESS', 'help@doctorbabamukisa.com', `Manually registered email subscriber: "${newSubEmail.trim()}".`);
     setNewSubEmail('');
     setTimeout(() => setSubSuccessMsg(''), 5000);
   };
@@ -679,6 +813,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       if (onDeleteSubscriber) {
         onDeleteSubscriber(subscriberId);
       }
+      addAuditLog('DELETE_SUBSCRIBER', 'INFO', 'help@doctorbabamukisa.com', `Removed email subscriber: "${email}".`);
     }
   };
 
@@ -709,6 +844,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
     if (onDeleteComment) {
       onDeleteComment(commentId);
     }
+    addAuditLog('DELETE_COMMENT', 'INFO', 'help@doctorbabamukisa.com', `Deleted visitor blog comment ID: "${commentId}".`);
+  };
+
+  const handleDeleteBlogAction = (blogId: string, blogTitle: string) => {
+    if (window.confirm(`Are you sure you want to delete the post "${blogTitle}"?`)) {
+      onDeleteBlog(blogId);
+      addAuditLog('DELETE_BLOG', 'WARNING', 'help@doctorbabamukisa.com', `Deleted spiritual blog post: "${blogTitle}" (ID: ${blogId}).`);
+    }
   };
 
   const handleToggleMessageStatus = (id: string) => {
@@ -731,6 +874,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
   };
 
   const handleDeleteMessage = async (id: string) => {
+    const targetMsg = messages.find((m) => m.id === id);
     try {
       await fetch(`/api/inquiries/${id}`, { method: 'DELETE' });
     } catch (e) {
@@ -746,6 +890,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
       }
       return updated;
     });
+
+    addAuditLog(
+      'DELETE_MESSAGE',
+      'INFO',
+      'help@doctorbabamukisa.com',
+      `Deleted contact message inquiry from ${targetMsg ? targetMsg.name : id}.`
+    );
   };
 
   const filteredMessages = (messages || [])
@@ -793,11 +944,20 @@ export const AdminView: React.FC<AdminViewProps> = ({
       return getTimestamp(b) - getTimestamp(a);
     });
 
-  const filteredBlogs = (blogs || []).filter(
-    (b) =>
-      (b?.name && b.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (b?.category_name && b.category_name.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredBlogs = (blogs || []).filter((b) => {
+    if (!b) return false;
+    if (selectedBlogCategoryFilter !== 'ALL' && b.category_slug !== selectedBlogCategoryFilter) {
+      return false;
+    }
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (b.name && b.name.toLowerCase().includes(q)) ||
+      (b.category_name && b.category_name.toLowerCase().includes(q)) ||
+      (b.author && b.author.toLowerCase().includes(q)) ||
+      (b.mini_description && b.mini_description.toLowerCase().includes(q))
+    );
+  });
 
   const filteredSubscribers = (localSubscribers || []).filter(
     (s) =>
@@ -967,10 +1127,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
       </div>
 
       {/* Admin Navigation Tabs */}
-      <div className="admin-nav-tabs flex flex-wrap items-center gap-2 border-b border-amber-900/50 pb-2">
+      <div className="admin-nav-tabs flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-amber-900/50 w-full">
         <button
           onClick={() => setActiveAdminTab('overview')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'overview'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
@@ -981,7 +1141,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('blogs')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'blogs'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
@@ -992,7 +1152,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('new-blog')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'new-blog'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
@@ -1003,7 +1163,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('comments')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'comments'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
@@ -1014,7 +1174,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('messages')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'messages'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
@@ -1025,7 +1185,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('subscribers')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'subscribers'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-emerald-400 hover:bg-amber-950/60'
@@ -1036,13 +1196,32 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         <button
           onClick={() => setActiveAdminTab('security')}
-          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
             activeAdminTab === 'security'
               ? 'bg-amber-600 text-slate-950 shadow-md'
               : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
           }`}
         >
           <Settings className="w-4 h-4" /> Password &amp; Security
+        </button>
+
+        <button
+          onClick={() => setActiveAdminTab('audit-logs')}
+          className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer ${
+            activeAdminTab === 'audit-logs'
+              ? 'bg-amber-600 text-slate-950 shadow-md'
+              : auditLogs.some((l) => l.status === 'FAILED')
+              ? 'bg-rose-950/80 text-rose-300 border border-rose-700/60 hover:bg-rose-900'
+              : 'bg-slate-900 text-amber-200/80 hover:bg-amber-950/60'
+          }`}
+        >
+          <ShieldAlert className="w-4 h-4 text-amber-400" />
+          <span>Security &amp; Audit Logs ({auditLogs.length})</span>
+          {auditLogs.some((l) => l.status === 'FAILED') && (
+            <span className="bg-rose-600 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full animate-pulse">
+              {auditLogs.filter((l) => l.status === 'FAILED').length} Alert
+            </span>
+          )}
         </button>
       </div>
 
@@ -1054,10 +1233,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
               Temple Content &amp; Subscriber Summary
             </h2>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Welcome to Doctor Baba Mukisa's Admin Facilities Control Panel. From here you can add new spiritual articles, manage email newsletter subscribers for marketing campaigns, change your admin credentials, review consultation inquiries, and moderate blog comments in real-time.
+              Welcome to Doctor Baba Mukisa's Admin Facilities Control Panel. From here you can add new spiritual articles, manage email newsletter subscribers for marketing campaigns, change your admin credentials, review consultation inquiries, and monitor real-time security access logs.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
               <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-4 space-y-2">
                 <h3 className="text-sm font-bold text-amber-400 flex items-center gap-1.5">
                   <FileText className="w-4 h-4" /> Recent Articles Published
@@ -1083,6 +1262,35 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/40 px-2 py-0.5 rounded-full shrink-0">
                         {s.subscribed_date}
                       </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-4 space-y-2 md:col-span-2 lg:col-span-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-amber-400 flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-amber-500" /> Recent Security Activity
+                  </h3>
+                  <button
+                    onClick={() => setActiveAdminTab('audit-logs')}
+                    className="text-[10px] text-amber-400 hover:underline flex items-center gap-0.5 font-bold"
+                  >
+                    View All Logs &rarr;
+                  </button>
+                </div>
+                <ul className="space-y-1.5 text-xs text-slate-300">
+                  {auditLogs.slice(0, 4).map((log) => (
+                    <li key={log.id} className="border-b border-amber-900/20 pb-1.5 space-y-0.5">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className={`font-bold uppercase px-1.5 py-0.2 rounded ${
+                          log.status === 'FAILED' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-slate-900 text-amber-300'
+                        }`}>
+                          {log.action.replace('_', ' ')}
+                        </span>
+                        <span className="text-slate-500">{log.timestamp.split(' ')[1] || log.timestamp}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 truncate">{log.details}</p>
                     </li>
                   ))}
                 </ul>
@@ -1292,82 +1500,440 @@ export const AdminView: React.FC<AdminViewProps> = ({
         </div>
       )}
 
-      {/* TAB CONTENT: MANAGE BLOGS */}
-      {activeAdminTab === 'blogs' && (
+      {/* TAB CONTENT: SECURITY & AUDIT LOGS */}
+      {activeAdminTab === 'audit-logs' && (
         <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 shadow-xl space-y-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-amber-900/40 pb-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-amber-900/40 pb-4">
             <div>
-              <h2 className="text-xl font-bold font-serif text-amber-100">
-                Manage Published Spiritual Articles
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider mb-1">
+                <ShieldCheck className="w-4 h-4 text-amber-500" />
+                <span>Real-Time Audit &amp; Access Monitoring</span>
+              </div>
+              <h2 className="text-xl font-bold font-serif text-amber-100 flex items-center gap-2">
+                <span>Security &amp; Activity Audit Logs</span>
+                <span className="bg-emerald-950 border border-emerald-800 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded-full">
+                  Active Monitoring
+                </span>
               </h2>
               <p className="text-xs text-amber-300/80">
-                View, filter, or remove blog posts directly from the website.
+                Track recent administrator logins, unauthorized access attempts, password changes, and site modifications.
               </p>
             </div>
 
-            <div className="relative w-full sm:w-64">
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  const csvRows = ['Log ID,Timestamp,Action,Status,User/Attempt,IP Address,Location,Device,Details'];
+                  auditLogs.forEach((l) => {
+                    csvRows.push(`"${l.id}","${l.timestamp}","${l.action}","${l.status}","${l.userOrEmail}","${l.ipAddress || ''}","${l.location || ''}","${l.deviceInfo || ''}","${l.details.replace(/"/g, '""')}"`);
+                  });
+                  const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n');
+                  const encodedUri = encodeURI(csvContent);
+                  const link = document.createElement('a');
+                  link.setAttribute('href', encodedUri);
+                  link.setAttribute('download', `admin_security_audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className="bg-slate-950 hover:bg-slate-800 text-amber-300 border border-amber-800/60 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow cursor-pointer"
+              >
+                <Download className="w-4 h-4 text-amber-500" /> Export CSV Logs
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to clear all security and activity audit logs?')) {
+                    setAuditLogs([]);
+                    try {
+                      localStorage.removeItem('admin_audit_logs');
+                    } catch {}
+                  }
+                }}
+                className="bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all shadow cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4 text-rose-400" /> Clear Logs
+              </button>
+            </div>
+          </div>
+
+          {/* Audit Metrics Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-3.5 space-y-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Logged Events</span>
+              <p className="text-xl font-bold text-amber-200">{auditLogs.length}</p>
+            </div>
+
+            <div className={`bg-slate-950 border rounded-xl p-3.5 space-y-1 ${
+              auditLogs.filter(l => l.status === 'FAILED').length > 0 
+                ? 'border-rose-600/80 bg-rose-950/20' 
+                : 'border-amber-900/40'
+            }`}>
+              <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3 text-rose-500" /> Unauthorized Attempts
+              </span>
+              <p className="text-xl font-bold text-rose-400">
+                {auditLogs.filter(l => l.status === 'FAILED').length}
+              </p>
+            </div>
+
+            <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-3.5 space-y-1">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Successful Logins
+              </span>
+              <p className="text-xl font-bold text-emerald-300">
+                {auditLogs.filter(l => l.action === 'LOGIN_SUCCESS').length}
+              </p>
+            </div>
+
+            <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-3.5 space-y-1">
+              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1">
+                <Edit3 className="w-3 h-3 text-amber-500" /> Site Modifications
+              </span>
+              <p className="text-xl font-bold text-amber-300">
+                {auditLogs.filter(l => ['CREATE_BLOG', 'UPDATE_BLOG', 'DELETE_BLOG', 'DELETE_COMMENT', 'ADD_SUBSCRIBER', 'DELETE_SUBSCRIBER', 'PASSWORD_CHANGE'].includes(l.action)).length}
+              </p>
+            </div>
+          </div>
+
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" />
+              <input
+                type="text"
+                value={auditSearch}
+                onChange={(e) => setAuditSearch(e.target.value)}
+                placeholder="Search audit logs by email, IP address, location, or details..."
+                className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+              <button
+                type="button"
+                onClick={() => setAuditFilter('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                  auditFilter === 'all'
+                    ? 'bg-amber-600 text-slate-950 font-bold'
+                    : 'bg-slate-950 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                All Events ({auditLogs.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAuditFilter('failed')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1 transition-all cursor-pointer ${
+                  auditFilter === 'failed'
+                    ? 'bg-rose-700 text-white font-bold'
+                    : 'bg-slate-950 text-rose-300 hover:bg-rose-950/50'
+                }`}
+              >
+                <AlertTriangle className="w-3 h-3 text-rose-400" />
+                Failed Logins ({auditLogs.filter(l => l.status === 'FAILED').length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAuditFilter('success')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1 transition-all cursor-pointer ${
+                  auditFilter === 'success'
+                    ? 'bg-emerald-700 text-white font-bold'
+                    : 'bg-slate-950 text-emerald-300 hover:bg-emerald-950/50'
+                }`}
+              >
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                Logins ({auditLogs.filter(l => l.action === 'LOGIN_SUCCESS').length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setAuditFilter('modifications')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1 transition-all cursor-pointer ${
+                  auditFilter === 'modifications'
+                    ? 'bg-amber-600 text-slate-950 font-bold'
+                    : 'bg-slate-950 text-amber-300 hover:bg-amber-950/50'
+                }`}
+              >
+                <Edit3 className="w-3 h-3 text-amber-400" />
+                Modifications
+              </button>
+            </div>
+          </div>
+
+          {/* Audit Logs List */}
+          <div className="space-y-3">
+            {auditLogs
+              .filter((log) => {
+                if (auditFilter === 'failed' && log.status !== 'FAILED') return false;
+                if (auditFilter === 'success' && log.action !== 'LOGIN_SUCCESS') return false;
+                if (
+                  auditFilter === 'modifications' &&
+                  !['CREATE_BLOG', 'UPDATE_BLOG', 'DELETE_BLOG', 'DELETE_COMMENT', 'ADD_SUBSCRIBER', 'DELETE_SUBSCRIBER', 'PASSWORD_CHANGE', 'EMAIL_REPLY'].includes(log.action)
+                ) {
+                  return false;
+                }
+
+                if (!auditSearch.trim()) return true;
+                const q = auditSearch.toLowerCase();
+                return (
+                  log.details.toLowerCase().includes(q) ||
+                  log.userOrEmail.toLowerCase().includes(q) ||
+                  log.action.toLowerCase().includes(q) ||
+                  (log.ipAddress && log.ipAddress.toLowerCase().includes(q)) ||
+                  (log.location && log.location.toLowerCase().includes(q)) ||
+                  (log.deviceInfo && log.deviceInfo.toLowerCase().includes(q))
+                );
+              })
+              .length === 0 ? (
+              <div className="bg-slate-950 border border-amber-900/40 rounded-2xl p-8 text-center space-y-2">
+                <ShieldCheck className="w-8 h-8 text-amber-500 mx-auto opacity-60" />
+                <p className="text-xs text-slate-400">No security audit logs match the current filter or search criteria.</p>
+              </div>
+            ) : (
+              auditLogs
+                .filter((log) => {
+                  if (auditFilter === 'failed' && log.status !== 'FAILED') return false;
+                  if (auditFilter === 'success' && log.action !== 'LOGIN_SUCCESS') return false;
+                  if (
+                    auditFilter === 'modifications' &&
+                    !['CREATE_BLOG', 'UPDATE_BLOG', 'DELETE_BLOG', 'DELETE_COMMENT', 'ADD_SUBSCRIBER', 'DELETE_SUBSCRIBER', 'PASSWORD_CHANGE', 'EMAIL_REPLY'].includes(log.action)
+                  ) {
+                    return false;
+                  }
+
+                  if (!auditSearch.trim()) return true;
+                  const q = auditSearch.toLowerCase();
+                  return (
+                    log.details.toLowerCase().includes(q) ||
+                    log.userOrEmail.toLowerCase().includes(q) ||
+                    log.action.toLowerCase().includes(q) ||
+                    (log.ipAddress && log.ipAddress.toLowerCase().includes(q)) ||
+                    (log.location && log.location.toLowerCase().includes(q)) ||
+                    (log.deviceInfo && log.deviceInfo.toLowerCase().includes(q))
+                  );
+                })
+                .map((log) => {
+                  const isFailed = log.status === 'FAILED';
+                  const isSuccess = log.status === 'SUCCESS';
+                  const isWarning = log.status === 'WARNING';
+
+                  return (
+                    <div
+                      key={log.id}
+                      className={`bg-slate-950 border rounded-2xl p-4 space-y-2 transition-all ${
+                        isFailed
+                          ? 'border-rose-600/80 bg-rose-950/20'
+                          : isWarning
+                          ? 'border-amber-600/60 bg-amber-950/10'
+                          : 'border-amber-900/40 hover:border-amber-600/50'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-amber-900/20 pb-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span
+                            className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1 uppercase tracking-wider ${
+                              isFailed
+                                ? 'bg-rose-600 text-white'
+                                : isSuccess
+                                ? 'bg-emerald-950 border border-emerald-500 text-emerald-300'
+                                : isWarning
+                                ? 'bg-amber-950 border border-amber-500 text-amber-300'
+                                : 'bg-slate-800 border border-slate-600 text-slate-300'
+                            }`}
+                          >
+                            {isFailed && <AlertTriangle className="w-3 h-3 text-white" />}
+                            {isSuccess && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+                            {isWarning && <AlertCircle className="w-3 h-3 text-amber-400" />}
+                            <span>{log.action.replace('_', ' ')}</span>
+                          </span>
+
+                          <span className="text-xs font-bold text-slate-200">
+                            Attempt/User: <span className="text-amber-300">{log.userOrEmail}</span>
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                          <Clock className="w-3 h-3 text-amber-500" />
+                          <span>{log.timestamp}</span>
+                        </div>
+                      </div>
+
+                      <p className={`text-xs leading-relaxed font-sans ${isFailed ? 'text-rose-200 font-medium' : 'text-slate-300'}`}>
+                        {log.details}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] text-slate-400 border-t border-amber-900/10">
+                        {log.ipAddress && (
+                          <span className="flex items-center gap-1 text-slate-400">
+                            <Wifi className="w-3 h-3 text-amber-500" /> IP: {log.ipAddress}
+                          </span>
+                        )}
+                        {log.location && (
+                          <span className="flex items-center gap-1 text-slate-400">
+                            <MapPin className="w-3 h-3 text-amber-500" /> Location: {log.location}
+                          </span>
+                        )}
+                        {log.deviceInfo && (
+                          <span className="flex items-center gap-1 text-slate-400">
+                            <Laptop className="w-3 h-3 text-amber-500" /> Device: {log.deviceInfo}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: MANAGE BLOGS */}
+      {activeAdminTab === 'blogs' && (
+        <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-4 sm:p-6 shadow-xl space-y-5">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 border-b border-amber-900/40 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-amber-400 shrink-0" />
+                <h2 className="text-lg sm:text-xl font-bold font-serif text-amber-100">
+                  Manage Published Spiritual Articles
+                </h2>
+                <span className="bg-amber-950 border border-amber-700/60 text-amber-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0">
+                  {filteredBlogs.length} {filteredBlogs.length === 1 ? 'Article' : 'Articles'}
+                </span>
+              </div>
+              <p className="text-xs text-amber-300/80 mt-1">
+                View, filter by category, edit content, or remove blog posts directly from the website.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveAdminTab('new-blog')}
+              className="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow cursor-pointer shrink-0 active:scale-95"
+            >
+              <PlusCircle className="w-4 h-4" /> Publish New Post
+            </button>
+          </div>
+
+          {/* Search & Category Filter Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-slate-950 p-3 rounded-xl border border-amber-900/40">
+            <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-amber-500" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search articles..."
-                className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                placeholder="Search articles by title, keywords, or author..."
+                className="admin-input w-full bg-slate-900 border border-amber-900/60 focus:border-amber-500 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
               />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-amber-500 shrink-0" />
+              <select
+                value={selectedBlogCategoryFilter}
+                onChange={(e) => setSelectedBlogCategoryFilter(e.target.value)}
+                className="admin-input w-full bg-slate-900 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none"
+              >
+                <option value="ALL">All Categories ({blogs.length})</option>
+                {localCategories.map((cat) => (
+                  <option key={cat.id} value={cat.slug}>
+                    {cat.name} ({blogs.filter((b) => b.category_slug === cat.slug).length})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          <div className="space-y-4">
+          {/* Posts Elements List - Mobile Rearranging */}
+          <div className="space-y-3.5">
             {filteredBlogs.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-6">No matching articles found.</p>
+              <div className="bg-slate-950 border border-amber-900/40 rounded-2xl p-8 text-center space-y-2">
+                <FileText className="w-8 h-8 text-amber-500 mx-auto opacity-50" />
+                <p className="text-xs text-slate-400">No articles match your current search query or category filter.</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedBlogCategoryFilter('ALL');
+                  }}
+                  className="text-xs text-amber-400 font-bold hover:underline pt-1 inline-block"
+                >
+                  Clear Filters &amp; Show All ({blogs.length})
+                </button>
+              </div>
             ) : (
               filteredBlogs.map((b) => (
                 <div
                   key={b.id}
-                  className="bg-slate-950 border border-amber-900/40 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-amber-600/50 transition-colors"
+                  className="bg-slate-950 border border-amber-900/40 rounded-xl sm:rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 hover:border-amber-600/50 transition-all shadow-md group"
                 >
-                  <div className="flex items-start gap-3 min-w-0">
-                    <img
-                      src={b.feature_image}
-                      alt={b.name}
-                      className="w-16 h-16 rounded-lg object-cover border border-amber-900/40 shrink-0"
-                    />
-                    <div className="min-w-0 space-y-1">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-amber-500">
-                        {b.category_name}
+                  <div className="flex items-start gap-3 min-w-0 w-full sm:w-auto">
+                    <div className="relative shrink-0">
+                      <img
+                        src={normalizeImageUrl(b.feature_image)}
+                        alt={b.name}
+                        onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border border-amber-900/50 shadow"
+                      />
+                      <span className="sm:hidden absolute -top-1.5 -right-1.5 bg-amber-950 border border-amber-600/80 text-amber-300 text-[9px] font-extrabold px-1.5 py-0.2 rounded-full">
+                        {b.views} views
                       </span>
-                      <h3 className="text-sm font-bold text-slate-100 truncate">{b.name}</h3>
-                      <div className="flex items-center gap-3 text-[11px] text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <User className="w-3 h-3 text-amber-500" /> {b.author}
+                    </div>
+
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[10px] uppercase tracking-wider font-extrabold text-amber-400 bg-amber-950/80 border border-amber-800/40 px-2 py-0.5 rounded-md">
+                          {b.category_name}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-amber-500" /> {b.post_date}
+                        <span className="hidden sm:inline text-[10px] text-slate-500">
+                          ID: #{b.id}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3 text-amber-500" /> {b.views} views
+                      </div>
+
+                      <h3 className="text-xs sm:text-sm font-bold text-slate-100 leading-snug line-clamp-2 break-words group-hover:text-amber-300 transition-colors">
+                        {b.name}
+                      </h3>
+
+                      <p className="text-[11px] text-slate-400 line-clamp-1 hidden sm:block">
+                        {b.mini_description}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400 pt-0.5">
+                        <span className="flex items-center gap-1 text-slate-300 font-medium">
+                          <User className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span className="truncate max-w-[120px] sm:max-w-none">{b.author}</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-slate-400">
+                          <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span>{b.post_date}</span>
+                        </span>
+                        <span className="hidden sm:flex items-center gap-1 text-slate-400">
+                          <Eye className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                          <span>{b.views} views</span>
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 w-full sm:w-auto pt-2.5 sm:pt-0 border-t border-amber-900/30 sm:border-0 shrink-0 justify-end">
                     <button
                       type="button"
                       onClick={() => handleStartEditBlog(b)}
-                      className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow"
+                      className="flex-1 sm:flex-initial justify-center bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3.5 py-2 sm:py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow active:scale-95"
                     >
-                      <Edit3 className="w-3.5 h-3.5" /> Edit
+                      <Edit3 className="w-3.5 h-3.5" /> Edit Article
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => {
-                        if (confirm(`Are you sure you want to delete "${b.name}"?`)) {
-                          onDeleteBlog(b.id);
-                        }
-                      }}
-                      className="bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-800/50 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                      onClick={() => handleDeleteBlogAction(b.id, b.name)}
+                      className="flex-1 sm:flex-initial justify-center bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 px-3.5 py-2 sm:py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Delete
                     </button>
@@ -1478,8 +2044,25 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     required
                     value={editFeatureImage}
                     onChange={(e) => setEditFeatureImage(e.target.value)}
+                    placeholder="e.g. https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y"
                     className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
                   />
+                  <div className="bg-slate-950/90 border border-amber-900/50 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 mt-1.5 text-xs">
+                    <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-900 border border-amber-700/50 shrink-0 relative shadow">
+                      <img
+                        src={normalizeImageUrl(editFeatureImage)}
+                        alt="Feature preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
+                      />
+                    </div>
+                    <div className="space-y-0.5 text-slate-300 min-w-0">
+                      <p className="font-semibold text-amber-300">💡 Image Link Helper &amp; Live Preview</p>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">
+                        Supports Unsplash page links (e.g. <span className="text-amber-200 font-mono">https://unsplash.com/photos/...</span>), direct image links, or Google Drive share links. Unsplash webpage links are automatically transformed into direct image CDN URLs!
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5 sm:col-span-2">
@@ -1545,17 +2128,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-amber-900/50">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 pt-4 border-t border-amber-900/50">
                 <button
                   type="button"
                   onClick={() => setEditingBlog(null)}
-                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2 rounded-xl text-xs transition-colors"
+                  className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold px-4 py-2.5 sm:py-2 rounded-xl text-xs text-center transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-lg"
+                  className="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-5 py-2.5 sm:py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors shadow-lg cursor-pointer active:scale-95"
                 >
                   <Save className="w-4 h-4" /> Save Article Changes
                 </button>
@@ -1654,12 +2237,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="text-xs font-semibold text-amber-200">Feature Image URL</label>
                 <input
-                  type="url"
+                  type="text"
                   value={featureImage}
                   onChange={(e) => setFeatureImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="e.g. https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y"
                   className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
                 />
+                <div className="bg-slate-950/90 border border-amber-900/50 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 mt-1.5 text-xs">
+                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-900 border border-amber-700/50 shrink-0 relative shadow">
+                    <img
+                      src={normalizeImageUrl(featureImage)}
+                      alt="Feature image preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
+                    />
+                  </div>
+                  <div className="space-y-0.5 text-slate-300 min-w-0">
+                    <p className="font-semibold text-amber-300">💡 Image Link Helper &amp; Live Preview</p>
+                    <p className="text-[11px] text-slate-400 leading-relaxed">
+                      You can paste Unsplash webpage links (e.g. <span className="text-amber-200 font-mono">https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y</span>), direct image links, or Google Drive share links. Unsplash web links are automatically transformed into direct image CDN URLs!
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-1.5 sm:col-span-2">

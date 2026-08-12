@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BlogPost, Category } from '../types';
 import { Sidebar } from './Sidebar';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Search, Share2, Facebook, Twitter, Eye, Calendar, User, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface BlogViewProps {
@@ -104,12 +105,10 @@ export const BlogView: React.FC<BlogViewProps> = ({
                 <div className="flex flex-col md:flex-row gap-5">
                   <div className="w-full md:w-56 h-48 rounded-xl overflow-hidden shrink-0 bg-slate-950 border border-amber-900/30">
                     <img
-                      src={data.feature_image}
+                      src={normalizeImageUrl(data.feature_image)}
                       alt={data.name}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                      }}
+                      onError={handleImageError}
                     />
                   </div>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
+import { normalizeImageUrl } from './utils/imageUtils';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
@@ -24,8 +25,59 @@ export default function App() {
     }
     return 'home';
   });
-  const [blogs, setBlogs] = useState<BlogPost[]>(INITIAL_BLOGS);
-  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const [blogs, setBlogs] = useState<BlogPost[]>(() => {
+    try {
+      const saved = localStorage.getItem('doctor_blogs');
+      if (saved) {
+        const parsed: BlogPost[] = JSON.parse(saved);
+        return parsed.map((b) => ({
+          ...b,
+          feature_image: normalizeImageUrl(b.feature_image)
+        }));
+      }
+    } catch (err) {
+      console.warn('Failed to load saved blogs from localStorage:', err);
+    }
+    return INITIAL_BLOGS.map((b) => ({
+      ...b,
+      feature_image: normalizeImageUrl(b.feature_image)
+    }));
+  });
+
+  const [categories, setCategories] = useState<Category[]>(() => {
+    try {
+      const saved = localStorage.getItem('doctor_categories');
+      if (saved) {
+        const parsed: Category[] = JSON.parse(saved);
+        return parsed.map((c) => ({
+          ...c,
+          featured_image: normalizeImageUrl(c.featured_image)
+        }));
+      }
+    } catch (err) {
+      console.warn('Failed to load saved categories from localStorage:', err);
+    }
+    return INITIAL_CATEGORIES.map((c) => ({
+      ...c,
+      featured_image: normalizeImageUrl(c.featured_image)
+    }));
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('doctor_blogs', JSON.stringify(blogs));
+    } catch (err) {
+      console.warn('Failed to save blogs to localStorage:', err);
+    }
+  }, [blogs]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('doctor_categories', JSON.stringify(categories));
+    } catch (err) {
+      console.warn('Failed to save categories to localStorage:', err);
+    }
+  }, [categories]);
 
   const handleAddCategory = (newCategory: Category) => {
     setCategories((prev) => {

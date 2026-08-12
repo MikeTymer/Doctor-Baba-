@@ -1,6 +1,7 @@
 import React from 'react';
 import { Category, BlogPost } from '../types';
 import { Sidebar } from './Sidebar';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { ArrowLeft, Eye, BookOpen, MessageSquare, Phone } from 'lucide-react';
 import { SITE_INFO } from '../data/initialData';
 
@@ -65,12 +66,10 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
           {/* Featured Image */}
           <div className="rounded-xl overflow-hidden bg-slate-950 border border-amber-900/40 aspect-video">
             <img
-              src={category.featured_image}
+              src={normalizeImageUrl(category.featured_image)}
               alt={category.name}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-              }}
+              onError={handleImageError}
             />
           </div>
 

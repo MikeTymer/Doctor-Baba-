@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GALLERY_ITEMS } from '../data/initialData';
 import { GalleryItem } from '../types';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Image, X, ZoomIn } from 'lucide-react';
 
 export const GalleryView: React.FC = () => {
@@ -56,12 +57,10 @@ export const GalleryView: React.FC = () => {
             className="group relative bg-slate-900 border border-amber-900/50 rounded-2xl overflow-hidden shadow-xl cursor-pointer aspect-square"
           >
             <img
-              src={item.image}
+              src={normalizeImageUrl(item.image)}
               alt={item.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/static/upload/garden_single_01.jpg';
-              }}
+              onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
 

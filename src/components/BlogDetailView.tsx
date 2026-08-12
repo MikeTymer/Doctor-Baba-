@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BlogPost, BlogComment, Category } from '../types';
 import { Sidebar } from './Sidebar';
 import { SITE_INFO } from '../data/initialData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Calendar, User, Eye, Share2, Facebook, Twitter, MessageSquare, Send, ArrowLeft, CheckCircle2, Phone, Sparkles, ShieldCheck } from 'lucide-react';
 
 interface BlogDetailViewProps {
@@ -116,12 +117,10 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
           {/* Article Image */}
           <div className="rounded-xl overflow-hidden bg-slate-950 border border-amber-900/40 aspect-video">
             <img
-              src={blog.feature_image}
+              src={normalizeImageUrl(blog.feature_image)}
               alt={blog.name}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-              }}
+              onError={handleImageError}
             />
           </div>
 

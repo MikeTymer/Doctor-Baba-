@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BlogPost, Category } from '../types';
 import { SITE_INFO } from '../data/initialData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Mail, CheckCircle2, Flame, Instagram, Sparkles } from 'lucide-react';
 
 interface SidebarProps {
@@ -144,12 +145,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             >
               <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-950 border border-amber-900/30">
                 <img
-                  src={blog.feature_image}
+                  src={normalizeImageUrl(blog.feature_image)}
                   alt={blog.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                  }}
+                  onError={handleImageError}
                 />
               </div>
               <div className="min-w-0 flex-1">
