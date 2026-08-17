@@ -14,6 +14,25 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
   const [isLightMode, setIsLightMode] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setServicesDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    // 300ms grace period so users can comfortably move mouse to any dropdown item
+    hoverTimeoutRef.current = setTimeout(() => {
+      setServicesDropdownOpen(false);
+    }, 300);
+  };
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -28,7 +47,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
   }, []);
 
   const toggleTheme = () => {
@@ -146,15 +170,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
                 return (
                   <div 
                     key={item.tab} 
-                    className="relative group" 
+                    className="relative" 
                     ref={dropdownRef}
-                    onMouseEnter={() => setServicesDropdownOpen(true)}
-                    onMouseLeave={() => setServicesDropdownOpen(false)}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                   >
                     <div className="flex items-center">
                       <button
+                        type="button"
                         onClick={() => handleNavClick(item.tab)}
-                        className={`pl-3 pr-1 py-2 rounded-l-md text-sm font-medium transition-all border-y border-l ${
+                        className={`pl-3 pr-1.5 py-2 rounded-l-md text-sm font-medium transition-all border-y border-l ${
                           isActive
                             ? 'bg-amber-900/60 text-amber-200 border-amber-700/50 shadow-inner'
                             : 'text-amber-100/90 border-transparent hover:text-amber-300 hover:bg-slate-900/80'
@@ -163,29 +188,57 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
                         {item.label}
                       </button>
                       <button
-                        onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
-                        className={`pr-2 pl-1 py-2 rounded-r-md text-sm font-medium transition-all border-y border-r ${
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setServicesDropdownOpen((prev) => !prev);
+                        }}
+                        aria-label="Toggle Services menu"
+                        aria-expanded={servicesDropdownOpen}
+                        className={`pr-2.5 pl-1 py-2 rounded-r-md text-sm font-medium transition-all border-y border-r cursor-pointer ${
                           isActive
                             ? 'bg-amber-900/60 text-amber-200 border-amber-700/50 shadow-inner'
                             : 'text-amber-100/90 border-transparent hover:text-amber-300 hover:bg-slate-900/80'
                         }`}
                       >
-                        <ChevronDown className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${servicesDropdownOpen ? 'rotate-180 text-amber-400' : ''}`} />
                       </button>
                     </div>
 
                     {servicesDropdownOpen && (
-                      <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-amber-900/50 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                        <div className="py-1">
-                          {serviceOfferings.map((service) => (
+                      <div 
+                        className="absolute left-0 top-full pt-1.5 w-64 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <div className="services-dropdown-box bg-slate-900 border border-amber-800/60 rounded-xl shadow-2xl overflow-hidden py-1 backdrop-blur-md">
+                          <div className="px-3.5 py-2 border-b border-amber-900/40 bg-amber-950/30 flex items-center justify-between">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">
+                              Spiritual Offerings
+                            </span>
                             <button
-                              key={service}
-                              onClick={() => handleServiceDetailClick(service)}
-                              className="block w-full text-left px-4 py-2.5 text-xs text-amber-100/80 hover:bg-amber-900/40 hover:text-amber-200 transition-colors border-b border-amber-900/10 last:border-0"
+                              type="button"
+                              onClick={() => handleNavClick('services')}
+                              className="text-[11px] text-amber-300 hover:text-amber-100 underline font-semibold cursor-pointer"
                             >
-                              {service}
+                              All Services &rarr;
                             </button>
-                          ))}
+                          </div>
+                          <div className="max-h-[340px] overflow-y-auto py-1 custom-scrollbar">
+                            {serviceOfferings.map((service) => (
+                              <button
+                                key={service}
+                                type="button"
+                                onClick={() => handleServiceDetailClick(service)}
+                                className="services-dropdown-item flex items-center justify-between w-full text-left px-3.5 py-2 text-xs text-amber-100/90 hover:bg-amber-800/40 hover:text-amber-200 transition-colors border-b border-amber-900/15 last:border-0 cursor-pointer group/item"
+                              >
+                                <span className="truncate">{service}</span>
+                                <span className="text-[10px] text-amber-500/60 group-hover/item:text-amber-400 group-hover/item:translate-x-0.5 transition-all flex-shrink-0 ml-2">
+                                  &rsaquo;
+                                </span>
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     )}

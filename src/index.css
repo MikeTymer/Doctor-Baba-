@@ -137,6 +137,43 @@ html.light header button.bg-amber-600 {
   color: #020617 !important;
 }
 
+/* Services Dropdown Menu Light Mode */
+html.light .services-dropdown-box {
+  background-color: #ffffff !important;
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15) !important;
+}
+
+html.light .services-dropdown-box > div:first-child {
+  background-color: #fef3c7 !important;
+  border-bottom: 1px solid #fcd34d !important;
+}
+
+html.light .services-dropdown-box span.text-amber-400 {
+  color: #78350f !important;
+  font-weight: 800 !important;
+}
+
+html.light .services-dropdown-item {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-bottom-color: #f1f5f9 !important;
+  font-weight: 600 !important;
+}
+
+html.light .services-dropdown-item:hover {
+  background-color: #fef3c7 !important;
+  color: #78350f !important;
+}
+
+html.light .services-dropdown-item span {
+  color: #0f172a !important;
+}
+
+html.light .services-dropdown-item:hover span {
+  color: #78350f !important;
+}
+
 /* FOOTER INTACT IN DARK MODE APPEARANCE (ALWAYS DEEP DARK) */
 html.light footer,
 footer {
