@@ -410,7 +410,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <service.icon className="w-5 h-5 text-amber-400" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-amber-100 font-bold text-sm group-hover:text-amber-300 transition-colors font-serif">{service.name}</h4>
+                <h4 className="text-white font-bold text-sm group-hover:text-amber-300 transition-colors font-serif">{service.name}</h4>
                 <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
                   {service.desc}
                 </p>
@@ -433,7 +433,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <button 
               key={idx} 
               onClick={() => onSelectServiceDetail(area)}
-              className="bg-slate-900/70 border border-amber-900/40 p-3 rounded-xl hover:border-amber-500/60 hover:bg-slate-900 transition-all cursor-pointer text-amber-200 hover:text-amber-100 text-center w-full shadow-md"
+              className="spell-region-btn bg-white dark:bg-slate-900/80 border border-amber-200 dark:border-amber-900/40 p-3 rounded-xl hover:border-amber-500/60 hover:bg-amber-50 dark:hover:bg-slate-900 transition-all cursor-pointer text-slate-950 dark:text-white hover:text-amber-700 dark:hover:text-amber-300 text-center w-full shadow-sm dark:shadow-md font-bold"
             >
               {area}
             </button>
@@ -442,7 +442,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
       </section>
 
       {/* Cascading Ad Section 2 - Marriage Spells focus */}
-      <section className="bg-slate-900/40 rounded-3xl border border-amber-900/20 overflow-hidden shadow-2xl">
+      <section className="marriage-divorce-box bg-white dark:bg-slate-900/40 rounded-3xl border border-amber-200 dark:border-amber-900/20 overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row-reverse items-stretch">
           <div className="w-full lg:w-1/2 relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[300px] group/adimg">
             <a 
@@ -466,15 +466,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
             />
             <div className="absolute inset-0 bg-gradient-to-l from-slate-950/20 to-transparent pointer-events-none" />
           </div>
-          <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-900/60">
-            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Marital Harmony</span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100 leading-tight">
+          <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-50 dark:bg-slate-900/60">
+            <span className="marital-harmony-tag text-xs uppercase tracking-widest text-slate-950 dark:text-amber-400 font-extrabold block">Marital Harmony</span>
+            <h2 className="marriage-divorce-heading text-2xl sm:text-4xl font-bold font-serif text-slate-950 dark:text-white leading-tight">
               Marriage & Divorce Spells in Dubai, Germany & SA
             </h2>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Restore peace to your home in <strong>Dubai</strong>, <strong>Berlin</strong>, or <strong>Johannesburg</strong>. 
+            <p className="marriage-divorce-text text-sm text-slate-800 dark:text-slate-300 leading-relaxed">
+              Restore peace to your home in <strong className="text-slate-950 dark:text-white font-bold">Dubai</strong>, <strong className="text-slate-950 dark:text-white font-bold">Berlin</strong>, or <strong className="text-slate-950 dark:text-white font-bold">Johannesburg</strong>. 
               Doctor Baba Mukisa specializes in marriage stabilization rituals that stop unwanted divorces and remove outside interference. 
-              From <strong>Soweto</strong> to <strong>Hamburg</strong>, our ancestral guidance helps couples in <strong>South Africa</strong>, <strong>Germany</strong>, and the <strong>UAE</strong> find their way back to love.
+              From <strong className="text-slate-950 dark:text-white font-bold">Soweto</strong> to <strong className="text-slate-950 dark:text-white font-bold">Hamburg</strong>, our ancestral guidance helps couples in <strong className="text-slate-950 dark:text-white font-bold">South Africa</strong>, <strong className="text-slate-950 dark:text-white font-bold">Germany</strong>, and the <strong className="text-slate-950 dark:text-white font-bold">UAE</strong> find their way back to love.
             </p>
             <div className="pt-2">
               <button 

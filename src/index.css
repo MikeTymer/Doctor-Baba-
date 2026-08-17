@@ -352,6 +352,42 @@ html.light .cta-description {
   font-weight: 500 !important;
 }
 
+/* REGIONAL SPELL BUTTONS & MARRIAGE AD IN LIGHT MODE: SOLID BLACK TEXT */
+html.light .spell-region-btn {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1.5px solid #f59e0b !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light .spell-region-btn:hover {
+  background-color: #fef3c7 !important;
+  color: #000000 !important;
+  border-color: #d97706 !important;
+}
+
+html.light .marital-harmony-tag {
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+html.light .marriage-divorce-box {
+  background-color: #ffffff !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light .marriage-divorce-heading {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+html.light .marriage-divorce-text,
+html.light .marriage-divorce-text strong {
+  color: #000000 !important;
+}
+
 /* BLOG PAGE LIGHT MODE STYLING */
 html.light .blog-header-box {
   background-color: #ffffff !important;
