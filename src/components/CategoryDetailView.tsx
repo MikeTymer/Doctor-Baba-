@@ -1,6 +1,7 @@
 import React from 'react';
 import { Category, BlogPost } from '../types';
 import { Sidebar } from './Sidebar';
+import { Breadcrumb } from './Breadcrumb';
 import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { ArrowLeft, Eye, BookOpen, MessageSquare, Phone } from 'lucide-react';
 import { SITE_INFO } from '../data/initialData';
@@ -11,6 +12,7 @@ interface CategoryDetailViewProps {
   categories: Category[];
   recentBlogs: BlogPost[];
   onBack: () => void;
+  onNavigateHome?: () => void;
   onSelectBlog: (blog: BlogPost) => void;
   onSelectCategory: (category: Category) => void;
 }
@@ -21,6 +23,7 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
   categories,
   recentBlogs,
   onBack,
+  onNavigateHome,
   onSelectBlog,
   onSelectCategory,
 }) => {
@@ -35,16 +38,24 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
       
       {/* Main Content */}
-      <div className="lg:col-span-8 space-y-8">
+      <div className="lg:col-span-8 space-y-6">
         
-        {/* Back Button */}
-        <div>
+        {/* Top Breadcrumb Navigation Trail & Back Button */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-900 border border-amber-900/50 px-4 py-2 rounded-xl transition-colors min-h-[44px]"
+            className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-900/90 border border-amber-900/50 px-4 py-2.5 rounded-xl hover:border-amber-500/60 transition-all min-h-[44px] self-start shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Services
           </button>
+
+          <Breadcrumb
+            items={[
+              { label: 'Home', onClick: onNavigateHome || onBack },
+              { label: 'Services', onClick: onBack },
+              { label: category.name, isCurrent: true }
+            ]}
+          />
         </div>
 
         {/* Category Banner Card */}

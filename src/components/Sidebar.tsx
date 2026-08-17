@@ -118,7 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             Direct Spiritual Guidance
           </h4>
         </div>
-        <p className="text-xs text-slate-300 mb-4 leading-relaxed">
+        <p className="direct-guidance-text text-xs text-white dark:text-white mb-4 leading-relaxed font-medium">
           Need spiritual advice or traditional herbal consultation? Speak directly with Doctor Baba Mukisa on WhatsApp.
         </p>
         <a
@@ -198,7 +198,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 alt="Temple Instagram"
                 className="w-full h-full object-cover hover:opacity-80 transition-opacity"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/static/upload/garden_sq_01.jpg';
+                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=800&q=80';
                 }}
               />
             </div>

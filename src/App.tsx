@@ -295,6 +295,7 @@ export default function App() {
             categories={categories}
             recentBlogs={blogs}
             onBack={() => handleTabChange('blog')}
+            onNavigateHome={() => handleTabChange('home')}
             onSelectBlog={handleSelectBlog}
             onSelectCategory={handleSelectCategory}
             onAddComment={handleAddComment}
@@ -317,6 +318,7 @@ export default function App() {
             categories={categories}
             recentBlogs={blogs}
             onBack={() => handleTabChange('services')}
+            onNavigateHome={() => handleTabChange('home')}
             onSelectBlog={handleSelectBlog}
             onSelectCategory={handleSelectCategory}
           />
@@ -326,6 +328,9 @@ export default function App() {
           <ServiceDetailView
             serviceName={selectedServiceDetail}
             onContact={() => handleTabChange('contact')}
+            onBack={() => handleTabChange('services')}
+            onNavigateHome={() => handleTabChange('home')}
+            onNavigateServices={() => handleTabChange('services')}
           />
         )}
 

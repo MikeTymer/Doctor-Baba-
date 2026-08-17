@@ -1,14 +1,24 @@
 import React from 'react';
+import { Breadcrumb } from './Breadcrumb';
 import { SITE_INFO } from '../data/initialData';
 import { SERVICE_DESCRIPTIONS, REGIONAL_SEO_CONTENT } from '../data/serviceDetails';
-import { Flame, Heart, Award, ShieldCheck, Star, MapPin, Globe, Sparkles, MessageSquare, Phone, ArrowRight } from 'lucide-react';
+import { Flame, Heart, Award, ShieldCheck, Star, MapPin, Globe, Sparkles, MessageSquare, Phone, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface ServiceDetailViewProps {
   serviceName: string;
   onContact: () => void;
+  onBack?: () => void;
+  onNavigateHome?: () => void;
+  onNavigateServices?: () => void;
 }
 
-export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ serviceName, onContact }) => {
+export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ 
+  serviceName, 
+  onContact,
+  onBack,
+  onNavigateHome,
+  onNavigateServices
+}) => {
   const getServiceIcon = () => {
     const name = serviceName.toLowerCase();
     if (name.includes('love') || name.includes('marriage') || name.includes('reconciliation') || name.includes('binding') || name.includes('psychic')) {
@@ -44,9 +54,31 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ serviceNam
     { region: "Asia & Australia", cities: "Singapore, Kuala Lumpur, Hong Kong, Bangkok, Seoul, Tokyo. Sydney, Melbourne, Brisbane, Perth, Adelaide, Gold Coast, Canberra, Newcastle, Wollongong, Logan City." }
   ];
 
+  const handleGoBack = onBack || onNavigateServices || onNavigateHome;
+
   return (
-    <div className="space-y-12 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500">
       
+      {/* Top Breadcrumb Navigation Trail & Back Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {handleGoBack && (
+          <button
+            onClick={handleGoBack}
+            className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-900/90 border border-amber-900/50 px-4 py-2.5 rounded-xl hover:border-amber-500/60 transition-all min-h-[44px] self-start shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Services
+          </button>
+        )}
+
+        <Breadcrumb
+          items={[
+            { label: 'Home', onClick: onNavigateHome },
+            { label: 'Spiritual Services', onClick: onNavigateServices || handleGoBack },
+            { label: serviceName, isCurrent: true }
+          ]}
+        />
+      </div>
+
       {/* Hero Header */}
       <section 
         className="relative rounded-3xl border border-amber-900/50 p-8 sm:p-16 overflow-hidden shadow-2xl text-center bg-cover bg-center"

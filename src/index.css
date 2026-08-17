@@ -388,6 +388,27 @@ html.light .marriage-divorce-text strong {
   color: #000000 !important;
 }
 
+/* BREADCRUMB NAVIGATION STYLING */
+html.light .breadcrumb-nav {
+  background-color: #ffffff !important;
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .breadcrumb-nav button,
+html.light .breadcrumb-nav li span {
+  color: #0f172a !important;
+}
+
+html.light .breadcrumb-nav button:hover {
+  color: #b45309 !important;
+}
+
+html.light .breadcrumb-nav span[aria-current="page"] {
+  color: #b45309 !important;
+  font-weight: 800 !important;
+}
+
 /* BLOG PAGE LIGHT MODE STYLING */
 html.light .blog-header-box {
   background-color: #ffffff !important;
@@ -444,6 +465,28 @@ html.light .blog-meta-details span.bg-amber-950 {
   color: #78350f !important;
   border-color: #fcd34d !important;
   font-weight: 800 !important;
+}
+
+html.light .author-box {
+  background-color: #ffffff !important;
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light .author-box h4 {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html.light .author-box p {
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+/* DIRECT SPIRITUAL GUIDANCE CARD TEXT IN LIGHT MODE: SOLID WHITE */
+html.light .direct-guidance-text {
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 /* FOOTER LIGHT MODE STYLING */

@@ -60,9 +60,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
                   src={cat.featured_image}
                   alt={cat.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                  }}
+                  onError={handleImageError}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
                 <span className="absolute bottom-2 right-2 bg-slate-950/80 text-amber-300 text-[10px] px-2 py-0.5 rounded border border-amber-800/40 flex items-center gap-1">

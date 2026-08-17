@@ -12,7 +12,7 @@ export const FloatingWhatsApp: React.FC = () => {
       title="Chat directly on WhatsApp with Doctor Baba Mukisa"
     >
       <MessageCircle className="w-6 h-6 animate-pulse" />
-      <span className="text-xs">Chat with Doctor Baba Mukisa</span>
+      <span className="text-xs font-bold">Chat on WhatsApp</span>
     </a>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BlogPost, BlogComment, Category } from '../types';
 import { Sidebar } from './Sidebar';
+import { Breadcrumb } from './Breadcrumb';
 import { SITE_INFO } from '../data/initialData';
 import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Calendar, User, Eye, Share2, Facebook, Twitter, MessageSquare, Send, ArrowLeft, CheckCircle2, Phone, Sparkles, ShieldCheck } from 'lucide-react';
@@ -11,6 +12,7 @@ interface BlogDetailViewProps {
   categories: Category[];
   recentBlogs: BlogPost[];
   onBack: () => void;
+  onNavigateHome?: () => void;
   onSelectBlog: (blog: BlogPost) => void;
   onSelectCategory: (category: Category) => void;
   onAddComment: (comment: { author_name: string; description: string }) => void;
@@ -22,6 +24,7 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
   categories,
   recentBlogs,
   onBack,
+  onNavigateHome,
   onSelectBlog,
   onSelectCategory,
   onAddComment,
@@ -49,20 +52,38 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-300">
       
       {/* Main Content */}
-      <div className="lg:col-span-8 space-y-8">
+      <div className="lg:col-span-8 space-y-6">
         
-        {/* Back Button & Breadcrumbs */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Top Breadcrumb Navigation Trail & Back Button */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-900 border border-amber-900/50 px-4 py-2 rounded-xl transition-colors min-h-[44px]"
+            className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 hover:text-amber-300 bg-slate-900/90 border border-amber-900/50 px-4 py-2.5 rounded-xl hover:border-amber-500/60 transition-all min-h-[44px] self-start shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Articles
           </button>
 
-          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
-            <span>Home</span> / <span>Blog</span> / <span className="text-amber-300 truncate max-w-xs">{blog.name}</span>
-          </div>
+          <Breadcrumb
+            items={[
+              { label: 'Home', onClick: onNavigateHome || onBack },
+              { label: 'Articles', onClick: onBack },
+              ...(blog.category_name ? [{
+                label: blog.category_name,
+                onClick: () => {
+                  const matchedCat = categories.find(c => 
+                    c.name?.toLowerCase() === blog.category_name?.toLowerCase() || 
+                    c.slug === blog.category_slug
+                  );
+                  if (matchedCat) {
+                    onSelectCategory(matchedCat);
+                  } else {
+                    onBack();
+                  }
+                }
+              }] : []),
+              { label: blog.name, isCurrent: true }
+            ]}
+          />
         </div>
 
         {/* Article Container */}
@@ -185,12 +206,13 @@ export const BlogDetailView: React.FC<BlogDetailViewProps> = ({
           </div>
 
           {/* Author Box */}
-          <div className="bg-slate-950 border border-amber-900/40 rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-amber-900 overflow-hidden shrink-0 border border-amber-500">
+          <div className="author-box bg-slate-950 border border-amber-900/40 rounded-xl p-5 flex flex-col sm:flex-row items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-amber-900 overflow-hidden shrink-0 border border-amber-500 shadow-md">
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80"
+                src={normalizeImageUrl('/baba.jpg')}
                 alt="Doctor Baba Mukisa"
                 className="w-full h-full object-cover"
+                onError={handleImageError}
               />
             </div>
             <div className="space-y-1 text-center sm:text-left">
