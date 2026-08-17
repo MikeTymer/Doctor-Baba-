@@ -142,21 +142,21 @@ export function getSEOForView(
         return {
           title: `${selectedBlog.name} | Doctor Baba Mukisa Spiritual Blog`,
           description: cleanDesc.length > 160 ? `${cleanDesc.slice(0, 157)}...` : cleanDesc,
-          keywords: `${selectedBlog.tags || ''}, ${selectedBlog.category_name || ''}, Doctor Baba Mukisa, spiritual healing, love spells, herbal remedies`,
+          keywords: `${selectedBlog.category_name || ''}, Doctor Baba Mukisa, spiritual healing, love spells, herbal remedies`,
           image: selectedBlog.feature_image || DEFAULT_IMAGE,
           url: articleUrl,
           type: 'article',
-          publishedTime: selectedBlog.created_at,
-          author: selectedBlog.author_name || 'Doctor Baba Mukisa',
+          publishedTime: selectedBlog.post_date,
+          author: selectedBlog.author || 'Doctor Baba Mukisa',
           structuredData: {
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: selectedBlog.name,
             image: [selectedBlog.feature_image || DEFAULT_IMAGE],
-            datePublished: selectedBlog.created_at || '2025-01-01',
+            datePublished: selectedBlog.post_date || '2025-01-01',
             author: {
               '@type': 'Person',
-              name: selectedBlog.author_name || 'Doctor Baba Mukisa',
+              name: selectedBlog.author || 'Doctor Baba Mukisa',
               url: BASE_URL
             },
             publisher: {

@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { sendInquiryEmail, sendReplyEmail, checkEmailConfiguration } from "./server/mailer";
+import { sendInquiryEmail, sendReplyEmail, checkEmailConfiguration, setRuntimeSmtpConfig, getActiveSmtpConfig } from "./server/mailer";
 
 async function startServer() {
   const app = express();
@@ -167,6 +167,60 @@ async function startServer() {
     return res.json({ success: true, status });
   });
 
+  app.get("/api/smtp-config", (req, res) => {
+    const current = getActiveSmtpConfig();
+    return res.json({
+      success: true,
+      config: {
+        host: current.host,
+        port: current.port,
+        secure: current.secure,
+        user: current.user,
+        notificationEmail: current.notificationEmail,
+        hasPassword: Boolean(current.pass)
+      }
+    });
+  });
+
+  app.post("/api/smtp-config", (req, res) => {
+    const { host, port, secure, user, pass, notificationEmail } = req.body;
+    setRuntimeSmtpConfig({
+      host: host ? String(host).trim() : undefined,
+      port: port ? parseInt(port, 10) : undefined,
+      secure: secure !== undefined ? Boolean(secure) : undefined,
+      user: user ? String(user).trim() : undefined,
+      pass: pass ? String(pass).trim() : undefined,
+      notificationEmail: notificationEmail ? String(notificationEmail).trim() : undefined
+    });
+    const current = getActiveSmtpConfig();
+    return res.json({
+      success: true,
+      config: {
+        host: current.host,
+        port: current.port,
+        secure: current.secure,
+        user: current.user,
+        notificationEmail: current.notificationEmail,
+        hasPassword: Boolean(current.pass)
+      }
+    });
+  });
+
+  app.post("/api/test-smtp", async (req, res) => {
+    const { host, port, secure, user, pass, notificationEmail } = req.body;
+    const testConfig = host ? {
+      host: String(host).trim(),
+      port: port ? parseInt(port, 10) : 465,
+      secure: secure !== undefined ? Boolean(secure) : true,
+      user: user ? String(user).trim() : 'help@doctorbabamukisa.com',
+      pass: pass ? String(pass).trim() : undefined,
+      notificationEmail: notificationEmail ? String(notificationEmail).trim() : undefined
+    } : undefined;
+
+    const result = await checkEmailConfiguration(testConfig);
+    return res.json({ success: true, result });
+  });
+
   app.get("/api/inquiries", (req, res) => {
     return res.json({ success: true, messages: contactMessages });
   });
@@ -245,12 +299,12 @@ async function startServer() {
   });
 
   app.post("/api/reply-email", async (req, res) => {
-    const { messageId, toEmail, clientName, subject, replyMessage } = req.body;
+    const { messageId, toEmail, clientName, subject, replyMessage, customConfig } = req.body;
     if (!toEmail || !replyMessage) {
       return res.status(400).json({ success: false, error: "Missing required email parameters." });
     }
 
-    const emailResult = await sendReplyEmail(toEmail, clientName || 'Valued Client', subject, replyMessage);
+    const emailResult = await sendReplyEmail(toEmail, clientName || 'Valued Client', subject, replyMessage, customConfig);
 
     // Update message status in contactMessages store
     if (messageId) {
@@ -261,7 +315,14 @@ async function startServer() {
       }
     }
 
-    return res.json({ success: true, emailResult });
+    return res.json({ 
+      success: true, 
+      delivered: emailResult.delivered, 
+      offline: emailResult.offline,
+      note: (emailResult as any).note,
+      error: emailResult.error,
+      emailResult 
+    });
   });
 
   app.post("/api/subscribe", async (req, res) => {

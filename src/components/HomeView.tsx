@@ -344,19 +344,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <button
                   key={idx}
                   onClick={() => onSelectServiceDetail(item.name)}
-                  className="flex-shrink-0 w-64 bg-white dark:bg-slate-950 border border-amber-200 dark:border-amber-900/40 p-6 rounded-2xl hover:border-amber-500/60 transition-all text-center group/card shadow-sm dark:shadow-none"
+                  className="flex-shrink-0 w-64 bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 p-6 rounded-2xl hover:-translate-y-1 transition-all text-center group/card shadow-xl flex flex-col justify-between"
                 >
-                  <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover/card:scale-110 transition-transform">
-                    <Icon className="w-7 h-7 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <div className="w-14 h-14 bg-amber-950/60 border border-amber-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover/card:scale-110 transition-transform">
+                      <Icon className="w-7 h-7 text-amber-400" />
+                    </div>
+                    <h4 className="text-amber-100 font-bold text-sm group-hover/card:text-amber-300 transition-colors mb-2 font-serif">
+                      {item.name}
+                    </h4>
+                    <p className="text-[11px] text-slate-300 mb-4 line-clamp-2 italic leading-relaxed">
+                      {item.description}
+                    </p>
                   </div>
-                  <h4 className="text-amber-900 dark:text-amber-100 font-bold text-sm group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors mb-2">
-                    {item.name}
-                  </h4>
-                  <p className="text-[10px] text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 italic leading-relaxed">
-                    {item.description}
-                  </p>
                   <div className="mt-auto pt-2">
-                    <span className="inline-block w-full py-2 bg-slate-100 dark:bg-slate-900 border border-amber-200 dark:border-amber-900/40 rounded-xl text-[10px] text-amber-700 dark:text-amber-200 uppercase tracking-widest font-bold group-hover/card:bg-amber-600 group-hover/card:text-slate-950 transition-all">
+                    <span className="inline-block w-full py-2 bg-slate-950/80 border border-amber-900/50 rounded-xl text-[10px] text-amber-300 uppercase tracking-widest font-bold group-hover/card:bg-amber-600 group-hover/card:text-slate-950 group-hover/card:border-amber-500 transition-all">
                       Learn More &rarr;
                     </span>
                   </div>
@@ -402,18 +404,18 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <button 
               key={idx} 
               onClick={() => onSelectServiceDetail(service.service)} 
-              className="bg-slate-100 dark:bg-slate-900 border border-amber-200 dark:border-amber-900/40 p-6 rounded-2xl hover:border-amber-500/60 transition-all text-center group w-full flex flex-col items-center justify-center space-y-3"
+              className="bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 p-6 rounded-2xl hover:-translate-y-1 transition-all text-center group w-full flex flex-col items-center justify-between space-y-3 shadow-xl"
             >
-              <div className="w-10 h-10 bg-amber-100 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                <service.icon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <div className="w-10 h-10 bg-amber-950/60 border border-amber-800/50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <service.icon className="w-5 h-5 text-amber-400" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-amber-900 dark:text-amber-100 font-bold text-sm group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{service.name}</h4>
-                <p className="text-[10px] text-slate-600 dark:text-slate-400 line-clamp-2 leading-tight group-hover:text-slate-800 dark:group-hover:text-slate-300 transition-colors">
+                <h4 className="text-amber-100 font-bold text-sm group-hover:text-amber-300 transition-colors font-serif">{service.name}</h4>
+                <p className="text-[11px] text-slate-300 line-clamp-2 leading-relaxed">
                   {service.desc}
                 </p>
                 <div className="pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <span className="text-[8px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-tighter">View Details &rarr;</span>
+                   <span className="text-[9px] text-amber-400 font-bold uppercase tracking-wider">View Details &rarr;</span>
                 </div>
               </div>
             </button>
@@ -431,7 +433,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <button 
               key={idx} 
               onClick={() => onSelectServiceDetail(area)}
-              className="bg-slate-100 dark:bg-slate-900/40 border border-amber-200 dark:border-amber-900/20 p-3 rounded-xl hover:border-amber-500/40 transition-all cursor-pointer text-amber-700 dark:text-amber-200/90 hover:text-amber-900 dark:hover:text-amber-100 text-center w-full shadow-sm dark:shadow-none"
+              className="bg-slate-900/70 border border-amber-900/40 p-3 rounded-xl hover:border-amber-500/60 hover:bg-slate-900 transition-all cursor-pointer text-amber-200 hover:text-amber-100 text-center w-full shadow-md"
             >
               {area}
             </button>
@@ -517,19 +519,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 <button
                   key={idx}
                   onClick={() => onSelectServiceDetail(area.name)}
-                  className="flex-shrink-0 w-64 bg-white dark:bg-slate-950 border border-amber-200 dark:border-amber-900/40 p-6 rounded-2xl hover:border-amber-500/60 transition-all text-center group/card shadow-sm dark:shadow-none"
+                  className="flex-shrink-0 w-64 bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 p-6 rounded-2xl hover:-translate-y-1 transition-all text-center group/card shadow-xl flex flex-col justify-between"
                 >
-                  <div className="w-14 h-14 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/40 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover/card:scale-110 transition-transform">
-                    <Icon className="w-7 h-7 text-amber-600 dark:text-amber-400" />
+                  <div>
+                    <div className="w-14 h-14 bg-amber-950/60 border border-amber-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover/card:scale-110 transition-transform">
+                      <Icon className="w-7 h-7 text-amber-400" />
+                    </div>
+                    <h4 className="text-amber-100 font-bold text-sm group-hover/card:text-amber-300 transition-colors mb-2 font-serif">
+                      {area.name}
+                    </h4>
+                    <p className="text-[11px] text-slate-300 mb-4 line-clamp-2 italic leading-relaxed">
+                      Authentic spiritual guidance and specialized {area.name.toLowerCase()} for permanent results.
+                    </p>
                   </div>
-                  <h4 className="text-amber-900 dark:text-amber-100 font-bold text-sm group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors mb-2">
-                    {area.name}
-                  </h4>
-                  <p className="text-[10px] text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 italic">
-                    Authentic spiritual guidance and specialized {area.name.toLowerCase()} for permanent results.
-                  </p>
-                  <div className="mt-auto">
-                    <span className="inline-block w-full py-2 bg-slate-100 dark:bg-slate-900 border border-amber-200 dark:border-amber-900/40 rounded-xl text-[10px] text-amber-700 dark:text-amber-200 uppercase tracking-widest font-bold group-hover/card:bg-amber-600 group-hover/card:text-slate-950 transition-all">
+                  <div className="mt-auto pt-2">
+                    <span className="inline-block w-full py-2 bg-slate-950/80 border border-amber-900/50 rounded-xl text-[10px] text-amber-300 uppercase tracking-widest font-bold group-hover/card:bg-amber-600 group-hover/card:text-slate-950 group-hover/card:border-amber-500 transition-all">
                       Learn More &rarr;
                     </span>
                   </div>
@@ -658,40 +662,40 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
-          <div className="bg-slate-100 dark:bg-slate-900/40 p-6 rounded-3xl border border-amber-200 dark:border-amber-900/20 text-center space-y-4 shadow-sm dark:shadow-none">
-            <h4 className="text-amber-700 dark:text-amber-500 font-bold text-sm uppercase tracking-tighter">North America</h4>
-            <ul className="text-[10px] text-slate-600 dark:text-slate-400 space-y-1.5">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Love Spells USA (New York, LA, Chicago)</li>
-              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Spiritual Healing Canada (Toronto, Vancouver)</li>
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Lost Lover Spells California</li>
-              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Marriage Spells Ontario</li>
+          <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
+            <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">North America</h4>
+            <ul className="text-[11px] text-slate-300 space-y-2">
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love Spells USA (New York, LA, Chicago)</li>
+              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Healing Canada (Toronto, Vancouver)</li>
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Lost Lover Spells California</li>
+              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Spells Ontario</li>
             </ul>
           </div>
-          <div className="bg-slate-100 dark:bg-slate-900/40 p-6 rounded-3xl border border-amber-200 dark:border-amber-900/20 text-center space-y-4 shadow-sm dark:shadow-none">
-            <h4 className="text-amber-700 dark:text-amber-500 font-bold text-sm uppercase tracking-tighter">Europe & UK</h4>
-            <ul className="text-[10px] text-slate-600 dark:text-slate-400 space-y-1.5">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Lost Lover Spells London & UK</li>
-              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Marriage Protection Germany (Berlin)</li>
-              <li onClick={() => onSelectServiceDetail('Voodoo Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Voodoo Spells France (Paris)</li>
-              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Spiritual Healing Ireland & Norway</li>
+          <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
+            <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Europe & UK</h4>
+            <ul className="text-[11px] text-slate-300 space-y-2">
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Lost Lover Spells London & UK</li>
+              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Protection Germany (Berlin)</li>
+              <li onClick={() => onSelectServiceDetail('Voodoo Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Voodoo Spells France (Paris)</li>
+              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Healing Ireland & Norway</li>
             </ul>
           </div>
-          <div className="bg-slate-100 dark:bg-slate-900/40 p-6 rounded-3xl border border-amber-200 dark:border-amber-900/20 text-center space-y-4 shadow-sm dark:shadow-none">
-            <h4 className="text-amber-700 dark:text-amber-500 font-bold text-sm uppercase tracking-tighter">Africa & Regions</h4>
-            <ul className="text-[10px] text-slate-600 dark:text-slate-400 space-y-1.5">
-              <li onClick={() => onSelectServiceDetail('Traditional Healer')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Traditional Healer South Africa (Soweto, Joburg)</li>
-              <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Spiritual Guidance Kenya (Nairobi, Mombasa)</li>
-              <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Ancestral Wisdom Uganda (Kampala)</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Wealth Spells Botswana & Namibia</li>
+          <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
+            <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Africa & Regions</h4>
+            <ul className="text-[11px] text-slate-300 space-y-2">
+              <li onClick={() => onSelectServiceDetail('Traditional Healer')} className="hover:text-amber-300 cursor-pointer transition-colors">Traditional Healer South Africa (Soweto, Joburg)</li>
+              <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Guidance Kenya (Nairobi, Mombasa)</li>
+              <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Wisdom Uganda (Kampala)</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Wealth Spells Botswana & Namibia</li>
             </ul>
           </div>
-          <div className="bg-slate-100 dark:bg-slate-900/40 p-6 rounded-3xl border border-amber-200 dark:border-amber-900/20 text-center space-y-4 shadow-sm dark:shadow-none">
-            <h4 className="text-amber-700 dark:text-amber-500 font-bold text-sm uppercase tracking-tighter">Middle East & Asia</h4>
-            <ul className="text-[10px] text-slate-600 dark:text-slate-400 space-y-1.5">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Love & Relationship Spells Dubai & UAE</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Business Luck Spells Singapore & Malaysia</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Success Spells Qatar & Kuwait</li>
-              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-600 dark:hover:text-amber-300 cursor-pointer">Spiritual Cleansing Oman & Bahrain</li>
+          <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
+            <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Middle East & Asia</h4>
+            <ul className="text-[11px] text-slate-300 space-y-2">
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love & Relationship Spells Dubai & UAE</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Business Luck Spells Singapore & Malaysia</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Success Spells Qatar & Kuwait</li>
+              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Cleansing Oman & Bahrain</li>
             </ul>
           </div>
         </div>

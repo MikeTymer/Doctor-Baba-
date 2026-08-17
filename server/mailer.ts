@@ -13,62 +13,89 @@ export interface MessageData {
   securityInfo?: any;
 }
 
-export function createTransporter(customPort?: number, customSecure?: boolean) {
-  const host = process.env.SMTP_HOST || 'mail.privateemail.com';
-  const port = customPort ?? parseInt(process.env.SMTP_PORT || '587', 10);
-  const secureEnv = process.env.SMTP_SECURE;
-  const secure = customSecure ?? (secureEnv !== undefined ? (secureEnv === 'true' || secureEnv === 'SSL' || secureEnv === 'ssl') : (port === 465));
-  const user = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
-  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS;
+export interface SmtpConfig {
+  host: string;
+  port: number;
+  secure?: boolean;
+  user: string;
+  pass?: string;
+  notificationEmail?: string;
+}
 
-  if (!pass) {
+// In-memory runtime SMTP configuration (can be updated from Admin)
+let runtimeSmtpConfig: Partial<SmtpConfig> = {};
+
+export function setRuntimeSmtpConfig(config: Partial<SmtpConfig>) {
+  runtimeSmtpConfig = { ...runtimeSmtpConfig, ...config };
+}
+
+export function getActiveSmtpConfig(custom?: Partial<SmtpConfig>): SmtpConfig {
+  const host = custom?.host || runtimeSmtpConfig.host || process.env.SMTP_HOST || 'mail.privateemail.com';
+  const port = custom?.port || runtimeSmtpConfig.port || parseInt(process.env.SMTP_PORT || '465', 10);
+  const secure = custom?.secure ?? runtimeSmtpConfig.secure ?? (port === 465 || process.env.SMTP_SECURE === 'true');
+  const user = custom?.user || runtimeSmtpConfig.user || process.env.SMTP_USER || 'help@doctorbabamukisa.com';
+  const pass = custom?.pass || runtimeSmtpConfig.pass || process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS || '';
+  const notificationEmail = custom?.notificationEmail || runtimeSmtpConfig.notificationEmail || process.env.NOTIFICATION_EMAIL || user;
+
+  return {
+    host,
+    port,
+    secure,
+    user,
+    pass,
+    notificationEmail
+  };
+}
+
+export function createTransporter(custom?: Partial<SmtpConfig>) {
+  const config = getActiveSmtpConfig(custom);
+
+  if (!config.pass) {
     return null;
   }
 
   return nodemailer.createTransport({
-    host,
-    port,
-    secure, // true for 465 SSL, false for 587 STARTTLS
+    host: config.host,
+    port: config.port,
+    secure: config.secure, // true for 465 SSL, false for 587 STARTTLS
     auth: {
-      user,
-      pass,
+      user: config.user,
+      pass: config.pass,
     },
     tls: {
       rejectUnauthorized: false
     },
     connectionTimeout: 4000,
     greetingTimeout: 4000,
-    socketTimeout: 8000,
+    socketTimeout: 6000,
   });
 }
 
-export async function checkEmailConfiguration() {
-  const host = process.env.SMTP_HOST || 'mail.privateemail.com';
-  const port = parseInt(process.env.SMTP_PORT || '587', 10);
-  const user = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
-  const notificationEmail = process.env.NOTIFICATION_EMAIL || user;
-  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS || process.env.MAIL_PASS || process.env.PRIVATEEMAIL_PASS;
+export async function checkEmailConfiguration(customConfig?: Partial<SmtpConfig>) {
+  const config = getActiveSmtpConfig(customConfig);
 
-  if (!pass) {
+  if (!config.pass) {
     return {
       configured: false,
-      host,
-      port,
-      user,
-      notificationEmail,
-      status: 'Pending SMTP Password: Please set SMTP_PASS (or EMAIL_PASS) secret in App Settings.'
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      notificationEmail: config.notificationEmail,
+      hasPassword: false,
+      status: 'Pending SMTP Password. Configure your PrivateEmail password in Settings or Admin SMTP tab.'
     };
   }
 
   // Primary attempt
-  let transporter = createTransporter(port);
+  let transporter = createTransporter(config);
   if (!transporter) {
     return {
       configured: false,
-      host,
-      port,
-      user,
-      notificationEmail,
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      notificationEmail: config.notificationEmail,
+      hasPassword: false,
       status: 'Missing SMTP authentication credentials.'
     };
   }
@@ -77,62 +104,66 @@ export async function checkEmailConfiguration() {
     await transporter.verify();
     return {
       configured: true,
-      host,
-      port,
-      user,
-      notificationEmail,
-      status: `Connected & Verified (${host}:${port} Ready)`
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      notificationEmail: config.notificationEmail,
+      hasPassword: true,
+      status: `Connected & Authenticated (${config.host}:${config.port} Active)`
     };
-  } catch (err) {
+  } catch (err: any) {
     // Try fallback port (587 STARTTLS if 465 failed, or 465 if 587 failed)
-    const fallbackPort = port === 465 ? 587 : 465;
+    const fallbackPort = config.port === 465 ? 587 : 465;
     const fallbackSecure = fallbackPort === 465;
-    const fallbackTransporter = createTransporter(fallbackPort, fallbackSecure);
+    const fallbackTransporter = createTransporter({ ...config, port: fallbackPort, secure: fallbackSecure });
 
     if (fallbackTransporter) {
       try {
         await fallbackTransporter.verify();
         return {
           configured: true,
-          host,
+          host: config.host,
           port: fallbackPort,
-          user,
-          notificationEmail,
-          status: `Connected & Verified via fallback port (${host}:${fallbackPort})`
+          user: config.user,
+          notificationEmail: config.notificationEmail,
+          hasPassword: true,
+          status: `Connected & Authenticated via fallback port (${config.host}:${fallbackPort})`
         };
       } catch (fallbackErr) {
         // Return clear diagnostic message
         return {
           configured: false,
-          host,
-          port,
-          user,
-          notificationEmail,
-          status: `SMTP Auth/Connection error: ${(err as Error).message}`
+          host: config.host,
+          port: config.port,
+          user: config.user,
+          notificationEmail: config.notificationEmail,
+          hasPassword: true,
+          status: `SMTP Network/Auth issue: ${err?.message || 'Could not verify connection'}`
         };
       }
     }
 
     return {
       configured: false,
-      host,
-      port,
-      user,
-      notificationEmail,
-      status: `SMTP Connection error: ${(err as Error).message}`
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      notificationEmail: config.notificationEmail,
+      hasPassword: true,
+      status: `SMTP Connection error: ${err?.message || 'Verification failed'}`
     };
   }
 }
 
 export async function sendInquiryEmail(msgData: MessageData, customRecipient?: string) {
+  const config = getActiveSmtpConfig();
   const transporter = createTransporter();
-  const sender = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
-  const notificationEnv = process.env.NOTIFICATION_EMAIL;
+  const sender = config.user;
 
   const recipientsList = Array.from(new Set([
     'help@doctorbabamukisa.com',
     sender,
-    notificationEnv,
+    config.notificationEmail,
     customRecipient
   ].filter((e): e is string => Boolean(e) && typeof e === 'string' && e.includes('@'))));
 
@@ -204,7 +235,7 @@ export async function sendInquiryEmail(msgData: MessageData, customRecipient?: s
         <!-- Quick Action Prompt -->
         <div style="text-align: center; background-color: #1e1b4b; padding: 16px; border-radius: 12px; border: 1px dashed #6366f1;">
           <p style="color: #e0e7ff; margin: 0 0 8px 0; font-size: 13px; font-weight: 500;">
-            💡 <strong>Direct Reply Enabled:</strong> Simply hit <strong>"Reply"</strong> in your email inbox to send an immediate response directly to <strong>${msgData.email}</strong>.
+            💡 <strong>Direct Reply:</strong> Hit <strong>"Reply"</strong> in your inbox or use the Admin panel to respond to <strong>${msgData.email}</strong>.
           </p>
         </div>
 
@@ -213,15 +244,14 @@ export async function sendInquiryEmail(msgData: MessageData, customRecipient?: s
       <!-- Footer -->
       <div style="background-color: #020617; padding: 16px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #1e293b;">
         <p style="margin: 0;">Doctor Baba Mukisa Mail Server • Powered by mail.privateemail.com</p>
-        <p style="margin: 4px 0 0 0;">IMAP: <code>mail.privateemail.com:993</code> (SSL) • SMTP: <code>mail.privateemail.com:465</code> (SSL)</p>
       </div>
 
     </div>
   `;
 
   if (!transporter) {
-    console.log(`[Mailer] SMTP credentials not set. Message saved in Admin panel & simulated email dispatch for ${msgData.email}.`);
-    return { success: true, delivered: false, note: 'Saved in system; configure SMTP_USER & SMTP_PASS in secrets for external email routing.' };
+    console.log(`[Mailer] SMTP password not configured yet. Message saved to Admin store for ${msgData.email}.`);
+    return { success: true, delivered: false, note: 'Saved in Admin database. Configure SMTP password to dispatch external email.' };
   }
 
   try {
@@ -233,13 +263,12 @@ export async function sendInquiryEmail(msgData: MessageData, customRecipient?: s
       text: `New Website Inquiry from ${msgData.name} (${msgData.email}, ${msgData.phone})\nService: ${msgData.service}\n\nMessage:\n${msgData.message}`,
       html: htmlContent,
     });
-    console.log(`[Mailer] Inquiry email dispatched via PrivateEmail SMTP to ${recipient}:`, info.messageId);
     return { success: true, delivered: true, messageId: info.messageId };
-  } catch (error) {
-    console.warn('[Mailer] Primary port send failed, attempting fallback port:', (error as Error).message);
-    const primaryPort = parseInt(process.env.SMTP_PORT || '587', 10);
+  } catch (error: any) {
+    console.warn('[Mailer] Primary port send failed, attempting fallback port:', error.message);
+    const primaryPort = config.port;
     const fallbackPort = primaryPort === 587 ? 465 : 587;
-    const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
+    const fallbackTransporter = createTransporter({ ...config, port: fallbackPort, secure: fallbackPort === 465 });
 
     if (fallbackTransporter) {
       try {
@@ -251,20 +280,26 @@ export async function sendInquiryEmail(msgData: MessageData, customRecipient?: s
           text: `New Website Inquiry from ${msgData.name} (${msgData.email}, ${msgData.phone})\nService: ${msgData.service}\n\nMessage:\n${msgData.message}`,
           html: htmlContent,
         });
-        console.log(`[Mailer] Inquiry email dispatched via fallback port ${fallbackPort} to ${recipient}:`, fallbackInfo.messageId);
         return { success: true, delivered: true, messageId: fallbackInfo.messageId };
-      } catch (fbErr) {
-        console.error('[Mailer] Fallback port send also failed:', (fbErr as Error).message);
+      } catch (fbErr: any) {
+        console.error('[Mailer] Fallback port send failed:', fbErr.message);
       }
     }
 
-    return { success: false, error: (error as Error).message };
+    return { success: false, delivered: false, error: error.message };
   }
 }
 
-export async function sendReplyEmail(toEmail: string, clientName: string, subject: string, replyMessage: string) {
-  const transporter = createTransporter();
-  const sender = process.env.SMTP_USER || 'help@doctorbabamukisa.com';
+export async function sendReplyEmail(
+  toEmail: string, 
+  clientName: string, 
+  subject: string, 
+  replyMessage: string,
+  customConfig?: Partial<SmtpConfig>
+) {
+  const config = getActiveSmtpConfig(customConfig);
+  const transporter = createTransporter(config);
+  const sender = config.user;
 
   const htmlContent = `
     <div style="font-family: Georgia, serif; max-width: 650px; margin: 0 auto; background-color: #020617; color: #f8fafc; border: 1px solid #78350f; border-radius: 16px; overflow: hidden; padding: 28px;">
@@ -301,8 +336,13 @@ export async function sendReplyEmail(toEmail: string, clientName: string, subjec
   `;
 
   if (!transporter) {
-    console.log(`[Mailer Mock Reply] Simulated direct reply to ${toEmail}.`);
-    return { success: true, delivered: false, note: 'Reply saved in Admin system. Configure SMTP credentials to deliver outbound email.' };
+    console.log(`[Mailer] SMTP credentials missing. Returning offline simulation guidance.`);
+    return {
+      success: true,
+      delivered: false,
+      offline: true,
+      note: 'SMTP password not set in environment. Saved reply to message history.'
+    };
   }
 
   try {
@@ -313,13 +353,12 @@ export async function sendReplyEmail(toEmail: string, clientName: string, subjec
       text: replyMessage,
       html: htmlContent,
     });
-    console.log(`[Mailer] Direct reply email delivered to ${toEmail}:`, info.messageId);
     return { success: true, delivered: true, messageId: info.messageId };
-  } catch (error) {
-    console.warn('[Mailer Reply] Primary port failed, trying fallback port:', (error as Error).message);
-    const primaryPort = parseInt(process.env.SMTP_PORT || '587', 10);
+  } catch (error: any) {
+    console.warn('[Mailer Reply] Primary port failed, trying fallback port:', error.message);
+    const primaryPort = config.port;
     const fallbackPort = primaryPort === 587 ? 465 : 587;
-    const fallbackTransporter = createTransporter(fallbackPort, fallbackPort === 465);
+    const fallbackTransporter = createTransporter({ ...config, port: fallbackPort, secure: fallbackPort === 465 });
 
     if (fallbackTransporter) {
       try {
@@ -330,13 +369,12 @@ export async function sendReplyEmail(toEmail: string, clientName: string, subjec
           text: replyMessage,
           html: htmlContent,
         });
-        console.log(`[Mailer Reply] Direct reply email delivered via fallback port ${fallbackPort} to ${toEmail}:`, fallbackInfo.messageId);
         return { success: true, delivered: true, messageId: fallbackInfo.messageId };
-      } catch (fbErr) {
-        console.error('[Mailer Reply] Fallback port send failed:', (fbErr as Error).message);
+      } catch (fbErr: any) {
+        console.error('[Mailer Reply] Fallback port send also failed:', fbErr.message);
       }
     }
 
-    return { success: false, error: (error as Error).message };
+    return { success: false, delivered: false, error: error.message };
   }
 }
