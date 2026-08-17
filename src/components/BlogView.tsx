@@ -21,7 +21,7 @@ export const BlogView: React.FC<BlogViewProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
 
   const filteredBlogs = blogs.filter((b) =>
     b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

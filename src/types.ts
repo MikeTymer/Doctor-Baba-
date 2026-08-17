@@ -123,6 +123,7 @@ export type ActiveTab =
   | 'blog-detail' 
   | 'services' 
   | 'category-detail' 
+  | 'service-detail'
   | 'videos' 
   | 'gallery' 
   | 'about' 

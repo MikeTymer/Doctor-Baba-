@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
 import { normalizeImageUrl } from './utils/imageUtils';
+import { updateSEO, getSEOForView } from './utils/seo';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
@@ -17,6 +18,7 @@ import { GalleryView } from './components/GalleryView';
 import { AboutView } from './components/AboutView';
 import { ContactView } from './components/ContactView';
 import { AdminView } from './components/AdminView';
+import { ServiceDetailView } from './components/ServiceDetailView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
@@ -79,6 +81,21 @@ export default function App() {
     }
   }, [categories]);
 
+  // Ensure new initial blogs are loaded even if localStorage exists
+  useEffect(() => {
+    const missingBlogs = INITIAL_BLOGS.filter(ib => !blogs.some(b => b.id === ib.id));
+    if (missingBlogs.length > 0) {
+      setBlogs(prev => {
+        const existingIds = new Set(prev.map(b => b.id));
+        const toAdd = INITIAL_BLOGS.filter(ib => !existingIds.has(ib.id));
+        return [...prev, ...toAdd.map(b => ({
+          ...b,
+          feature_image: normalizeImageUrl(b.feature_image)
+        }))];
+      });
+    }
+  }, []);
+
   const handleAddCategory = (newCategory: Category) => {
     setCategories((prev) => {
       if (prev.some((c) => c.slug === newCategory.slug)) return prev;
@@ -90,6 +107,18 @@ export default function App() {
 
   const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedServiceDetail, setSelectedServiceDetail] = useState<string | null>(null);
+
+  // Dynamically update document title, meta descriptions, and OpenGraph tags on navigation
+  useEffect(() => {
+    const seoConfig = getSEOForView(
+      activeTab,
+      selectedBlog,
+      selectedCategory,
+      selectedServiceDetail
+    );
+    updateSEO(seoConfig);
+  }, [activeTab, selectedBlog, selectedCategory, selectedServiceDetail]);
 
   // Sync route /admin if user navigates directly or clicks Admin facilities
   useEffect(() => {
@@ -107,6 +136,7 @@ export default function App() {
 
   const handleTabChange = (tab: ActiveTab) => {
     setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (tab === 'admin') {
       window.history.pushState({}, '', '/admin');
     } else if (window.location.pathname === '/admin') {
@@ -207,6 +237,12 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSelectServiceDetail = (service: string) => {
+    setSelectedServiceDetail(service);
+    handleTabChange('service-detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleAddComment = (newComment: { author_name: string; description: string }) => {
     if (!selectedBlog) return;
     const commentObj: BlogComment = {
@@ -226,6 +262,7 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={handleTabChange}
+        onSelectServiceDetail={handleSelectServiceDetail}
       />
 
       {/* Main App Content Viewport */}
@@ -235,6 +272,7 @@ export default function App() {
             onNavigate={(tab) => handleTabChange(tab)}
             onSelectBlog={handleSelectBlog}
             onSelectCategory={handleSelectCategory}
+            onSelectServiceDetail={handleSelectServiceDetail}
             featuredBlogs={blogs}
             categories={categories}
           />
@@ -267,6 +305,7 @@ export default function App() {
           <ServicesView
             categories={categories}
             onSelectCategory={handleSelectCategory}
+            onSelectServiceDetail={handleSelectServiceDetail}
             onContact={() => handleTabChange('contact')}
           />
         )}
@@ -283,12 +322,26 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'videos' && <VideosView />}
+        {activeTab === 'service-detail' && selectedServiceDetail && (
+          <ServiceDetailView
+            serviceName={selectedServiceDetail}
+            onContact={() => handleTabChange('contact')}
+          />
+        )}
 
-        {activeTab === 'gallery' && <GalleryView />}
+        {activeTab === 'videos' && (
+          <VideosView onSelectServiceDetail={handleSelectServiceDetail} />
+        )}
+
+        {activeTab === 'gallery' && (
+          <GalleryView onSelectServiceDetail={handleSelectServiceDetail} />
+        )}
 
         {activeTab === 'about' && (
-          <AboutView onContact={() => handleTabChange('contact')} />
+          <AboutView 
+            onContact={() => handleTabChange('contact')} 
+            onSelectServiceDetail={handleSelectServiceDetail}
+          />
         )}
 
         {activeTab === 'contact' && <ContactView />}
@@ -312,7 +365,11 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer setActiveTab={handleTabChange} onSubscribe={(email) => handleAddSubscriber(email, 'Website Newsletter')} />
+      <Footer 
+        setActiveTab={handleTabChange} 
+        onSelectServiceDetail={handleSelectServiceDetail}
+        onSubscribe={(email) => handleAddSubscriber(email, 'Website Newsletter')} 
+      />
 
       {/* Mobile Bottom Navigation Bar */}
       <MobileBottomNav activeTab={activeTab} setActiveTab={handleTabChange} />

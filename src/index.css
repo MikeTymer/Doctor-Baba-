@@ -56,7 +56,9 @@ html.light main .border-slate-900 {
 
 /* Main Body Text Colors in Light Mode */
 html.light main .text-amber-100,
-html.light main .text-amber-200 {
+html.light main .text-amber-100\/90,
+html.light main .text-amber-200,
+html.light main .text-amber-200\/90 {
   color: #78350f !important;
 }
 
@@ -703,6 +705,15 @@ html.light .custom-assistance-banner a {
 
 html.light .custom-assistance-banner {
   background: linear-gradient(to right, #451a03, #0f172a) !important;
+}
+
+/* Scrollbar Hiding Utility */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 

@@ -65,6 +65,101 @@ export const INITIAL_CATEGORIES: Category[] = [
     description: "Spiritual mediation and boundary blessings to promote peaceful family dialogue and estate stability.",
     views: 1680,
     featured_image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "cat-7",
+    name: "Marriage & Divorce Spells",
+    slug: "marriage-and-divorce-spells",
+    description: "Powerful marriage spells to stop divorce, increase trust, and bind hearts permanently. Heal relationship wounds and restore marital bliss.",
+    views: 4120,
+    featured_image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "cat-8",
+    name: "Money & Wealth Rituals",
+    slug: "money-and-wealth-rituals",
+    description: "Authentic money spells and wealth rituals to attract financial openings, clear debts, and achieve prosperity through ancestral energy.",
+    views: 3890,
+    featured_image: "https://images.unsplash.com/photo-1554034483-04fda0d3507b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "cat-9",
+    name: "Wiccan & Protection Spells",
+    slug: "wiccan-and-protection-spells",
+    description: "Ancient Wiccan traditions for spiritual shielding, evil eye protection, and personal safety against negative energy and sabotage.",
+    views: 2760,
+    featured_image: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "cat-10",
+    name: "Gay & Lesbian Love Rituals",
+    slug: "gay-and-lesbian-love-spells",
+    description: "Specialized same-sex love rituals to find your soulmate, return a lost partner, and ensure commitment in gay and lesbian relationships.",
+    views: 2140,
+    featured_image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80"
+  }
+];
+
+export const TESTIMONIALS = [
+  {
+    id: 1,
+    name: "Iris, UK",
+    text: "Doctor Baba Mukisa's lost lover spell worked wonders! My partner returned within days after a year of separation. The ancestral healing is truly powerful.",
+    service: "Lost Lover Spells"
+  },
+  {
+    id: 2,
+    name: "Marcus, Thailand",
+    text: "The financial wealth rituals cleared my debts and brought new business opportunities to my doorstep. Doctor Baba Mukisa is a true master of spiritual prosperity.",
+    service: "Money Spells"
+  },
+  {
+    id: 3,
+    name: "Grace A., Kenya",
+    text: "Saved my marriage from a certain divorce. The reconciliation spells softened my husband's heart and brought peace back to our home.",
+    service: "Marriage Spells"
+  },
+  {
+    id: 4,
+    name: "Samuel M., Uganda",
+    text: "The protection rituals against workplace envy gave me the composure to win my promotion. Highly recommended traditional healer.",
+    service: "Spiritual Protection"
+  },
+  {
+    id: 5,
+    name: "Chloe R., Canada",
+    text: "I was skeptical about distance healing, but the wiccan spells for aura cleansing completely shifted my energy. I feel lighter and more focused than ever.",
+    service: "Wiccan Spells"
+  },
+  {
+    id: 6,
+    name: "Ahmed H., Dubai",
+    text: "My business was failing due to what I suspected was spiritual sabotage. After the business blessing ritual, my sales tripled in just one month.",
+    service: "Business Success"
+  },
+  {
+    id: 7,
+    name: "David L., USA",
+    text: "The legal win rituals helped me stay grounded during a very difficult property dispute. We reached a favorable settlement that seemed impossible before.",
+    service: "Court Case Help"
+  },
+  {
+    id: 8,
+    name: "Sarah W., Australia",
+    text: "After struggling with fertility for years, I sought ancestral blessings. I am now 4 months pregnant and so grateful for the spiritual guidance received.",
+    service: "Fertility Rituals"
+  },
+  {
+    id: 9,
+    name: "John K., South Africa",
+    text: "The gay love spells helped me find a partner who truly understands and commits to me. The spiritual connection we share is undeniable.",
+    service: "Gay Love Spells"
+  },
+  {
+    id: 10,
+    name: "Elena V., Russia",
+    text: "I had been suffering from constant bad luck and night terrors. The deep herbal cleansing removed the negative energy permanently. I finally have peace.",
+    service: "Black Magic Removal"
   }
 ];
 
@@ -254,6 +349,161 @@ export const INITIAL_BLOGS: BlogPost[] = [
     feature_image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80",
     category_slug: "property-and-land-rituals",
     category_name: "Property & Family Peace Rituals"
+  },
+  {
+    id: "blog-7",
+    name: "The Power of Authentic Wiccan Spells for Spiritual Shielding",
+    slug: "wiccan-spells-for-protection-and-spiritual-defense",
+    author: "Doctor Baba Mukisa",
+    views: 3120,
+    mini_description: "Learn how modern Wiccan practices combined with ancestral African wisdom can create a permanent shield against negative forces.",
+    description: "Spiritual protection is not just a ritual; it is a necessity in a world filled with unseen energies. Doctor Baba Mukisa explores the intersection of Wiccan traditions and Digo spiritual shielding techniques.",
+    content_sections: [
+      {
+        heading: "Identifying Spiritual Vulnerabilities",
+        body: "Before casting a shield, one must understand where their aura is weak. Sudden misfortune, recurring nightmares, and unexplained fatigue are often signs of spiritual leakage that require immediate Wiccan intervention."
+      },
+      {
+        heading: "Consecrated Amulets and Sacred Circles",
+        body: "Using moon-cleansed crystals and sacred herbs from the East African coast, Doctor Baba Mukisa creates powerful amulets. These tools act as a physical anchor for the spiritual shield, reflecting envy and malice back to the source."
+      },
+      {
+        heading: "Daily Protection Mantras",
+        body: "Consistency is key to a strong aura. Practicing simple daily mantras provided by the Temple helps maintain the integrity of your spiritual defense throughout the day."
+      },
+      {
+        heading: "Start Your Protection Journey",
+        body: "Do not wait for disaster to strike. Protect your energy today by consulting Doctor Baba Mukisa via WhatsApp +256767062834 for a personalized protection ritual."
+      }
+    ],
+    post_date: "2026-08-10",
+    feature_image: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=800&q=80",
+    category_slug: "spiritual-protection-and-cleansing",
+    category_name: "Wiccan & Spiritual Protection"
+  },
+  {
+    id: "blog-8",
+    name: "Ancestral Fertility Blessings: A Path to Parenthood",
+    slug: "ancestral-fertility-spells-and-childbirth-blessings",
+    author: "Doctor Baba Mukisa",
+    views: 4560,
+    mini_description: "Discover how traditional herbal remedies and ancestral fertility rituals have helped families overcome reproductive challenges for generations.",
+    description: "The journey to parenthood is sacred. When modern methods face limitations, many turn to the time-tested wisdom of ancestral fertility rituals and herbal cleanses that prepare the body and spirit for new life.",
+    content_sections: [
+      {
+        heading: "Cleansing the Womb and Spirit",
+        body: "Fertility is often blocked by spiritual 'knots' or physiological imbalances that traditional herbs can address. Doctor Baba Mukisa's fertility cleanse uses rare roots to detoxify the system and invite new life force."
+      },
+      {
+        heading: "Invoking the Ancestors for Conception",
+        body: "In Digo tradition, children are seen as gifts from the ancestors. Rituals are performed to seek permission and blessings from the lineage, ensuring the path is clear for a healthy pregnancy."
+      },
+      {
+        heading: "Support Through Pregnancy",
+        body: "Our guidance doesn't end at conception. Traditional protection spells ensure the safety of both mother and child during the nine-month journey, guarding against spiritual interference."
+      },
+      {
+        heading: "Schedule a Fertility Consultation",
+        body: "Embrace the joy of motherhood. Contact Doctor Baba Mukisa on WhatsApp +256767062834 for a confidential fertility ritual session."
+      }
+    ],
+    post_date: "2026-08-12",
+    feature_image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
+    category_slug: "fertility-and-family",
+    category_name: "Fertility & Childbirth"
+  },
+  {
+    id: "blog-9",
+    name: "Permanent Black Magic Removal: Reclaiming Your Life",
+    slug: "how-to-remove-black-magic-curses-and-hexes-permanently",
+    author: "Doctor Baba Mukisa",
+    views: 5200,
+    mini_description: "A comprehensive guide to identifying and permanently removing black magic, generational curses, and malicious hexes.",
+    description: "Black magic can manifest as a string of 'bad luck', deteriorating health, or broken relationships. Reclaiming your life requires a powerful spiritual intervention that goes deeper than simple prayer.",
+    content_sections: [
+      {
+        heading: "Symptoms of a Spiritual Hex",
+        body: "Are you working hard but seeing no results? Is your partner suddenly distant without reason? These are classic signs of external spiritual interference. Recognizing these early is crucial for effective removal."
+      },
+      {
+        heading: "The Ritual of Deep Extraction",
+        body: "Doctor Baba Mukisa performs a three-day extraction ritual that pulls negative energy from the core of your spirit. This involves sacred fires, herbal libations, and ancestral chants to break the strongest bonds of black magic."
+      },
+      {
+        heading: "Breaking Generational Curses",
+        body: "Some burdens are carried from our forefathers. We specialize in tracing these lineage blockages and severing them once and for all, ensuring your children are born into a legacy of light."
+      },
+      {
+        heading: "Emergency Curse Removal",
+        body: "If you feel you are under immediate spiritual attack, reach out now. Contact Doctor Baba Mukisa on WhatsApp +256767062834 for an urgent spiritual diagnosis."
+      }
+    ],
+    post_date: "2026-08-14",
+    feature_image: "https://images.unsplash.com/photo-1514733670139-4d87a1941d55?auto=format&fit=crop&w=800&q=80",
+    category_slug: "spiritual-protection-and-cleansing",
+    category_name: "Black Magic Removal"
+  },
+  {
+    id: "blog-10",
+    name: "Binding Love Spells for Marriage & Eternal Commitment",
+    slug: "binding-love-spells-for-marriage-commitment-and-fidelity",
+    author: "Doctor Baba Mukisa",
+    views: 6100,
+    mini_description: "Ensure a lifetime of loyalty and passion. Learn how love binding rituals can solidify your marriage and protect it from infidelity.",
+    description: "True love deserves protection. Binding love spells are designed to create an unbreakable bond between two souls, ensuring that passion and commitment remain vibrant for a lifetime.",
+    content_sections: [
+      {
+        heading: "The Essence of Spiritual Binding",
+        body: "Unlike simple attraction spells, binding rituals link the destiny of two people. This creates a deep spiritual resonance that makes both partners feel a natural and powerful urge toward loyalty and companionship."
+      },
+      {
+        heading: "Protecting Your Marriage from Outsiders",
+        body: "Third-party interference is a common cause of divorce. Our binding spells include a 'shield of fidelity' that makes your partner blind to the advances of others, keeping their focus entirely on the home."
+      },
+      {
+        heading: "Rekindling the Flame of Passion",
+        body: "If your relationship has become cold, a binding ritual can reignite the initial spark. We use sacred Digo love oils to awaken dormant feelings and restore the romance you once shared."
+      },
+      {
+        heading: "Secure Your Future Together",
+        body: "Invest in the longevity of your relationship. Book a marriage binding session with Doctor Baba Mukisa via WhatsApp +256767062834 today."
+      }
+    ],
+    post_date: "2026-08-16",
+    feature_image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
+    category_slug: "love-and-marriage-spells",
+    category_name: "Marriage & Commitment"
+  },
+  {
+    id: "blog-11",
+    name: "Spiritual Healing for Depression, Anxiety and Mental Health",
+    slug: "traditional-spiritual-healing-for-depression-and-anxiety",
+    author: "Doctor Baba Mukisa",
+    views: 3800,
+    mini_description: "Understand how traditional Digo spiritual rituals and herbal meditation can help alleviate the symptoms of modern mental health struggles.",
+    description: "In the fast-paced modern world, the soul often becomes disconnected from its purpose, leading to deep-seated anxiety and depression. Doctor Baba Mukisa offers a sanctuary for spiritual restoration.",
+    content_sections: [
+      {
+        heading: "The Root of Spiritual Malaise",
+        body: "Traditional wisdom views mental health not just as a chemical imbalance, but as a spiritual 'wandering'. When the spirit is not grounded by ancestral connection, feelings of hopelessness can take hold."
+      },
+      {
+        heading: "Herbal Libations for Emotional Release",
+        body: "We use specific herbal mixtures designed to calm the nervous system and open the 'heart center'. These are combined with guided reflection to help you release trauma and stagnant emotions."
+      },
+      {
+        heading: "Reconnecting with Your Life Force",
+        body: "Through sacred rituals, we help you call back your scattered energy. This restoration of the 'inner sun' brings back interest in life, improves sleep, and fosters a sense of belonging."
+      },
+      {
+        heading: "Begin Your Healing Journey",
+        body: "You do not have to suffer in silence. Contact Doctor Baba Mukisa for a private mental health spiritual consultation via WhatsApp +256767062834."
+      }
+    ],
+    post_date: "2026-08-17",
+    feature_image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80",
+    category_slug: "spiritual-protection-and-cleansing",
+    category_name: "Mental Health Healing"
   }
 ];
 

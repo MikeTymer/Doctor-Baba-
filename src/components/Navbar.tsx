@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
-import { Menu, X, Phone, MessageSquare, Flame, Sparkles, Sun, Moon } from 'lucide-react';
+import { Menu, X, Phone, MessageSquare, Flame, Sparkles, Sun, Moon, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
-  onSelectCategory?: (slug: string) => void;
+  onSelectServiceDetail?: (serviceName: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelectServiceDetail }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -19,6 +21,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
       setIsLightMode(true);
       document.documentElement.classList.add('light');
     }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setServicesDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const toggleTheme = () => {
@@ -33,10 +43,25 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
     }
   };
 
-  const navItems: { label: string; tab: ActiveTab }[] = [
+  const serviceOfferings = [
+    "Lost Lover Spells",
+    "Marriage & Divorce",
+    "Money & Wealth Spells",
+    "Black Magic Spells",
+    "Spiritual Protection",
+    "Ancestral Guidance",
+    "Wiccan Spells",
+    "Psychic Healing",
+    "Fertility Rituals",
+    "Gay Love Spells",
+    "Business Success",
+    "Traditional Healer"
+  ];
+
+  const navItems: { label: string; tab: ActiveTab; hasDropdown?: boolean }[] = [
     { label: 'Home', tab: 'home' },
     { label: 'Blog', tab: 'blog' },
-    { label: 'Services', tab: 'services' },
+    { label: 'Services', tab: 'services', hasDropdown: true },
     { label: 'Videos', tab: 'videos' },
     { label: 'Gallery', tab: 'gallery' },
     { label: 'About', tab: 'about' },
@@ -46,7 +71,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const handleNavClick = (tab: ActiveTab) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
+    setServicesDropdownOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleServiceDetailClick = (service: string) => {
+    if (onSelectServiceDetail) {
+      onSelectServiceDetail(service);
+      setServicesDropdownOpen(false);
+      setMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -106,8 +140,59 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             {navItems.map((item) => {
               const isActive = activeTab === item.tab || 
                 (item.tab === 'blog' && activeTab === 'blog-detail') ||
-                (item.tab === 'services' && activeTab === 'category-detail');
+                (item.tab === 'services' && (activeTab === 'category-detail' || activeTab === 'service-detail'));
               
+              if (item.hasDropdown) {
+                return (
+                  <div 
+                    key={item.tab} 
+                    className="relative group" 
+                    ref={dropdownRef}
+                    onMouseEnter={() => setServicesDropdownOpen(true)}
+                    onMouseLeave={() => setServicesDropdownOpen(false)}
+                  >
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => handleNavClick(item.tab)}
+                        className={`pl-3 pr-1 py-2 rounded-l-md text-sm font-medium transition-all border-y border-l ${
+                          isActive
+                            ? 'bg-amber-900/60 text-amber-200 border-amber-700/50 shadow-inner'
+                            : 'text-amber-100/90 border-transparent hover:text-amber-300 hover:bg-slate-900/80'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                      <button
+                        onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+                        className={`pr-2 pl-1 py-2 rounded-r-md text-sm font-medium transition-all border-y border-r ${
+                          isActive
+                            ? 'bg-amber-900/60 text-amber-200 border-amber-700/50 shadow-inner'
+                            : 'text-amber-100/90 border-transparent hover:text-amber-300 hover:bg-slate-900/80'
+                        }`}
+                      >
+                        <ChevronDown className={`w-4 h-4 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
+
+                    {servicesDropdownOpen && (
+                      <div className="absolute left-0 mt-2 w-56 bg-slate-900 border border-amber-900/50 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="py-1">
+                          {serviceOfferings.map((service) => (
+                            <button
+                              key={service}
+                              onClick={() => handleServiceDetailClick(service)}
+                              className="block w-full text-left px-4 py-2.5 text-xs text-amber-100/80 hover:bg-amber-900/40 hover:text-amber-200 transition-colors border-b border-amber-900/10 last:border-0"
+                            >
+                              {service}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <button
                   key={item.tab}
@@ -183,12 +268,55 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-slate-950/98 border-b border-amber-900/50 px-4 pt-2 pb-6 space-y-2 animate-in slide-in-from-top duration-200">
+        <div className="md:hidden bg-slate-950/98 border-b border-amber-900/50 px-4 pt-2 pb-6 space-y-2 animate-in slide-in-from-top duration-200 overflow-y-auto max-h-[80vh]">
           <div className="pt-2 pb-3 space-y-1">
             {navItems.map((item) => {
               const isActive = activeTab === item.tab ||
                 (item.tab === 'blog' && activeTab === 'blog-detail') ||
-                (item.tab === 'services' && activeTab === 'category-detail');
+                (item.tab === 'services' && (activeTab === 'category-detail' || activeTab === 'service-detail'));
+
+              if (item.hasDropdown) {
+                return (
+                  <div key={item.tab} className="space-y-1">
+                    <div className="flex items-center w-full">
+                      <button
+                        onClick={() => handleNavClick(item.tab)}
+                        className={`flex-1 text-left px-4 py-3 rounded-l-lg text-base font-medium min-h-[44px] border-l-4 ${
+                          isActive
+                            ? 'bg-amber-900/80 text-amber-200 font-semibold border-amber-400'
+                            : 'text-amber-100/90 hover:bg-slate-900 hover:text-amber-300 border-transparent'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                      <button
+                        onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+                        className={`px-4 py-3 rounded-r-lg text-base font-medium min-h-[44px] ${
+                          isActive
+                            ? 'bg-amber-900/80 text-amber-200'
+                            : 'text-amber-100/90 hover:bg-slate-900'
+                        }`}
+                      >
+                        <ChevronDown className={`w-5 h-5 transition-transform ${servicesDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+                    </div>
+                    
+                    {servicesDropdownOpen && (
+                      <div className="pl-6 space-y-1 py-1 border-l border-amber-900/30 ml-4 animate-in slide-in-from-top-1 duration-200">
+                        {serviceOfferings.map((service) => (
+                          <button
+                            key={service}
+                            onClick={() => handleServiceDetailClick(service)}
+                            className="block w-full text-left px-4 py-2 text-sm text-amber-100/70 hover:text-amber-300 min-h-[40px]"
+                          >
+                            {service}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
 
               return (
                 <button

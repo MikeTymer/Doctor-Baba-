@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
-import { ChevronDown, ChevronUp, Flame, ShieldAlert, Phone, Mail, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Flame, ShieldAlert, Phone, Mail, MapPin, Send, CheckCircle2, AlertCircle, Globe, Map, Sparkles, Star, Heart } from 'lucide-react';
 
 interface FooterProps {
   setActiveTab: (tab: ActiveTab) => void;
+  onSelectServiceDetail?: (service: string) => void;
   onSubscribe?: (email: string) => { added: boolean; isDuplicate: boolean; message: string; subscriberId?: string } | void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => {
+export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDetail, onSubscribe }) => {
   const [disclaimerExpanded, setDisclaimerExpanded] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [subscribedMsg, setSubscribedMsg] = useState('');
@@ -17,6 +18,12 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => 
   const handleNavClick = (tab: ActiveTab) => {
     setActiveTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleServiceClick = (service: string) => {
+    if (onSelectServiceDetail) {
+      onSelectServiceDetail(service);
+    }
   };
 
   const handleSubscribeSubmit = (e: React.FormEvent) => {
@@ -167,28 +174,33 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => 
           {/* Quick Links 2 */}
           <div>
             <h4 className="text-sm font-bold font-serif text-amber-200 uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
-              Information
+              Spiritual Services
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button onClick={() => handleNavClick('gallery')} className="hover:text-amber-300 transition-colors">
-                  Temple Photo Gallery
+                <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
+                  Lost Lover Spells
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('about')} className="hover:text-amber-300 transition-colors">
-                  About Doctor Baba Mukisa
+                <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
+                  Marriage & Divorce Spells
                 </button>
               </li>
               <li>
-                <button onClick={() => handleNavClick('contact')} className="hover:text-amber-300 transition-colors">
-                  Contact & Temple Visits
+                <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
+                  Money & Wealth Rituals
                 </button>
               </li>
               <li>
-                <a href={`https://wa.me/${SITE_INFO.whatsapp}`} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-400 transition-colors">
-                  WhatsApp Direct Consultation
-                </a>
+                <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
+                  Spiritual Cleansing
+                </button>
+              </li>
+              <li>
+                <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
+                  Legal & Court Case Help
+                </button>
               </li>
             </ul>
           </div>
@@ -196,17 +208,138 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => 
           {/* Temple Hours / Info */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold font-serif text-amber-200 uppercase tracking-wider mb-4 border-l-2 border-amber-500 pl-2">
-              Temple & Consultations
+              Contact Information
             </h4>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Doctor Baba Mukisa conducts both in-person temple consultations in Kampala, Uganda and remote international spiritual consultations worldwide.
-            </p>
-            <div className="bg-amber-950/60 border border-amber-800/40 rounded-xl p-3 text-xs text-amber-200/90">
-              <span className="font-semibold block text-amber-400">Operating Hours:</span>
-              <span>Mon - Sun: 7:00 AM - 10:00 PM (EAT)</span>
+            <div className="pt-2 text-xs space-y-2.5 text-amber-300/80">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>{SITE_INFO.address}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>{SITE_INFO.phone}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span>{SITE_INFO.email}</span>
+              </div>
+              <div className="flex items-center gap-2 pt-1">
+                <a href="https://wa.me/256767062834" target="_blank" rel="noopener noreferrer" className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-[10px] font-bold">
+                  <Phone className="w-3 h-3" />
+                  WhatsApp Doctor
+                </a>
+              </div>
             </div>
           </div>
 
+        </div>
+
+        {/* SEO Optimized Links Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 pt-10 text-[10px] text-slate-400 border-b border-amber-900/20 pb-12">
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
+              <Globe className="w-4 h-4 text-amber-500" />
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Global Love Spells</h5>
+            </div>
+            <ul className="space-y-1.5">
+              {[
+                "Love Spells USA", "Love Spells UK", "Love Spells Canada", "Love Spells Australia",
+                "Love Spells London", "Love Spells California", "Love Spells New York", "Love Spells Los Angeles",
+                "Love Spells Norway", "Love Spells Germany", "Love Spells Dubai", "Love Spells France",
+                "Love Spells UAE", "Love Spells Switzerland", "Love Spells Russia", "Love Spells Ireland",
+                "Love Spells Sweden", "Love Spells Oman"
+              ].map((loc) => (
+                <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
+                  <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
+              <Map className="w-4 h-4 text-amber-500" />
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Regional Services</h5>
+            </div>
+            <ul className="space-y-1.5">
+              {[
+                "Love Spells South Africa", "Love Spells Kenya", "Love Spells Botswana", "Love Spells Namibia",
+                "Love Spells Mauritius", "Love Spells Moscow", "Love Spells Istanbul", "Love Spells Mumbai",
+                "Love Spells Berlin", "Love Spells Johannesburg", "Love Spells St.Petersburg", "Love Spells Shanghai",
+                "Love Spells Bahrain", "Love Spells Singapore", "Love Spells Malaysia", "Love Spells Kuwait",
+                "Love Spells Denmark", "Love Spells Nairobi"
+              ].map((loc) => (
+                <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
+                  <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
+              <MapPin className="w-4 h-4 text-amber-500" />
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Specific Locations</h5>
+            </div>
+            <ul className="space-y-1.5">
+              {[
+                "Love Spells Mombasa", "Love Spells Kisumu", "Love Spells Eldoret", "Love Spells Nakuru",
+                "Love Spells Langata", "Love Spells Malaba", "Love Spells Soweto", "Love Spells Limpopo",
+                "Love Spells Durban", "Love Spells Witbank", "Love Spells Stellenbosch", "Love Spells Transkei",
+                "Love Spells Copenhagen", "Love Spells Amsterdam", "Love Spells Seoul", "Love Spells Bali"
+              ].map((loc) => (
+                <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
+                  <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
+              <Flame className="w-4 h-4 text-amber-500" />
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Our Specializations</h5>
+            </div>
+            <ul className="space-y-1.5">
+              {[
+                "Traditional Healer Uganda", "Traditional Healer Soweto", "Traditional Healer Sandton", "Traditional Healer Kenya",
+                "Traditional Healer USA", "Wiccan Spells UK", "Wiccan Spells Cyprus", "Wiccan Spells Canada",
+                "Wiccan Spells USA", "Black Magic Spells", "Black Magic USA", "Black Magic UK",
+                "Money Spells Uganda", "Money Spells Limpopo", "Money Spells Sandton", "Money Spells UAE",
+                "Psychic Healer Canada", "Psychic Healer USA", "Psychic South Africa"
+              ].map((loc) => (
+                <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
+                  <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Sacred Offerings</h5>
+            </div>
+            <ul className="space-y-1.5">
+              {[
+                "Ancestral Guidance", "Binding Love Spells", "Voodoo Spells", "Lost Lover Spells",
+                "Divorce & Marriage", "Court Case Help", "Business Blessings", "Fertility Rituals",
+                "Gay Love Spells", "Spiritual Protection", "Wealth & Money Spells", "Aura Cleansing",
+                "Wiccan Spells", "Psychic Readings", "Herbal Healing", "Dream Interpretation",
+                "Protection Artifacts", "Remote Meditation"
+              ].map((loc) => (
+                <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
+                  <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
+                  {loc}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Disclaimer Accordion */}
@@ -235,6 +368,13 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSubscribe }) => 
         {/* Bottom Copyright */}
         <div className="text-center text-xs text-amber-500/70 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-900">
           <p>© {new Date().getFullYear()} Doctor Baba Mukisa. All Rights Reserved. Sacred African spiritual wisdom.</p>
+          <div className="flex items-center gap-4">
+            <button onClick={() => handleNavClick('contact')} className="hover:text-amber-400 transition-colors border-b border-amber-900/50 pb-0.5">
+              Contact Us
+            </button>
+            <button onClick={() => handleNavClick('about')} className="hover:text-amber-400 transition-colors">Privacy Policy</button>
+            <button onClick={() => handleNavClick('about')} className="hover:text-amber-400 transition-colors">Terms of Use</button>
+          </div>
         </div>
 
       </div>

@@ -1,12 +1,20 @@
 import React from 'react';
 import { SITE_INFO } from '../data/initialData';
-import { MapPin, Phone, Mail, Award, Flame, Heart, MessageSquare } from 'lucide-react';
+import { ABOUT_SERVICES } from '../data/aboutPageData';
+import { ABOUT_SLIDER_ITEMS } from '../data/aboutSliderData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
+import { MapPin, Phone, Mail, Award, Flame, Heart, MessageSquare, ArrowRight, Sparkles, ShieldCheck, Star, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface AboutViewProps {
   onContact: () => void;
+  onSelectServiceDetail: (service: string) => void;
 }
 
-export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
+export const AboutView: React.FC<AboutViewProps> = ({ 
+  onContact, 
+  onSelectServiceDetail
+}) => {
   return (
     <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-300">
       
@@ -31,11 +39,11 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
           <div className="flex items-center gap-2 text-amber-400 font-bold font-serif text-xl border-b border-amber-900/40 pb-3">
             <Award className="w-5 h-5" /> Who We Are
           </div>
-          <p className="text-xs sm:text-sm text-slate-900 dark:text-amber-100/90 leading-relaxed font-sans">
-            Meet <strong>Doctor Baba Mukisa</strong>, a traditional African herbalist and spiritual guidance practitioner sharing sacred ancestral knowledge passed down through generations from coastal Digo heritage.
+          <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
+            Meet <strong>Doctor Baba Mukisa</strong>, a <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">traditional African herbalist</button> and spiritual guidance practitioner sharing sacred ancestral knowledge passed down through generations from coastal Digo heritage. We specialize in <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">love spells</button>, <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-400 underline hover:text-amber-300">marriage spells</button>, and <button onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="text-amber-400 underline hover:text-amber-300">spiritual healing</button>.
           </p>
-          <p className="text-xs text-slate-900 dark:text-slate-300 leading-relaxed">
-            With decades of practice, Doctor Baba Mukisa assists individuals seeking relationship harmony, personal reflection, spiritual cleansing, and emotional peace.
+          <p className="text-xs text-slate-300 leading-relaxed">
+            With decades of practice, Doctor Baba Mukisa assists individuals seeking <button onClick={() => onSelectServiceDetail('Love Rituals')} className="text-amber-400 underline hover:text-amber-300">relationship harmony</button>, personal reflection, spiritual cleansing, and emotional peace. Our temple in Kampala serves as a beacon for those needing <button onClick={() => onSelectServiceDetail('Voodoo Spells')} className="text-amber-400 underline hover:text-amber-300">powerful voodoo spells</button> and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-400 underline hover:text-amber-300">ancestral guidance</button>.
           </p>
         </div>
 
@@ -44,15 +52,126 @@ export const AboutView: React.FC<AboutViewProps> = ({ onContact }) => {
           <div className="flex items-center gap-2 text-amber-400 font-bold font-serif text-xl border-b border-amber-900/40 pb-3">
             <Heart className="w-5 h-5" /> How We Help
           </div>
-          <p className="text-xs sm:text-sm text-slate-900 dark:text-amber-100/90 leading-relaxed font-sans">
-            Doctor Baba Mukisa provides personal spiritual readings, traditional herbal consultation, and guided meditation for those seeking internal balance and spiritual clarity.
+          <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
+            Doctor Baba Mukisa provides personal <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-400 underline hover:text-amber-300">spiritual readings</button>, <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">traditional healer</button> consultation, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-400 underline hover:text-amber-300">guided meditation</button> for those seeking internal balance and spiritual clarity. We help clients with <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">money spells</button>, <button onClick={() => onSelectServiceDetail('Money Spells')} className="text-amber-400 underline hover:text-amber-300">business success rituals</button>, and <button onClick={() => onSelectServiceDetail('Black Magic Spells')} className="text-amber-400 underline hover:text-amber-300">protection from evil eye</button>.
           </p>
-          <p className="text-xs text-slate-900 dark:text-slate-300 leading-relaxed">
-            Consultations are available both in-person at the Kampala sanctuary and via phone/WhatsApp for remote spiritual reflection.
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Consultations are available both in-person at the Kampala sanctuary and via phone/WhatsApp for remote <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-400 underline hover:text-amber-300">spiritual reflection</button>. We offer <button onClick={() => onSelectServiceDetail('Gay Love Spells')} className="text-amber-400 underline hover:text-amber-300">gay love spells</button>, <button onClick={() => onSelectServiceDetail('Black Magic Spells')} className="text-amber-400 underline hover:text-amber-300">wiccan spells</button>, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-400 underline hover:text-amber-300">fertility rituals</button> to heal every aspect of your life.
           </p>
         </div>
 
       </div>
+
+      {/* Services Showcase Preview */}
+      <section className="space-y-8">
+        <div className="section-heading-box text-center">
+          <span className="text-xs uppercase tracking-widest text-amber-400 font-bold block">Spiritual Legacy & Arts</span>
+          <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-100 mt-1">
+            Doctor Baba Mukisa’s Specialized Services
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {ABOUT_SERVICES.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => onSelectServiceDetail(item.service)}
+              className="group service-card bg-slate-900/90 border border-amber-900/50 hover:border-amber-500/80 rounded-2xl overflow-hidden shadow-xl cursor-pointer transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between"
+            >
+              <div>
+                <div className="aspect-video relative overflow-hidden bg-slate-950">
+                  <img
+                    src={normalizeImageUrl(item.image)}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={handleImageError}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+                </div>
+
+                <div className="p-5 space-y-2">
+                  <h3 className="text-lg font-bold font-serif text-amber-100 group-hover:text-amber-300 transition-colors">
+                    {item.name}
+                  </h3>
+                  <p className="text-xs text-slate-300 line-clamp-3 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-5 pt-0">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 group-hover:text-amber-300">
+                  Detailed Consultation <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SACRED HEALING METHODS - Carousel Section */}
+      <section className="space-y-10 py-12 bg-slate-900/30 rounded-3xl border border-amber-900/20 overflow-hidden">
+        <div className="text-center space-y-3 px-4">
+          <span className="text-xs uppercase tracking-[0.2em] text-amber-500 font-extrabold flex items-center justify-center gap-2">
+            <Flame className="w-4 h-4" /> Timeless Ancestral Wisdom
+          </span>
+          <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
+            SACRED HEALING METHODS
+          </h2>
+          <p className="text-sm text-slate-400 max-w-2xl mx-auto">
+            Discover the profound spiritual techniques passed down through generations. 
+            Each method is an authentic reflection of coastal Digo heritage designed for modern challenges.
+          </p>
+        </div>
+
+        <div className="relative group overflow-hidden">
+          <motion.div 
+            className="flex gap-6 px-8 pb-8 overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing"
+            drag="x"
+            dragConstraints={{ right: 0, left: -1000 }}
+          >
+            {ABOUT_SLIDER_ITEMS.map((item, idx) => {
+              const Icon = item.icon === 'Flame' ? Flame : 
+                           item.icon === 'Sparkles' ? Sparkles : 
+                           item.icon === 'ShieldCheck' ? ShieldCheck : 
+                           item.icon === 'Heart' ? Heart : 
+                           item.icon === 'Award' ? Award : 
+                           item.icon === 'Star' ? Star : Globe;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => onSelectServiceDetail(item.name)}
+                  className="flex-shrink-0 w-64 bg-slate-950 border border-amber-900/40 p-6 rounded-2xl hover:border-amber-500/60 transition-all text-center group/card"
+                >
+                  <div className="w-14 h-14 bg-amber-950/40 border border-amber-800/40 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover/card:scale-110 transition-transform">
+                    <Icon className="w-7 h-7 text-amber-400" />
+                  </div>
+                  <h4 className="text-amber-100 font-bold text-sm group-hover/card:text-amber-400 transition-colors mb-2">
+                    {item.name}
+                  </h4>
+                  <p className="text-[10px] text-slate-400 mb-4 line-clamp-2 italic leading-relaxed">
+                    {item.description}
+                  </p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                    View Details &rarr;
+                  </p>
+                </button>
+              );
+            })}
+          </motion.div>
+          
+          <div className="absolute top-1/2 -translate-y-1/2 left-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="w-10 h-10 bg-slate-950/80 border border-amber-700/50 rounded-full flex items-center justify-center text-amber-400">
+              <ChevronLeft className="w-6 h-6" />
+            </div>
+          </div>
+          <div className="absolute top-1/2 -translate-y-1/2 right-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <div className="w-10 h-10 bg-slate-950/80 border border-amber-700/50 rounded-full flex items-center justify-center text-amber-400">
+              <ChevronRight className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Contact & Location Details */}
       <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">

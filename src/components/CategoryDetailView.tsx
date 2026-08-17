@@ -25,7 +25,10 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
   onSelectCategory,
 }) => {
   const categoryBlogs = blogs.filter(
-    (b) => b.category_slug === category.slug || b.category_name === category.name
+    (b) => 
+      b.category_slug === category.slug || 
+      b.category_name?.toLowerCase() === category.name?.toLowerCase() ||
+      (category.slug && b.category_slug?.toLowerCase() === category.slug.toLowerCase())
   );
 
   return (
@@ -125,12 +128,10 @@ export const CategoryDetailView: React.FC<CategoryDetailViewProps> = ({
                 >
                   <div className="w-full sm:w-40 h-36 rounded-xl overflow-hidden shrink-0 bg-slate-950 border border-amber-900/30">
                     <img
-                      src={post.feature_image}
+                      src={normalizeImageUrl(post.feature_image)}
                       alt={post.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/static/upload/blog_travel_01.jpg';
-                      }}
+                      onError={handleImageError}
                     />
                   </div>
 
