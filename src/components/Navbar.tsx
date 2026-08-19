@@ -148,7 +148,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-600 to-amber-950 p-0.5 shadow-md shadow-amber-900/50 flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center overflow-hidden border border-amber-500/50">
                 <img
-                  src={normalizeImageUrl('/logo.png')}
+                  src={normalizeImageUrl('/Doctor Baba Mukisa Logo -1.jpg')}
                   alt="Doctor Baba Mukisa Logo"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   onError={handleImageError}

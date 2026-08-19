@@ -115,7 +115,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-900 p-0.5 shadow-md flex items-center justify-center shrink-0">
                 <div className="w-full h-full bg-slate-950 rounded-full overflow-hidden flex items-center justify-center border border-amber-500/50">
                   <img
-                    src={normalizeImageUrl('/logo.png')}
+                    src={normalizeImageUrl('/Doctor Baba Mukisa Logo -1.jpg')}
                     alt="Doctor Baba Mukisa Logo"
                     className="w-full h-full object-cover"
                     onError={handleImageError}
