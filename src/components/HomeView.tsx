@@ -185,11 +185,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
           <div className="relative">
-            <div className="aspect-square rounded-2xl overflow-hidden border border-amber-800/50 shadow-2xl bg-slate-900">
+            <div className="aspect-square rounded-2xl overflow-hidden border-2 border-amber-500/70 shadow-2xl bg-slate-900">
               <img 
-                src="/baba.jpg" 
+                src={normalizeImageUrl('/baba.jpg')} 
                 alt="Doctor Baba Mukisa" 
-                className="w-full h-full object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-700"
+                className="w-full h-full object-cover hover:scale-105 transition-all duration-500"
                 onError={handleImageError}
               />
             </div>

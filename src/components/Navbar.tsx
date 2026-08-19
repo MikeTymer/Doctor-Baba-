@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { Menu, X, Phone, MessageSquare, Flame, Sparkles, Sun, Moon, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
@@ -144,9 +145,14 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
             onClick={() => handleNavClick('home')}
             className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group min-w-0 shrink"
           >
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-amber-500 via-amber-700 to-amber-950 p-0.5 shadow-md shadow-amber-900/50 flex items-center justify-center shrink-0">
-              <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center group-hover:bg-amber-950/40 transition-colors">
-                <Flame className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 group-hover:scale-110 transition-transform" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-amber-400 via-amber-600 to-amber-950 p-0.5 shadow-md shadow-amber-900/50 flex items-center justify-center shrink-0">
+              <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center overflow-hidden border border-amber-500/50">
+                <img
+                  src={normalizeImageUrl('/logo.png')}
+                  alt="Doctor Baba Mukisa Logo"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  onError={handleImageError}
+                />
               </div>
             </div>
             <div className="min-w-0">

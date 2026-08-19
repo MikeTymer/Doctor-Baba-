@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
+import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { ChevronDown, ChevronUp, Flame, ShieldAlert, Phone, Mail, MapPin, Send, CheckCircle2, AlertCircle, Globe, Map, Sparkles, Star, Heart } from 'lucide-react';
 
 interface FooterProps {
@@ -110,9 +111,16 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
           
           {/* Brand Col */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-slate-950">
-                <Flame className="w-5 h-5" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-900 p-0.5 shadow-md flex items-center justify-center shrink-0">
+                <div className="w-full h-full bg-slate-950 rounded-full overflow-hidden flex items-center justify-center border border-amber-500/50">
+                  <img
+                    src={normalizeImageUrl('/logo.png')}
+                    alt="Doctor Baba Mukisa Logo"
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
+                  />
+                </div>
               </div>
               <span className="text-xl font-bold font-serif text-amber-100">
                 Doctor Baba Mukisa

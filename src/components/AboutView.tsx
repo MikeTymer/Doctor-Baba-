@@ -20,8 +20,13 @@ export const AboutView: React.FC<AboutViewProps> = ({
       
       {/* Header */}
       <div className="bg-slate-900 border border-amber-900/50 rounded-2xl p-6 sm:p-10 shadow-2xl space-y-4 text-center">
-        <div className="w-16 h-16 rounded-full bg-amber-950 border border-amber-700 mx-auto flex items-center justify-center text-amber-400 mb-2">
-          <Flame className="w-8 h-8" />
+        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-amber-400 via-amber-600 to-amber-950 p-1 border border-amber-500/80 mx-auto shadow-xl overflow-hidden mb-2">
+          <img
+            src={normalizeImageUrl('/baba.jpg')}
+            alt="Doctor Baba Mukisa"
+            className="w-full h-full object-cover rounded-full"
+            onError={handleImageError}
+          />
         </div>
         <h1 className="text-3xl sm:text-5xl font-extrabold font-serif text-amber-100">
           About Doctor Baba Mukisa
