@@ -72,23 +72,25 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onSelectServiceDetail 
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               onError={handleImageError}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
+            {/* Dark gradient overlay for high contrast readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/50 to-transparent opacity-85 group-hover:opacity-95 transition-opacity" />
 
-            <div className="absolute bottom-0 inset-x-0 p-4 space-y-1">
-              <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">
+            {/* Bottom text overlay on image - pure white and gold with text shadow */}
+            <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 space-y-1 z-10 gallery-img-overlay">
+              <span className="text-[11px] font-extrabold text-amber-300 uppercase tracking-widest block drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
                 {item.category}
               </span>
-              <h3 className="text-sm font-bold font-serif text-amber-100 group-hover:text-amber-300 transition-colors">
+              <h3 className="text-base sm:text-lg font-bold font-serif text-white group-hover:text-amber-200 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] leading-tight">
                 {item.title}
               </h3>
             </div>
 
-            <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-950/80 border border-amber-700/60 flex items-center justify-center text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ZoomIn className="w-4 h-4" />
+            <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-slate-950/80 border border-amber-500/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-10 shadow-lg">
+              <ZoomIn className="w-4 h-4 text-white" />
             </div>
 
             {/* Quick Link to Service */}
-            <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -100,9 +102,9 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onSelectServiceDetail 
                   };
                   handleServiceClick(serviceMap[item.category] || 'Spiritual Services');
                 }}
-                className="bg-amber-600 hover:bg-amber-500 text-slate-950 text-[8px] font-bold px-2 py-1 rounded-lg shadow-lg flex items-center gap-1 uppercase tracking-tighter"
+                className="bg-amber-600 hover:bg-amber-500 text-white text-[9px] font-bold px-2.5 py-1.5 rounded-lg shadow-lg flex items-center gap-1 uppercase tracking-wider border border-amber-400/40"
               >
-                View Service Details <ChevronRight className="w-2 h-2" />
+                View Service Details <ChevronRight className="w-3 h-3 text-white" />
               </button>
             </div>
           </div>
@@ -132,7 +134,7 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onSelectServiceDetail 
                   onError={handleImageError}
                 />
                 <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute top-2 left-2 bg-amber-600 text-slate-950 text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">
+                <div className="absolute top-2 left-2 bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase shadow-md z-10">
                   {item.location}
                 </div>
               </div>
@@ -221,25 +223,27 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ onSelectServiceDetail 
       {/* Lightbox Modal */}
       {lightboxImage && (
         <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-4xl w-full bg-slate-900 border border-amber-800/60 rounded-3xl overflow-hidden shadow-2xl p-4 sm:p-6 space-y-4">
+          <div className="relative max-w-4xl w-full bg-slate-950 border border-amber-800/60 rounded-3xl overflow-hidden shadow-2xl p-4 sm:p-6 space-y-4 text-white">
             <button
               onClick={() => setLightboxImage(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-slate-950 text-amber-400 hover:text-white border border-amber-800/40 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="absolute top-4 right-4 p-2 rounded-full bg-slate-900 text-white hover:text-amber-300 border border-amber-800/40 min-h-[44px] min-w-[44px] flex items-center justify-center z-10"
+              aria-label="Close image modal"
             >
-              <X className="w-6 h-6" />
+              <X className="w-6 h-6 text-white" />
             </button>
 
             <div className="max-h-[70vh] rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center">
               <img
-                src={lightboxImage.image}
+                src={normalizeImageUrl(lightboxImage.image)}
                 alt={lightboxImage.title}
                 className="max-h-[70vh] w-auto object-contain"
+                onError={handleImageError}
               />
             </div>
 
             <div className="text-center space-y-1">
-              <span className="text-xs text-amber-400 font-bold uppercase">{lightboxImage.category}</span>
-              <h3 className="text-xl font-bold font-serif text-amber-100">{lightboxImage.title}</h3>
+              <span className="text-xs text-amber-300 font-bold uppercase tracking-wider block drop-shadow-md">{lightboxImage.category}</span>
+              <h3 className="text-xl font-bold font-serif text-white drop-shadow-md">{lightboxImage.title}</h3>
             </div>
           </div>
         </div>

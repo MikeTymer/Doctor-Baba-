@@ -526,6 +526,45 @@ html.light .direct-guidance-text {
   font-weight: 600 !important;
 }
 
+/* GALLERY IMAGES OVERLAY TEXT IN LIGHT MODE: SOLID WHITE WITH SHADOW FOR CRISP VISIBILITY */
+html.light .gallery-img-overlay,
+html.light .gallery-img-overlay * {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+}
+
+html.light .gallery-img-overlay h3,
+html.light .gallery-img-overlay h3 * {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+html.light .gallery-img-overlay span,
+html.light .gallery-img-overlay span * {
+  color: #fde68a !important;
+  font-weight: 800 !important;
+}
+
+html.light .gallery-img-overlay p,
+html.light .gallery-img-overlay p * {
+  color: #ffffff !important;
+}
+
+/* Lightbox Modal Text in Light Mode */
+html.light .fixed.z-50 .bg-slate-950,
+html.light .fixed.z-50 .bg-slate-900 {
+  background-color: #020617 !important;
+}
+
+html.light .fixed.z-50 h3,
+html.light .fixed.z-50 p,
+html.light .fixed.z-50 span {
+  color: #ffffff !important;
+}
+
+html.light .fixed.z-50 button svg {
+  color: #ffffff !important;
+}
+
 /* FOOTER LIGHT MODE STYLING */
 html.light .site-footer {
   background-color: #ffffff !important;
