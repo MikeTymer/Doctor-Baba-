@@ -68,25 +68,25 @@ export const INITIAL_CATEGORIES: Category[] = [
   },
   {
     id: "cat-7",
-    name: "Marriage & Divorce Spells",
+    name: "Marriage & Relationship Harmony",
     slug: "marriage-and-divorce-spells",
-    description: "Powerful marriage spells to stop divorce, increase trust, and bind hearts permanently. Heal relationship wounds and restore marital bliss.",
+    description: "Traditional marriage reconciliation rituals to resolve disputes, increase trust, and foster mutual understanding. Heal emotional wounds and restore marital peace.",
     views: 4120,
     featured_image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-8",
-    name: "Money & Wealth Rituals",
+    name: "Prosperity & Enterprise Alignment",
     slug: "money-and-wealth-rituals",
-    description: "Authentic money spells and wealth rituals to attract financial openings, clear debts, and achieve prosperity through ancestral energy.",
+    description: "Authentic traditional rituals and spiritual alignment to foster career clarity, business confidence, and financial prosperity through ancestral wisdom.",
     views: 3890,
     featured_image: "https://images.unsplash.com/photo-1554034483-04fda0d3507b?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "cat-9",
-    name: "Wiccan & Protection Spells",
+    name: "Traditional Shielding & Protection",
     slug: "wiccan-and-protection-spells",
-    description: "Ancient Wiccan traditions for spiritual shielding, evil eye protection, and personal safety against negative energy and sabotage.",
+    description: "Ancient African traditions for spiritual shielding, aura purification, and personal safety against negative vibrations and fatigue.",
     views: 2760,
     featured_image: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=800&q=80"
   },
@@ -94,7 +94,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     id: "cat-10",
     name: "Gay & Lesbian Love Rituals",
     slug: "gay-and-lesbian-love-spells",
-    description: "Specialized same-sex love rituals to find your soulmate, return a lost partner, and ensure commitment in gay and lesbian relationships.",
+    description: "Specialized same-sex love rituals to foster deep connection, emotional security, and lasting commitment in LGBTQ+ relationships.",
     views: 2140,
     featured_image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80"
   }
@@ -104,38 +104,38 @@ export const TESTIMONIALS = [
   {
     id: 1,
     name: "Iris, UK",
-    text: "Doctor Baba Mukisa's lost lover spell worked wonders! My partner returned within days after a year of separation. The ancestral healing is truly powerful.",
-    service: "Lost Lover Spells"
+    text: "Doctor Baba Mukisa's relationship guidance brought remarkable clarity. My partner and I reconciled our differences after months of separation. His ancestral wisdom is genuine and compassionate.",
+    service: "Relationship Reconciliation"
   },
   {
     id: 2,
     name: "Marcus, Thailand",
-    text: "The financial wealth rituals cleared my debts and brought new business opportunities to my doorstep. Doctor Baba Mukisa is a true master of spiritual prosperity.",
-    service: "Money Spells"
+    text: "The prosperity alignment consultations helped me overcome mental blockages and focus on new business opportunities. Doctor Baba Mukisa provides profound spiritual guidance.",
+    service: "Prosperity Alignment"
   },
   {
     id: 3,
     name: "Grace A., Kenya",
-    text: "Saved my marriage from a certain divorce. The reconciliation spells softened my husband's heart and brought peace back to our home.",
-    service: "Marriage Spells"
+    text: "Helped bring harmony back into our marriage during a difficult period. The spiritual mediation softened communication and brought peace back to our family.",
+    service: "Marriage Harmony"
   },
   {
     id: 4,
     name: "Samuel M., Uganda",
-    text: "The protection rituals against workplace envy gave me the composure to win my promotion. Highly recommended traditional healer.",
+    text: "The aura protection rituals gave me the composure and calm confidence to navigate workplace challenges and earn my promotion. Highly respected practitioner.",
     service: "Spiritual Protection"
   },
   {
     id: 5,
     name: "Chloe R., Canada",
-    text: "I was skeptical about distance healing, but the wiccan spells for aura cleansing completely shifted my energy. I feel lighter and more focused than ever.",
-    service: "Wiccan Spells"
+    text: "I was curious about distance meditation, and the aura cleansing completely shifted my energy. I feel lighter, more centered, and optimistic about my path.",
+    service: "Aura Cleansing"
   },
   {
     id: 6,
     name: "Ahmed H., Dubai",
-    text: "My business was failing due to what I suspected was spiritual sabotage. After the business blessing ritual, my sales tripled in just one month.",
-    service: "Business Success"
+    text: "My business was going through immense stress. After the traditional enterprise blessing ritual and focused meditation, we experienced renewed client trust and growth.",
+    service: "Business Blessing"
   },
   {
     id: 7,

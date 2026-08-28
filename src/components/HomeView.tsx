@@ -96,38 +96,80 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
+      {/* Trust & Policy Compliance Banner */}
+      <section className="bg-slate-900/90 border border-amber-800/40 rounded-2xl p-4 sm:p-6 shadow-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3 p-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-700/50 flex items-center justify-center text-amber-400 shrink-0 mx-auto sm:mx-0">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-amber-200 uppercase tracking-wider">Physical Sanctuary</h4>
+              <p className="text-[11px] text-slate-300">Plot 24 Buganda St, Kampala, Uganda</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-700/50 flex items-center justify-center text-amber-400 shrink-0 mx-auto sm:mx-0">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-amber-200 uppercase tracking-wider">Strict Privacy</h4>
+              <p className="text-[11px] text-slate-300">100% Confidential consultations</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-700/50 flex items-center justify-center text-amber-400 shrink-0 mx-auto sm:mx-0">
+              <Award className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-amber-200 uppercase tracking-wider">Generational Heritage</h4>
+              <p className="text-[11px] text-slate-300">Over 20+ years of ancestral lineage</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-700/50 flex items-center justify-center text-amber-400 shrink-0 mx-auto sm:mx-0">
+              <Globe className="w-5 h-5" />
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-amber-200 uppercase tracking-wider">Global Consultations</h4>
+              <p className="text-[11px] text-slate-300">Phone, WhatsApp & Sanctuary Visits</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Trust & Pillars Grid */}
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         <div className="bg-slate-900/90 border border-amber-900/50 rounded-2xl p-6 text-center space-y-2 hover:border-amber-600/50 transition-colors">
           <div className="w-12 h-12 rounded-2xl bg-amber-950 border border-amber-700/60 mx-auto flex items-center justify-center text-amber-400 mb-2">
             <Flame className="w-6 h-6" />
           </div>
-          <h3 className="font-bold font-serif text-amber-100 text-base">Ancestral Powers</h3>
-          <p className="text-xs text-slate-300">Rooted in ancient coastal Digo traditional spiritual rituals.</p>
+          <h3 className="font-bold font-serif text-amber-100 text-base">Ancestral Lineage</h3>
+          <p className="text-xs text-slate-300">Rooted in authentic coastal Digo traditional spiritual practices.</p>
         </div>
 
         <div className="bg-slate-900/90 border border-amber-900/50 rounded-2xl p-6 text-center space-y-2 hover:border-amber-600/50 transition-colors">
           <div className="w-12 h-12 rounded-2xl bg-amber-950 border border-amber-700/60 mx-auto flex items-center justify-center text-amber-400 mb-2">
             <Heart className="w-6 h-6" />
           </div>
-          <h3 className="font-bold font-serif text-amber-100 text-base">Love & Reunion</h3>
-          <p className="text-xs text-slate-300">Reunite lost lovers and restore harmony in broken marriages.</p>
+          <h3 className="font-bold font-serif text-amber-100 text-base">Relationship Harmony</h3>
+          <p className="text-xs text-slate-300">Foster reconciliation, mutual understanding, and peace in marriages.</p>
         </div>
 
         <div className="bg-slate-900/90 border border-amber-900/50 rounded-2xl p-6 text-center space-y-2 hover:border-amber-600/50 transition-colors">
           <div className="w-12 h-12 rounded-2xl bg-amber-950 border border-amber-700/60 mx-auto flex items-center justify-center text-amber-400 mb-2">
             <Award className="w-6 h-6" />
           </div>
-          <h3 className="font-bold font-serif text-amber-100 text-base">Top Traditional Doctor</h3>
-          <p className="text-xs text-slate-300">Ranked among top ten traditional herbalists across East Africa.</p>
+          <h3 className="font-bold font-serif text-amber-100 text-base">Respected Practitioner</h3>
+          <p className="text-xs text-slate-300">Renowned traditional herbalist practicing across East Africa.</p>
         </div>
 
         <div className="bg-slate-900/90 border border-amber-900/50 rounded-2xl p-6 text-center space-y-2 hover:border-amber-600/50 transition-colors">
           <div className="w-12 h-12 rounded-2xl bg-amber-950 border border-amber-700/60 mx-auto flex items-center justify-center text-amber-400 mb-2">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h3 className="font-bold font-serif text-amber-100 text-base">Remote Meditation</h3>
-          <p className="text-xs text-slate-300">Spiritual energy work effective over distance without travel.</p>
+          <h3 className="font-bold font-serif text-amber-100 text-base">Spiritual Reflection</h3>
+          <p className="text-xs text-slate-300">Meditation and distance consultation for international clients.</p>
         </div>
       </section>
 
@@ -139,11 +181,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="section-heading-box">
               <span className="text-xs uppercase tracking-widest text-amber-400 font-bold block">Legacy of Wisdom</span>
               <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100 mt-1">
-                Why Choose Doctor Baba Mukisa?
+                Why Consult Doctor Baba Mukisa?
               </h2>
             </div>
             <p className="text-sm text-slate-300 leading-relaxed">
-              With a legacy of spiritual power and thousands of satisfied clients worldwide, Doctor Baba Mukisa provides deep insights and effective traditional solutions for life's most complex challenges.
+              With a heritage of ancestral wisdom and thousands of satisfied clients worldwide, Doctor Baba Mukisa provides genuine insights and traditional guidance for life's most challenging personal and relationship crossroads.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
               <div className="flex gap-3">
@@ -152,7 +194,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-amber-100">Years Experience</h4>
-                  <p className="text-[11px] text-slate-400">Deep knowledge of Digo & Voodoo traditions.</p>
+                  <p className="text-[11px] text-slate-400">Deep knowledge of Digo traditional customs.</p>
                 </div>
               </div>
               <div className="flex gap-3">
@@ -160,8 +202,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <ShieldCheck className="w-4 h-4 text-amber-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-amber-100">100% Confidential</h4>
-                  <p className="text-[11px] text-slate-400">Private & secure spiritual consultations.</p>
+                  <h4 className="text-sm font-bold text-amber-100">Strictly Confidential</h4>
+                  <p className="text-[11px] text-slate-400">Private & secure consultations guaranteed.</p>
                 </div>
               </div>
               <div className="flex gap-3">
@@ -169,8 +211,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <Flame className="w-4 h-4 text-amber-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-amber-100">Fast Manifestation</h4>
-                  <p className="text-[11px] text-slate-400">Rituals designed for quick spiritual results.</p>
+                  <h4 className="text-sm font-bold text-amber-100">Ancestral Dedication</h4>
+                  <p className="text-[11px] text-slate-400">Personalized traditional sessions & guidance.</p>
                 </div>
               </div>
               <div className="flex gap-3">
@@ -178,8 +220,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   <Award className="w-4 h-4 text-amber-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-amber-100">Global Service</h4>
-                  <p className="text-[11px] text-slate-400">Helping clients in USA, UK, Canada & worldwide.</p>
+                  <h4 className="text-sm font-bold text-amber-100">Worldwide Assistance</h4>
+                  <p className="text-[11px] text-slate-400">Serving clients in USA, UK, Canada & globally.</p>
                 </div>
               </div>
             </div>
@@ -263,12 +305,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Cascading Ad Section 1 - Love Spells focus */}
+      {/* Cascading Ad Section 1 - Relationship Reconciliation focus */}
       <section className="bg-slate-900/40 rounded-3xl border border-amber-900/20 overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row items-stretch">
           <div className="w-full lg:w-1/2 relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[300px] group/adimg">
             <a 
-              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Love%20Spells%20services%20seen%20on%20the%20website.`}
+              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Relationship%20Reconciliation%20services%20seen%20on%20the%20website.`}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0 z-10 block"
@@ -282,7 +324,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </a>
             <img 
               src={normalizeImageUrl("/ad1.jpg")} 
-              alt="Powerful Love Spells USA UK Canada" 
+              alt="Relationship Reconciliation & Spiritual Guidance in USA, UK & Canada" 
               className="w-full h-full object-cover lg:object-center group-hover/adimg:scale-105 transition-transform duration-700"
               onError={handleImageError}
             />
@@ -290,14 +332,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 to-transparent pointer-events-none" />
           </div>
           <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-900/60">
-            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Spiritual Attraction</span>
+            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Emotional Harmony</span>
             <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100 leading-tight">
-              Powerful Love Spells in USA, UK & Canada
+              Relationship Guidance & Reconciliation in USA, UK & Canada
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Seeking to reunite with a lost lover in <strong>New York</strong>, <strong>London</strong>, or <strong>Toronto</strong>? 
-              Doctor Baba Mukisa provides authentic ancestral attraction rituals and binding spells designed to bridge emotional gaps and restore passion. 
-              Our spiritual reach extends across <strong>California</strong>, <strong>Los Angeles</strong>, and all major regions of <strong>North America</strong> and the <strong>United Kingdom</strong>.
+              Seeking to reconcile with a loved one in <strong>New York</strong>, <strong>London</strong>, or <strong>Toronto</strong>? 
+              Doctor Baba Mukisa provides authentic ancestral relationship consultations and traditional spiritual rituals designed to bridge emotional gaps, inspire mutual understanding, and foster genuine affection. 
+              Our spiritual guidance extends across <strong>California</strong>, <strong>Los Angeles</strong>, and all major regions of <strong>North America</strong> and the <strong>United Kingdom</strong>.
             </p>
             <div className="pt-2">
               <button 
@@ -315,14 +357,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <section className="space-y-10 py-12 bg-slate-900/40 rounded-3xl border border-amber-900/20 overflow-hidden">
         <div className="text-center space-y-3 px-4">
           <span className="text-xs uppercase tracking-[0.2em] text-amber-500 font-extrabold flex items-center justify-center gap-2">
-            <Award className="w-4 h-4" /> Empowered Ancestral Tools
+            <Award className="w-4 h-4" /> Traditional Ancestral Practices
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
             SACRED RITUALS & ARTIFACTS
           </h2>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-            Experience the power of consecrated tools and specialized spiritual rituals. 
-            Doctor Baba Mukisa crafts each artifact with ancestral precision to manifest your desires.
+            Experience traditional spiritual counseling and consecrated artifacts. 
+            Doctor Baba Mukisa conducts each session with ancestral wisdom to foster peace, balance, and positive energy in your life.
           </p>
         </div>
 
@@ -380,26 +422,26 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Key Global Spells Areas - Deep Links Section */}
+      {/* Key Global Consultation Areas - Deep Links Section */}
       <section className="space-y-12">
         <div className="text-center space-y-3">
           <span className="text-xs uppercase tracking-[0.2em] text-amber-400 font-bold">Worldwide Services</span>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
-            Key Global Spells Areas
+            Global Spiritual Consultation Areas
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing powerful spiritual services to clients in every country, worldwide. Seek <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-500 underline hover:text-amber-400">marriage spells</button>, <button onClick={() => onSelectServiceDetail('Money Spells')} className="text-amber-500 underline hover:text-amber-400">money & wealth rituals</button>, and <button onClick={() => onSelectServiceDetail('Black Magic Spells')} className="text-amber-500 underline hover:text-amber-400">wiccan spells</button>.</p>
+          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional spiritual services to clients in every country, worldwide. Seek <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-500 underline hover:text-amber-400">marital reconciliation</button>, <button onClick={() => onSelectServiceDetail('Money Spells')} className="text-amber-500 underline hover:text-amber-400">prosperity guidance</button>, and <button onClick={() => onSelectServiceDetail('Black Magic Spells')} className="text-amber-500 underline hover:text-amber-400">spiritual protection</button>.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {[
-            { name: "Marriage Spells", service: "Marriage Spells", icon: Heart, desc: "Restore marital harmony and stop divorce proceedings permanently." },
-            { name: "Money & Wealth", service: "Money Spells", icon: Award, desc: "Attract financial favor and unlock prosperity through ancestral energy." },
-            { name: "Wiccan Spells", service: "Black Magic Spells", icon: Sparkles, desc: "Powerful Wiccan traditions for spiritual protection and intervention." },
-            { name: "Gay Love Spells", service: "Gay Love Spells", icon: Heart, desc: "Specialized same-sex love rituals for commitment and soulmate attraction." },
-            { name: "Love Healing Spells", service: "Love Healing Spells", icon: Flame, desc: "Heal emotional wounds and clear blockages in your romantic life." },
-            { name: "Reconciliation Love Spells", service: "Reconciliation Love Spells", icon: Star, desc: "Bring back a lost lover and restore the bond of deep affection." },
-            { name: "Commitment Love Spells", service: "Binding Love Spells", icon: ShieldCheck, desc: "Strengthen the bond of fidelity and ensure long-term relationship stability." },
-            { name: "Broken Heart Spells", service: "Love Rituals", icon: Heart, desc: "Soothe the pain of separation and find the strength to love again." }
+            { name: "Marriage Harmony", service: "Marriage Spells", icon: Heart, desc: "Restore marital peace, improve communication, and overcome relationship conflicts." },
+            { name: "Prosperity Guidance", service: "Money Spells", icon: Award, desc: "Foster positive mindset, career focus, and spiritual alignment for business opportunities." },
+            { name: "Spiritual Protection", service: "Black Magic Spells", icon: Sparkles, desc: "Traditional African spiritual shielding and aura cleansing against negative energy." },
+            { name: "Same-Sex Harmony", service: "Gay Love Spells", icon: Heart, desc: "Specialized LGBTQ+ relationship guidance and emotional commitment rituals." },
+            { name: "Emotional Healing", service: "Love Healing Spells", icon: Flame, desc: "Heal past emotional wounds and restore romantic optimism and self-worth." },
+            { name: "Reconciliation Rituals", service: "Reconciliation Love Spells", icon: Star, desc: "Reignite communication and rebuild bonds of deep affection with a partner." },
+            { name: "Commitment Guidance", service: "Binding Love Spells", icon: ShieldCheck, desc: "Strengthen the bond of fidelity, mutual trust, and long-term partnership stability." },
+            { name: "Inner Peace Healing", service: "Love Rituals", icon: Heart, desc: "Soothe emotional separation pain and find the inner strength to love with confidence." }
           ].map((service, idx) => (
             <button 
               key={idx} 
@@ -441,12 +483,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Cascading Ad Section 2 - Marriage Spells focus */}
+      {/* Cascading Ad Section 2 - Marriage & Reconciliation focus */}
       <section className="marriage-divorce-box bg-white dark:bg-slate-900/40 rounded-3xl border border-amber-200 dark:border-amber-900/20 overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row-reverse items-stretch">
           <div className="w-full lg:w-1/2 relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[300px] group/adimg">
             <a 
-              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Marriage%20and%20Divorce%20rituals%20seen%20on%20the%20website.`}
+              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Marriage%20Reconciliation%20consultations%20seen%20on%20the%20website.`}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0 z-10 block"
@@ -460,7 +502,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </a>
             <img 
               src={normalizeImageUrl("/ad2.jpg")} 
-              alt="Marriage and Divorce Spells Dubai Germany South Africa" 
+              alt="Marriage Reconciliation & Family Harmony Dubai Germany South Africa" 
               className="w-full h-full object-cover group-hover/adimg:scale-105 transition-transform duration-700"
               onError={handleImageError}
             />
@@ -469,11 +511,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-50 dark:bg-slate-900/60">
             <span className="marital-harmony-tag text-xs uppercase tracking-widest text-slate-950 dark:text-amber-400 font-extrabold block">Marital Harmony</span>
             <h2 className="marriage-divorce-heading text-2xl sm:text-4xl font-bold font-serif text-slate-950 dark:text-white leading-tight">
-              Marriage & Divorce Spells in Dubai, Germany & SA
+              Marriage Reconciliation & Harmony in Dubai, Germany & SA
             </h2>
             <p className="marriage-divorce-text text-sm text-slate-800 dark:text-slate-300 leading-relaxed">
-              Restore peace to your home in <strong className="text-slate-950 dark:text-white font-bold">Dubai</strong>, <strong className="text-slate-950 dark:text-white font-bold">Berlin</strong>, or <strong className="text-slate-950 dark:text-white font-bold">Johannesburg</strong>. 
-              Doctor Baba Mukisa specializes in marriage stabilization rituals that stop unwanted divorces and remove outside interference. 
+              Restore peace and mutual understanding to your home in <strong className="text-slate-950 dark:text-white font-bold">Dubai</strong>, <strong className="text-slate-950 dark:text-white font-bold">Berlin</strong>, or <strong className="text-slate-950 dark:text-white font-bold">Johannesburg</strong>. 
+              Doctor Baba Mukisa provides ancestral marriage counseling and spiritual mediation rituals to help resolve marital conflicts, overcome misunderstandings, and rebuild enduring mutual respect and love. 
               From <strong className="text-slate-950 dark:text-white font-bold">Soweto</strong> to <strong className="text-slate-950 dark:text-white font-bold">Hamburg</strong>, our ancestral guidance helps couples in <strong className="text-slate-950 dark:text-white font-bold">South Africa</strong>, <strong className="text-slate-950 dark:text-white font-bold">Germany</strong>, and the <strong className="text-slate-950 dark:text-white font-bold">UAE</strong> find their way back to love.
             </p>
             <div className="pt-2">
@@ -488,17 +530,17 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* LOVE SPELLS THAT WORK - Carousel Section */}
+      {/* RELATIONSHIP GUIDANCE & SPIRITUAL SERVICES - Carousel Section */}
       <section className="space-y-10 py-12 bg-slate-900/30 rounded-3xl border border-amber-900/20 overflow-hidden">
         <div className="text-center space-y-3 px-4">
           <span className="text-xs uppercase tracking-[0.2em] text-amber-500 font-extrabold flex items-center justify-center gap-2">
-            <Sparkles className="w-4 h-4" /> Proven Spiritual Results
+            <Sparkles className="w-4 h-4" /> Authentic Ancestral Guidance
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
-            LOVE SPELLS THAT WORK
+            RELATIONSHIP & SPIRITUAL GUIDANCE
           </h2>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
-            Explore our specialized love rituals and spiritual healing services available in your region. 
+            Explore our specialized relationship rituals and spiritual counseling services available in your region. 
             Doctor Baba Mukisa provides authentic ancestral solutions for thousands of clients globally.
           </p>
         </div>
@@ -555,12 +597,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Cascading Ad Section 3 - Money Spells focus */}
+      {/* Cascading Ad Section 3 - Prosperity & Enterprise focus */}
       <section className="bg-slate-900/40 rounded-3xl border border-amber-900/20 overflow-hidden shadow-2xl">
         <div className="flex flex-col lg:flex-row items-stretch">
           <div className="w-full lg:w-1/2 relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[300px] group/adimg">
             <a 
-              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Wealth%20and%20Success%20rituals%20seen%20on%20the%20website.`}
+              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Prosperity%20and%20Business%20guidance%20seen%20on%20the%20website.`}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0 z-10 block"
@@ -574,28 +616,28 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </a>
             <img 
               src={normalizeImageUrl("/ad3.jpg")} 
-              alt="Wealth and Success Spells London California New York" 
+              alt="Prosperity Guidance & Career Focus London California New York" 
               className="w-full h-full object-cover group-hover/adimg:scale-105 transition-transform duration-700"
               onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 to-transparent pointer-events-none" />
           </div>
           <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-900/60">
-            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Financial Favor</span>
+            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Career & Financial Focus</span>
             <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100 leading-tight">
-              Wealth & Success Spells in London & USA
+              Prosperity & Career Guidance in London & USA
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Unlock the doors of prosperity in <strong>London</strong>, <strong>California</strong>, or <strong>New York</strong>. 
-              Doctor Baba Mukisa's money spells are designed to attract financial favor, business success, and debt relief. 
-              Whether you are in <strong>Australia</strong>, <strong>Oman</strong>, or <strong>Singapore</strong>, our wealth rituals help entrepreneurs and professionals achieve their highest financial potential through spiritual alignment.
+              Foster clarity, confidence, and positive momentum in your career and enterprise pursuits in <strong>London</strong>, <strong>California</strong>, or <strong>New York</strong>. 
+              Doctor Baba Mukisa provides traditional prosperity consultations and spiritual alignment rituals to help overcome mental blockages, attract favorable business opportunities, and cultivate financial focus. 
+              Whether you are located in <strong>Australia</strong>, <strong>Oman</strong>, or <strong>Singapore</strong>, our consultations help professionals align their energy for sustained progress.
             </p>
             <div className="pt-2">
               <button 
                 onClick={() => onSelectServiceDetail('Money Spells')}
                 className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3 rounded-full text-xs transition-all shadow-lg active:scale-95"
               >
-                Attract Wealth
+                Seek Guidance
               </button>
             </div>
           </div>
@@ -607,7 +649,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 text-amber-500 mb-6">
             <Quote className="w-8 h-8 opacity-50" />
-            <span className="text-xs uppercase tracking-widest font-bold">Client Success Stories</span>
+            <span className="text-xs uppercase tracking-widest font-bold">Client Experiences & Feedback</span>
           </div>
 
           <div className="relative min-h-[200px] flex items-center justify-center">
@@ -658,25 +700,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
             Global Spiritual Reach
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing powerful <button onClick={() => onSelectServiceDetail('Love Spells')} className="text-amber-500 underline hover:text-amber-400">lost lover spells</button>, <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-400 underline hover:text-amber-400">marriage rituals</button>, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-500 underline hover:text-amber-400">ancestral healing</button> to clients in every corner of the world.</p>
+          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional <button onClick={() => onSelectServiceDetail('Love Spells')} className="text-amber-500 underline hover:text-amber-400">relationship reconciliation</button>, <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-400 underline hover:text-amber-400">marriage rituals</button>, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-500 underline hover:text-amber-400">ancestral guidance</button> to clients in every corner of the world.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">North America</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love Spells USA (New York, LA, Chicago)</li>
-              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Healing Canada (Toronto, Vancouver)</li>
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Lost Lover Spells California</li>
-              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Spells Ontario</li>
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Guidance USA (New York, LA, Chicago)</li>
+              <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Cleansing Canada (Toronto, Vancouver)</li>
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Reconciliation Consultations California</li>
+              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Harmony Ontario</li>
             </ul>
           </div>
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Europe & UK</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Lost Lover Spells London & UK</li>
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Reconciliation London & UK</li>
               <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Protection Germany (Berlin)</li>
-              <li onClick={() => onSelectServiceDetail('Voodoo Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Voodoo Spells France (Paris)</li>
+              <li onClick={() => onSelectServiceDetail('Voodoo Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Rituals France (Paris)</li>
               <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Healing Ireland & Norway</li>
             </ul>
           </div>
@@ -686,15 +728,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <li onClick={() => onSelectServiceDetail('Traditional Healer')} className="hover:text-amber-300 cursor-pointer transition-colors">Traditional Healer South Africa (Soweto, Joburg)</li>
               <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Guidance Kenya (Nairobi, Mombasa)</li>
               <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Wisdom Uganda (Kampala)</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Wealth Spells Botswana & Namibia</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Prosperity Blessings Botswana & Namibia</li>
             </ul>
           </div>
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Middle East & Asia</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love & Relationship Spells Dubai & UAE</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Business Luck Spells Singapore & Malaysia</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Success Spells Qatar & Kuwait</li>
+              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love & Relationship Guidance Dubai & UAE</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Business Blessing Rituals Singapore & Malaysia</li>
+              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Career Focus Consultations Qatar & Kuwait</li>
               <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Cleansing Oman & Bahrain</li>
             </ul>
           </div>
@@ -706,7 +748,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <div className="flex flex-col lg:flex-row-reverse items-stretch">
           <div className="w-full lg:w-1/2 relative bg-slate-950 flex items-center justify-center overflow-hidden min-h-[300px] group/adimg">
             <a 
-              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Spiritual%20Protection%20and%20Voodoo%20rituals%20seen%20on%20the%20website.`}
+              href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20interested%20in%20your%20Spiritual%20Protection%20and%20Shielding%20rituals%20seen%20on%20the%20website.`}
               target="_blank"
               rel="noopener noreferrer"
               className="absolute inset-0 z-10 block"
@@ -720,21 +762,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </a>
             <img 
               src={normalizeImageUrl("/ad4.jpg")} 
-              alt="Spiritual Protection and Voodoo Spells Global" 
+              alt="Spiritual Protection and Shielding Rituals Global" 
               className="w-full h-full object-cover group-hover/adimg:scale-105 transition-transform duration-700"
               onError={handleImageError}
             />
             <div className="absolute inset-0 bg-gradient-to-l from-slate-950/20 to-transparent pointer-events-none" />
           </div>
           <div className="w-full lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center space-y-6 bg-slate-900/60">
-            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Divine Shielding</span>
+            <span className="text-xs uppercase tracking-widest text-amber-500 font-bold block">Spiritual Shielding</span>
             <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100 leading-tight">
-              Spiritual Protection & Voodoo Globally
+              Spiritual Protection & Aura Cleansing Globally
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed">
-              Safeguard your future with authentic African voodoo and spiritual protection rituals. 
-              Doctor Baba Mukisa provides shielding against negative energy and generational curses for clients in <strong>Kenya</strong>, <strong>Uganda</strong>, <strong>Mauritius</strong>, and beyond. 
-              Our traditional healer services are sought after in <strong>Russia</strong>, <strong>France</strong>, and <strong>Norway</strong> for their deep-rooted effectiveness in cleansing the spirit and protecting the home.
+              Safeguard your spiritual well-being with authentic African traditional protection rituals and herbal washes. 
+              Doctor Baba Mukisa provides shielding against negative vibrations, heavy energy, and emotional blockages for clients in <strong>Kenya</strong>, <strong>Uganda</strong>, <strong>Mauritius</strong>, and beyond. 
+              Our traditional consultations are trusted in <strong>Russia</strong>, <strong>France</strong>, and <strong>Norway</strong> for restoring peace of mind and personal vitality.
             </p>
             <div className="pt-2">
               <button 
@@ -748,12 +790,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </section>
 
-      {/* Authentic Voodoo & Traditional Healing - SEO Focus */}
+      {/* Authentic African Spiritual Traditions - Pillars */}
       <section className="space-y-12">
         <div className="text-center space-y-3">
-          <span className="text-xs uppercase tracking-[0.2em] text-amber-400 font-bold">Sacred African Arts</span>
+          <span className="text-xs uppercase tracking-[0.2em] text-amber-400 font-bold">Sacred African Traditions</span>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
-            Authentic Voodoo & Healing
+            Authentic Traditional Practices & Guidance
           </h2>
           <div className="w-24 h-1 bg-amber-600 mx-auto rounded-full" />
         </div>
@@ -764,10 +806,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-amber-500" /> Love Binding
+              <Heart className="w-5 h-5 text-amber-500" /> Relationship Reconciliation
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Make someone fall in love with you or attract your soulmate. My attraction spells create a powerful aura around you that makes you irresistible to the one you desire.
+              Cultivate deep affection, mutual attraction, and emotional harmony. Our traditional relationship guidance creates an atmosphere of understanding, drawing partners closer together through positive ancestral alignment.
             </p>
           </div>
           <div 
@@ -775,10 +817,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-amber-500" /> Stop Divorce
+              <ShieldCheck className="w-5 h-5 text-amber-500" /> Marriage Stabilization
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Is your marriage on the brink of collapse? My divorce spells can soften your partner's heart, remove outside interference, and restore the love and commitment you once shared.
+              Resolve persistent marital disputes, clear outside interference, and soften tense communication. Rebuild the foundation of mutual respect, trust, and lasting love in your home.
             </p>
           </div>
           <div 
@@ -786,15 +828,14 @@ export const HomeView: React.FC<HomeViewProps> = ({
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">
-              <Flame className="w-5 h-5 text-amber-500" /> Wealth Rituals
+              <Flame className="w-5 h-5 text-amber-500" /> Prosperity & Career Focus
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Money Spells aimed to bring Money, Luck, and Wealth from known or unknown openings to make you free from debts and become Rich. Release energy into the universe today.
+              Align your spiritual focus to invite enterprise opportunities, clarity in career decisions, and peace of mind regarding financial well-being through traditional blessings.
             </p>
           </div>
         </div>
       </section>
-
 
       {/* Featured Articles Section */}
       <section className="space-y-8">
@@ -855,10 +896,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
       {/* Call To Action Banner */}
       <section className="bg-gradient-to-r from-amber-950 via-slate-950 to-amber-950 border border-amber-800/60 rounded-3xl p-8 text-center space-y-4 shadow-2xl">
         <h2 className="text-2xl sm:text-4xl font-bold font-serif text-amber-100">
-          Ready to Change Your Life & Resolve Your Hardships?
+          Ready to Find Balance, Clarity & Peace of Mind?
         </h2>
         <p className="cta-description text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto leading-relaxed">
-          Seek personal peace of mind, traditional herbal consultations, and spiritual guidance. Connect directly with Doctor Baba Mukisa today.
+          Seek personal peace of mind, traditional herbal consultations, and ancestral guidance. Connect directly with Doctor Baba Mukisa for a confidential consultation.
         </p>
         <div className="pt-2 flex flex-wrap justify-center gap-4">
           <button
@@ -868,6 +909,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
             Contact Doctor Baba Mukisa Now
           </button>
         </div>
+      </section>
+
+      {/* Landing Page Policy & Ethical Statement Footer Bar */}
+      <section className="bg-slate-950/80 border border-amber-900/30 rounded-2xl p-6 text-center space-y-2">
+        <p className="text-xs font-semibold text-amber-300/90">
+          Ethical & Traditional Practice Disclosure
+        </p>
+        <p className="text-[11px] text-slate-400 max-w-3xl mx-auto leading-relaxed">
+          Doctor Baba Mukisa provides authentic African traditional spiritual consultations, mindfulness meditation, and cultural herbal knowledge. Consultations are intended for personal guidance, spiritual enrichment, and cultural connection. Services do not replace professional medical, legal, or financial counseling.
+        </p>
       </section>
 
     </div>

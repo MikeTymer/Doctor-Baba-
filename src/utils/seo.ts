@@ -238,9 +238,9 @@ export function getSEOForView(
 
     case 'blog': {
       return {
-        title: 'Spiritual Wisdom, Spells & Healing Blog | Doctor Baba Mukisa',
-        description: 'Read authentic articles on African spiritual traditions, lost lover restoration, marriage protection spells, sacred herbal remedies, and ancestral guidance.',
-        keywords: 'spiritual blog, African love spells, herbal remedy articles, ancestral guidance blog, Doctor Baba Mukisa blog',
+        title: 'Spiritual Wisdom, Traditional Practices & Healing Blog | Doctor Baba Mukisa',
+        description: 'Read authentic articles on African spiritual traditions, relationship reconciliation, marriage harmony, sacred herbal remedies, and ancestral guidance.',
+        keywords: 'spiritual blog, traditional relationship guidance, herbal remedy articles, ancestral guidance blog, Doctor Baba Mukisa blog',
         url: `${BASE_URL}/#blog`,
         type: 'website'
       };
@@ -248,9 +248,9 @@ export function getSEOForView(
 
     case 'services': {
       return {
-        title: 'Spiritual Services & Sacred Ancestral Rituals | Doctor Baba Mukisa',
-        description: 'Discover authentic spiritual services: Lost Lover Spells, Marriage Stabilization, Financial & Business Prosperity, Voodoo Protection, and Traditional Herbal Healing in Kampala.',
-        keywords: 'spiritual healing services, lost lover spells, marriage protection, wealth spells, traditional healer Kampala Uganda',
+        title: 'Spiritual Services & Sacred Ancestral Traditions | Doctor Baba Mukisa',
+        description: 'Discover authentic spiritual services: Relationship Reconciliation, Marriage Harmony, Career & Business Guidance, Spiritual Protection, and Traditional Herbal Knowledge in Kampala.',
+        keywords: 'spiritual guidance services, relationship reconciliation, marriage harmony, prosperity guidance, traditional healer Kampala Uganda',
         url: `${BASE_URL}/#services`,
         type: 'website'
       };
@@ -269,8 +269,8 @@ export function getSEOForView(
     case 'contact': {
       return {
         title: 'Contact Doctor Baba Mukisa - Temple Consultation & WhatsApp',
-        description: 'Book a confidential spiritual consultation with Doctor Baba Mukisa in Kampala, Uganda, or connect directly on WhatsApp +256767062834 for global distance healing.',
-        keywords: 'Contact Doctor Baba Mukisa, WhatsApp spiritual healer, book consultation Kampala, traditional healer phone number',
+        description: 'Book a confidential spiritual consultation with Doctor Baba Mukisa in Kampala, Uganda, or connect directly on WhatsApp +256767062834 for distance guidance.',
+        keywords: 'Contact Doctor Baba Mukisa, WhatsApp spiritual advisor, book consultation Kampala, traditional healer phone number',
         url: `${BASE_URL}/#contact`,
         type: 'website'
       };
@@ -308,9 +308,9 @@ export function getSEOForView(
     case 'home':
     default: {
       return {
-        title: 'Doctor Baba Mukisa - African Traditional Herbalist & Spiritual Guidance | Love Spells & Healing',
-        description: 'Official sanctuary of Doctor Baba Mukisa. Authentic African traditional herbalist, ancestral guidance practitioner, and powerful spell caster for lost lover spells, marriage protection, and wealth rituals in Kampala, Uganda.',
-        keywords: 'Doctor Baba Mukisa, traditional herbalist Uganda, lost lover spells, marriage spells, spiritual healing Africa, voodoo spells, wealth rituals, traditional doctor Kampala',
+        title: 'Doctor Baba Mukisa - African Traditional Herbalist & Spiritual Guidance Sanctuary',
+        description: 'Official sanctuary of Doctor Baba Mukisa. Authentic African traditional herbalist, ancestral guidance practitioner, and spiritual advisor for relationship harmony, traditional healing, and mindfulness in Kampala, Uganda.',
+        keywords: 'Doctor Baba Mukisa, traditional herbalist Uganda, relationship reconciliation, marriage harmony, spiritual cleansing Africa, traditional healing, prosperity consultations, traditional advisor Kampala',
         image: DEFAULT_IMAGE,
         url: BASE_URL,
         type: 'website'
