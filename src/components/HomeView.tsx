@@ -237,7 +237,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
             <div className="absolute -bottom-6 -left-6 bg-slate-950 border border-amber-500/50 p-6 rounded-2xl shadow-2xl max-w-[240px] hidden sm:block">
               <p className="text-xs italic text-amber-200 leading-relaxed">
-                "Spiritual healing is the alignment of one's soul with the ancestors to unlock doors that were once shut."
+                "Spiritual guidance is the alignment of one's mind with ancestral wisdom to bring clarity and peace."
               </p>
               <p className="text-[10px] font-bold text-amber-600 mt-2 uppercase tracking-tighter">
                 — Doctor Baba Mukisa
@@ -466,11 +466,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-[10px] uppercase font-bold tracking-tighter">
           {[
-            "Commitment Love Spells UAE", "Broken Heart Spells London", "France Love Spells", "Sweden Love Spells", "USA Love Spells",
-            "Germany Love Spells", "Oman Love Spells", "Switzerland Love Spells", "Russia Love Spells", "India Love Spells",
-            "China Love Spells", "Ireland Love Spells", "Singapore Love Spells", "Turkey Love Spells", "Malaysia Love Spells",
-            "Canada Love Spells", "Australia Love Spells", "Netherlands Love Spells", "Kuwait Love Spells", "San Francisco Love Spells",
-            "Seoul Love Spells", "Amsterdam Love Spells", "Denmark Love Spells", "Bahrain Love Spells"
+            "Commitment Guidance UAE", "Relationship Peace London", "France Spiritual Guidance", "Sweden Relationship Guidance", "USA Spiritual Consultations",
+            "Germany Relationship Focus", "Oman Prosperity Focus", "Switzerland Guidance", "Russia Spiritual Reflection", "India Marriage Harmony",
+            "China Prosperity Guidance", "Ireland Spiritual Reflection", "Singapore Career Guidance", "Turkey Relationship Guidance", "Malaysia Prosperity Guidance",
+            "Canada Relationship Focus", "Australia Guidance", "Netherlands Harmony", "Kuwait Prosperity Focus", "San Francisco Guidance",
+            "Seoul Prosperity Focus", "Amsterdam Spiritual Reflection", "Denmark Relationship Focus", "Bahrain Prosperity Guidance"
           ].map((area, idx) => (
             <button 
               key={idx} 
@@ -571,7 +571,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       {area.name}
                     </h4>
                     <p className="text-[11px] text-slate-300 mb-4 line-clamp-2 italic leading-relaxed">
-                      Authentic spiritual guidance and specialized {area.name.toLowerCase()} for permanent results.
+                      Authentic spiritual guidance and specialized {area.name.toLowerCase()} to nurture harmony and mutual understanding.
                     </p>
                   </div>
                   <div className="mt-auto pt-2">

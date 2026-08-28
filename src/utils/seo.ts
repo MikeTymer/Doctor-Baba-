@@ -142,7 +142,7 @@ export function getSEOForView(
         return {
           title: `${selectedBlog.name} | Doctor Baba Mukisa Spiritual Blog`,
           description: cleanDesc.length > 160 ? `${cleanDesc.slice(0, 157)}...` : cleanDesc,
-          keywords: `${selectedBlog.category_name || ''}, Doctor Baba Mukisa, spiritual healing, love spells, herbal remedies`,
+          keywords: `${selectedBlog.category_name || ''}, Doctor Baba Mukisa, spiritual guidance, relationship counseling, herbal wellness`,
           image: selectedBlog.feature_image || DEFAULT_IMAGE,
           url: articleUrl,
           type: 'article',
@@ -187,9 +187,9 @@ export function getSEOForView(
         const serviceUrl = `${BASE_URL}/#service/${encodeURIComponent(selectedServiceDetail)}`;
 
         return {
-          title: `${selectedServiceDetail} - Authentic Spiritual Rituals | Doctor Baba Mukisa`,
+          title: `${selectedServiceDetail} - Authentic Spiritual Consultations | Doctor Baba Mukisa`,
           description: desc.length > 160 ? `${desc.slice(0, 157)}...` : desc,
-          keywords: `${selectedServiceDetail}, authentic love spells, traditional healer Uganda, relationship reconciliation, Doctor Baba Mukisa`,
+          keywords: `${selectedServiceDetail}, authentic relationship guidance, traditional advisor Uganda, relationship reconciliation, Doctor Baba Mukisa`,
           image: DEFAULT_IMAGE,
           url: serviceUrl,
           type: 'website',

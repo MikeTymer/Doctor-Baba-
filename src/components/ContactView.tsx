@@ -332,7 +332,7 @@ export const ContactView: React.FC = () => {
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Describe your situation (love, business, legal, health, protection)..."
+                  placeholder="Describe your situation (relationship, career, legal stress, spiritual guidance)..."
                   className="w-full bg-slate-950 border border-amber-900/50 rounded-xl px-4 py-2.5 text-xs text-amber-100 focus:outline-none focus:border-amber-500"
                 />
               </div>

@@ -128,7 +128,7 @@ export const VideosView: React.FC<VideosViewProps> = ({ onSelectServiceDetail })
           </h2>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
             Experience the far-reaching impact of ancestral wisdom. 
-            Providing documented spiritual results for clients in these major global hubs.
+            Providing authentic traditional spiritual consultations for clients in these major global hubs.
           </p>
         </div>
 

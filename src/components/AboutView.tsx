@@ -121,7 +121,7 @@ export const AboutView: React.FC<AboutViewProps> = ({
             <Flame className="w-4 h-4" /> Timeless Ancestral Wisdom
           </span>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
-            SACRED HEALING METHODS
+            SACRED TRADITIONAL METHODS
           </h2>
           <p className="text-sm text-slate-400 max-w-2xl mx-auto">
             Discover the profound spiritual techniques passed down through generations. 

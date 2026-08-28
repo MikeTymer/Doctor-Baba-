@@ -44,7 +44,7 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
       if (serviceName.includes(region)) return `${content} ${serviceName} is one of our most requested services in this region.`;
     }
     
-    return `Professional and authentic ${serviceName.toLowerCase()} cast by Doctor Baba Mukisa. Experience the ancient spiritual power of coastal Digo heritage to resolve your deepest life challenges.`;
+    return `Professional and authentic ${serviceName.toLowerCase()} consultations provided by Doctor Baba Mukisa. Experience the ancient spiritual wisdom of coastal Digo heritage to nurture balance and peace in your life.`;
   };
 
   const locations = [
@@ -95,14 +95,14 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
             </div>
           </div>
           <h1 className="text-4xl sm:text-6xl font-extrabold font-serif text-amber-100 tracking-tight">
-            Powerful {serviceName}
+            Authentic {serviceName}
           </h1>
           <p className="text-sm sm:text-xl text-amber-200/80 max-w-3xl mx-auto leading-relaxed">
             {getCustomDescription()}
           </p>
           <div className="flex flex-wrap justify-center gap-4 pt-4">
             <button onClick={onContact} className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3.5 rounded-full text-sm shadow-xl transition-all hover:scale-105 active:scale-95">
-              Request Free Consultation
+              Request Consultation
             </button>
             <a href={`https://wa.me/${SITE_INFO.whatsapp}`} target="_blank" rel="noopener noreferrer" className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-8 py-3.5 rounded-full text-sm shadow-xl flex items-center gap-2 transition-all hover:scale-105 active:scale-95">
               <MessageSquare className="w-4 h-4" /> WhatsApp Now
@@ -117,23 +117,23 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
           
           <div className="bg-slate-900/40 border border-amber-900/20 rounded-3xl p-8 space-y-6 shadow-xl">
             <h2 className="text-2xl font-bold font-serif text-amber-100 flex items-center gap-3">
-              <Star className="w-6 h-6 text-amber-500" /> Why My {serviceName} Work
+              <Star className="w-6 h-6 text-amber-500" /> Understanding {serviceName}
             </h2>
             <div className="space-y-4 text-slate-300 text-sm leading-relaxed">
               <p>
-                The spiritual world is complex, and navigating it requires a guide with deep <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">ancestral connection</button> and years of experience. {serviceName} rituals are not just traditional acts; they are a realignment of your soul's path with the energy of the universe, specifically tailored for your current circumstances.
+                The spiritual world is intricate, and navigating life's challenges is aided by a guide with deep <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">ancestral connection</button> and years of traditional heritage. {serviceName} consultations are designed to help align your spiritual focus with positive energy, tailored to your personal circumstances.
               </p>
               <p>
-                Whether you are seeking <button onClick={() => window.scrollTo({top: 0})} className="text-amber-400 underline font-bold">{serviceName}</button> or specialized <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">spiritual intervention</button>, Doctor Baba Mukisa's methods are designed for fast manifestation and permanent results.
+                Whether you are seeking <button onClick={() => window.scrollTo({top: 0})} className="text-amber-400 underline font-bold">{serviceName}</button> or specialized <button onClick={onContact} className="text-amber-400 underline hover:text-amber-300">spiritual guidance</button>, Doctor Baba Mukisa's methods are grounded in respect, cultural wisdom, and peaceful understanding.
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                 {[
-                  "100% Guaranteed Results",
-                  "Ancestral Power Connection",
+                  "Ancestral Heritage & Wisdom",
+                  "Deep Spiritual Connection",
                   "Total Privacy & Confidentiality",
-                  "Fast Acting Manifestation",
+                  "Personalized Spiritual Reflection",
                   "Safe & Natural Traditional Herbs",
-                  "Worldwide Distance Casting"
+                  "Worldwide Distance Consultations"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-2 text-xs font-bold text-amber-200">
                     <ShieldCheck className="w-4 h-4 text-emerald-500" /> {item}
@@ -145,10 +145,10 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
 
           <div className="bg-slate-900/40 border border-amber-900/20 rounded-3xl p-8 space-y-6 shadow-xl">
             <h2 className="text-2xl font-bold font-serif text-amber-100 flex items-center gap-3">
-              <Globe className="w-6 h-6 text-amber-500" /> Global Reach & Regional Support
+              <Globe className="w-6 h-6 text-amber-500" /> Global Reach & Regional Consultations
             </h2>
             <p className="text-slate-400 text-xs italic leading-relaxed">
-              Doctor Baba Mukisa provides {serviceName} to clients across the globe. Distance is no barrier to spiritual energy work.
+              Doctor Baba Mukisa provides {serviceName} consultations to clients across the globe. Distance is no barrier to spiritual guidance.
             </p>
             <div className="space-y-8">
               {locations.map((loc, i) => (
@@ -176,9 +176,9 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
             <div className="w-16 h-16 bg-amber-950 border border-amber-500/50 rounded-full flex items-center justify-center mx-auto shadow-lg">
               <Phone className="w-8 h-8 text-amber-400" />
             </div>
-            <h3 className="text-xl font-bold font-serif text-white">Urgent Assistance?</h3>
+            <h3 className="text-xl font-bold font-serif text-white">Need Guidance?</h3>
             <p className="text-xs text-amber-100/70 leading-relaxed">
-              Speak directly with Doctor Baba Mukisa for immediate guidance on {serviceName.toLowerCase()}.
+              Speak directly with Doctor Baba Mukisa for personalized guidance on {serviceName.toLowerCase()}.
             </p>
             <div className="space-y-3 pt-2">
               <a href={`tel:${SITE_INFO.phone}`} className="flex items-center justify-center gap-2 w-full py-3.5 bg-slate-950 border border-amber-500/30 text-amber-400 rounded-2xl font-bold text-sm hover:bg-slate-900 transition-all">
@@ -189,7 +189,7 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
               </a>
             </div>
             <div className="pt-4 text-[10px] text-amber-500/60 uppercase font-bold tracking-tighter">
-              Available 24/7 for Spiritual Emergencies
+              Confidential Spiritual Consultations
             </div>
           </div>
 
@@ -197,7 +197,7 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
             <h4 className="text-sm font-bold text-amber-200 border-b border-amber-900/30 pb-2">Related Offerings</h4>
             <div className="space-y-2">
               {[
-                "Love Spells", "Traditional Healer", "Marriage Spells", "Voodoo Spells", "Money Spells"
+                "Relationship Guidance", "Traditional Herbalist", "Marriage Harmony", "Ancestral Guidance", "Prosperity Consultations"
               ].filter(n => n !== serviceName).slice(0, 4).map((n, idx) => (
                 <button 
                   key={idx} 
@@ -218,20 +218,20 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
         <h2 className="text-3xl font-bold font-serif text-amber-100">Frequently Asked Questions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
           <div className="space-y-2">
-            <h4 className="text-amber-400 font-bold text-sm">How long does it take to see results?</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">Most clients begin to feel the shift in spiritual energy within 24-48 hours. Full physical manifestation of {serviceName.toLowerCase()} typically occurs between 3 to 7 days depending on the complexity.</p>
+            <h4 className="text-amber-400 font-bold text-sm">How do consultations work?</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">Spiritual consultations involve discussing your personal circumstances, exploring ancestral perspectives, and identifying traditional practices to cultivate peace and clarity.</p>
           </div>
           <div className="space-y-2">
             <h4 className="text-amber-400 font-bold text-sm">Is distance a barrier for {serviceName.toLowerCase()}?</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">No. Spiritual energy has no geographical boundaries. My remote meditation and distance casting techniques are just as powerful as in-person temple rituals.</p>
+            <p className="text-xs text-slate-400 leading-relaxed">No. Doctor Baba Mukisa provides telephone, WhatsApp, and remote meditation guidance to clients globally with the same dedication as in-person visits.</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-amber-400 font-bold text-sm">Are the rituals safe?</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">Yes. All {serviceName.toLowerCase()} performed by Doctor Baba Mukisa use natural traditional herbs and positive ancestral energy. There are no side effects or negative karma involved.</p>
+            <h4 className="text-amber-400 font-bold text-sm">Are traditional herbal practices safe?</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">Yes. Traditional consultations focus on non-invasive herbal heritage and mindfulness meditation to support emotional well-being.</p>
           </div>
           <div className="space-y-2">
-            <h4 className="text-amber-400 font-bold text-sm">What do I need to provide?</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">During your free consultation, I will determine exactly what is needed. Usually, names, dates of birth, or photographs are required to focus the ancestral energy correctly.</p>
+            <h4 className="text-amber-400 font-bold text-sm">What should I prepare for a consultation?</h4>
+            <p className="text-xs text-slate-400 leading-relaxed">Simply bring an open mind and a clear understanding of the questions or challenges you would like guidance on.</p>
           </div>
         </div>
       </section>

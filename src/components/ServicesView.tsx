@@ -151,80 +151,80 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
       <section className="bg-slate-900/30 border border-amber-900/20 rounded-3xl p-8 space-y-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           
-          {/* Love Spells & Relationships */}
+          {/* Relationship Guidance & Reconciliation */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-amber-400">
               <Heart className="w-5 h-5" />
-              <h3 className="font-bold font-serif text-lg text-amber-100">Love & Marriage Spells</h3>
+              <h3 className="font-bold font-serif text-lg text-amber-100">Relationship Harmony & Counseling</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Love Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Return Lost Lover Spells - Bring back an ex partner permanently.</span>
+                <span>Relationship Reconciliation - Guidance for reconnecting with estranged partners.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Binding Love Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Binding Love Spells - Create an unbreakable bond between two hearts.</span>
+                <span>Couples Alignment - Deepening emotional understanding and mutual commitment.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Marriage Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Stop Divorce Spells - Heal marriages and resolve domestic disputes.</span>
+                <span>Marriage Mediation - Spiritual mediation to nurture peaceful communication.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Love Rituals')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Cheating Partner Spells - Bind your lover's heart to yours only.</span>
+                <span>Trust Restoration - Spiritual guidance to rebuild fidelity and mutual respect.</span>
               </li>
             </ul>
           </div>
 
-          {/* Traditional Healing & Voodoo */}
+          {/* Traditional Healing & Cleansing */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-amber-400">
               <Flame className="w-5 h-5" />
-              <h3 className="font-bold font-serif text-lg text-amber-100">Authentic Voodoo & Healing</h3>
+              <h3 className="font-bold font-serif text-lg text-amber-100">Authentic Traditional Guidance</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Voodoo Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Voodoo Doll Rituals - Specialized distance healing and influence.</span>
+                <span>Ancestral Meditation - Traditional distance spiritual reflection.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Black Magic Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Black Magic Removal - Protection against evil eye and witchcraft.</span>
+                <span>Spiritual Shielding - Ancestral protection against negative vibrations.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Spiritual Cleansing')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Spiritual Cleansing - Rituals to wash away bad luck and stagnation.</span>
+                <span>Spiritual Cleansing - Herbal washes to restore clarity, calm, and vitality.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Ancestral Guidance')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Ancestral Spirit Alignment - Connecting you with your spirit guides.</span>
+                <span>Ancestral Lineage Wisdom - Connecting with traditional African heritage.</span>
               </li>
             </ul>
           </div>
 
-          {/* Money & Success */}
+          {/* Career & Prosperity Focus */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-amber-400">
               <Award className="w-5 h-5" />
-              <h3 className="font-bold font-serif text-lg text-amber-100">Wealth & Business Spells</h3>
+              <h3 className="font-bold font-serif text-lg text-amber-100">Career & Prosperity Consultations</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Business Growth Spells - Attract customers and increase sales.</span>
+                <span>Enterprise Blessings - Spiritual alignment for confident business management.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Money Attraction Rituals - Open doors for financial opportunities.</span>
+                <span>Mindset & Prosperity Focus - Cultivating clarity for financial planning.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Debt Relief Spells - Clear your name and settle financial burdens.</span>
+                <span>Stress Relief Consultation - Spiritual peace during financial transitions.</span>
               </li>
               <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
-                <span>Job & Promotion Spells - Secure your position or get a new career.</span>
+                <span>Career Confidence - Cultivating leadership and positive professional momentum.</span>
               </li>
             </ul>
           </div>
@@ -235,17 +235,17 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
         <div className="pt-8 border-t border-amber-900/30 space-y-8">
           <div className="flex items-center gap-2 text-amber-500">
             <Globe className="w-5 h-5" />
-            <h3 className="font-bold font-serif text-lg text-amber-100 uppercase tracking-widest text-sm">International Reach & Regional Support</h3>
+            <h3 className="font-bold font-serif text-lg text-amber-100 uppercase tracking-widest text-sm">International Reach & Regional Consultations</h3>
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <div className="space-y-2">
               <h5 className="text-[10px] font-bold text-amber-600 uppercase flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> North America</h5>
-              <p className="text-[9px] text-slate-500 leading-relaxed">Love Spells New York, Los Angeles, Chicago, Houston, Phoenix. Lost Lover Spells Toronto, Vancouver, Montreal.</p>
+              <p className="text-[9px] text-slate-500 leading-relaxed">Relationship Guidance New York, Los Angeles, Chicago, Houston, Phoenix. Reconciliation Consultations Toronto, Vancouver, Montreal.</p>
             </div>
             <div className="space-y-2">
               <h5 className="text-[10px] font-bold text-amber-600 uppercase flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> Europe & UK</h5>
-              <p className="text-[9px] text-slate-500 leading-relaxed">Spiritual Healing London, Manchester, Birmingham. Marriage Rituals Paris, Berlin, Stockholm, Oslo, Amsterdam.</p>
+              <p className="text-[9px] text-slate-500 leading-relaxed">Spiritual Guidance London, Manchester, Birmingham. Marriage Consultations Paris, Berlin, Stockholm, Oslo, Amsterdam.</p>
             </div>
             <div className="space-y-2">
               <h5 className="text-[10px] font-bold text-amber-600 uppercase flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> Africa & Regions</h5>
@@ -253,7 +253,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
             </div>
             <div className="space-y-2">
               <h5 className="text-[10px] font-bold text-amber-600 uppercase flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> Middle East & Asia</h5>
-              <p className="text-[9px] text-slate-500 leading-relaxed">Relationship Spells Dubai, Abu Dhabi, Doha, Kuwait City. Wealth Rituals Singapore, Kuala Lumpur, Hong Kong.</p>
+              <p className="text-[9px] text-slate-500 leading-relaxed">Relationship Guidance Dubai, Abu Dhabi, Doha, Kuwait City. Prosperity Blessings Singapore, Kuala Lumpur, Hong Kong.</p>
             </div>
           </div>
         </div>

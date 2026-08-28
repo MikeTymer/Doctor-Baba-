@@ -187,17 +187,17 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
             <ul className="space-y-2 text-xs">
               <li>
                 <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
-                  Lost Lover Spells
+                  Relationship Guidance
                 </button>
               </li>
               <li>
                 <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
-                  Marriage & Divorce Spells
+                  Marriage & Family Harmony
                 </button>
               </li>
               <li>
                 <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
-                  Money & Wealth Rituals
+                  Prosperity & Career Focus
                 </button>
               </li>
               <li>
@@ -207,7 +207,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
               </li>
               <li>
                 <button onClick={() => handleNavClick('services')} className="hover:text-amber-300 transition-colors">
-                  Legal & Court Case Help
+                  Dispute & Legal Mediation
                 </button>
               </li>
             </ul>
@@ -248,15 +248,15 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
           <div className="space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-amber-900/40">
               <Globe className="w-4 h-4 text-amber-500" />
-              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Global Love Spells</h5>
+              <h5 className="font-bold text-amber-200 uppercase tracking-wider text-[11px]">Global Consultations</h5>
             </div>
             <ul className="space-y-1.5">
               {[
-                "Love Spells USA", "Love Spells UK", "Love Spells Canada", "Love Spells Australia",
-                "Love Spells London", "Love Spells California", "Love Spells New York", "Love Spells Los Angeles",
-                "Love Spells Norway", "Love Spells Germany", "Love Spells Dubai", "Love Spells France",
-                "Love Spells UAE", "Love Spells Switzerland", "Love Spells Russia", "Love Spells Ireland",
-                "Love Spells Sweden", "Love Spells Oman"
+                "Relationship Guidance USA", "Relationship Guidance UK", "Relationship Guidance Canada", "Relationship Guidance Australia",
+                "Relationship Guidance London", "Relationship Guidance California", "Relationship Guidance New York", "Relationship Guidance Los Angeles",
+                "Relationship Guidance Norway", "Relationship Guidance Germany", "Relationship Guidance Dubai", "Relationship Guidance France",
+                "Relationship Guidance UAE", "Relationship Guidance Switzerland", "Relationship Guidance Russia", "Relationship Guidance Ireland",
+                "Relationship Guidance Sweden", "Relationship Guidance Oman"
               ].map((loc) => (
                 <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
                   <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
@@ -273,11 +273,11 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
             </div>
             <ul className="space-y-1.5">
               {[
-                "Love Spells South Africa", "Love Spells Kenya", "Love Spells Botswana", "Love Spells Namibia",
-                "Love Spells Mauritius", "Love Spells Moscow", "Love Spells Istanbul", "Love Spells Mumbai",
-                "Love Spells Berlin", "Love Spells Johannesburg", "Love Spells St.Petersburg", "Love Spells Shanghai",
-                "Love Spells Bahrain", "Love Spells Singapore", "Love Spells Malaysia", "Love Spells Kuwait",
-                "Love Spells Denmark", "Love Spells Nairobi"
+                "Relationship Guidance South Africa", "Relationship Guidance Kenya", "Relationship Guidance Botswana", "Relationship Guidance Namibia",
+                "Relationship Guidance Mauritius", "Relationship Guidance Moscow", "Relationship Guidance Istanbul", "Relationship Guidance Mumbai",
+                "Relationship Guidance Berlin", "Relationship Guidance Johannesburg", "Relationship Guidance St.Petersburg", "Relationship Guidance Shanghai",
+                "Relationship Guidance Bahrain", "Relationship Guidance Singapore", "Relationship Guidance Malaysia", "Relationship Guidance Kuwait",
+                "Relationship Guidance Denmark", "Relationship Guidance Nairobi"
               ].map((loc) => (
                 <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
                   <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
@@ -294,10 +294,10 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
             </div>
             <ul className="space-y-1.5">
               {[
-                "Love Spells Mombasa", "Love Spells Kisumu", "Love Spells Eldoret", "Love Spells Nakuru",
-                "Love Spells Langata", "Love Spells Malaba", "Love Spells Soweto", "Love Spells Limpopo",
-                "Love Spells Durban", "Love Spells Witbank", "Love Spells Stellenbosch", "Love Spells Transkei",
-                "Love Spells Copenhagen", "Love Spells Amsterdam", "Love Spells Seoul", "Love Spells Bali"
+                "Relationship Guidance Mombasa", "Relationship Guidance Kisumu", "Relationship Guidance Eldoret", "Relationship Guidance Nakuru",
+                "Relationship Guidance Langata", "Relationship Guidance Malaba", "Relationship Guidance Soweto", "Relationship Guidance Limpopo",
+                "Relationship Guidance Durban", "Relationship Guidance Witbank", "Relationship Guidance Stellenbosch", "Relationship Guidance Transkei",
+                "Relationship Guidance Copenhagen", "Relationship Guidance Amsterdam", "Relationship Guidance Seoul", "Relationship Guidance Bali"
               ].map((loc) => (
                 <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
                   <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
@@ -315,10 +315,10 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
             <ul className="space-y-1.5">
               {[
                 "Traditional Healer Uganda", "Traditional Healer Soweto", "Traditional Healer Sandton", "Traditional Healer Kenya",
-                "Traditional Healer USA", "Wiccan Spells UK", "Wiccan Spells Cyprus", "Wiccan Spells Canada",
-                "Wiccan Spells USA", "Black Magic Spells", "Black Magic USA", "Black Magic UK",
-                "Money Spells Uganda", "Money Spells Limpopo", "Money Spells Sandton", "Money Spells UAE",
-                "Psychic Healer Canada", "Psychic Healer USA", "Psychic South Africa"
+                "Traditional Healer USA", "Traditional Shielding UK", "Traditional Shielding Cyprus", "Traditional Shielding Canada",
+                "Traditional Shielding USA", "Spiritual Protection & Shielding", "Spiritual Protection USA", "Spiritual Protection UK",
+                "Prosperity Alignment Uganda", "Prosperity Alignment Limpopo", "Prosperity Alignment Sandton", "Prosperity Alignment UAE",
+                "Psychic Guidance Canada", "Psychic Guidance USA", "Psychic Guidance South Africa"
               ].map((loc) => (
                 <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">
                   <span className="w-1 h-1 rounded-full bg-amber-900 group-hover:bg-amber-500 transition-colors" />
@@ -335,10 +335,10 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
             </div>
             <ul className="space-y-1.5">
               {[
-                "Ancestral Guidance", "Binding Love Spells", "Voodoo Spells", "Lost Lover Spells",
-                "Divorce & Marriage", "Court Case Help", "Business Blessings", "Fertility Rituals",
-                "Gay Love Spells", "Spiritual Protection", "Wealth & Money Spells", "Aura Cleansing",
-                "Wiccan Spells", "Psychic Readings", "Herbal Healing", "Dream Interpretation",
+                "Ancestral Guidance", "Relationship Reconciliation", "Spiritual Mediation", "Reconciliation Consultations",
+                "Family & Marriage Peace", "Court Dispute Guidance", "Business Blessings", "Family Harmony Rituals",
+                "Inclusive Relationship Guidance", "Spiritual Protection", "Prosperity Consultations", "Aura Cleansing",
+                "Traditional Shielding", "Spiritual Insight", "Herbal Consultations", "Dream Interpretation",
                 "Protection Artifacts", "Remote Meditation"
               ].map((loc) => (
                 <li key={loc} onClick={() => handleServiceClick(loc)} className="hover:text-amber-400 cursor-pointer transition-colors flex items-center gap-1.5 group">

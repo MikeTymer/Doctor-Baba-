@@ -69,18 +69,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onSelec
   };
 
   const serviceOfferings = [
-    "Lost Lover Spells",
-    "Marriage & Divorce",
-    "Money & Wealth Spells",
-    "Black Magic Spells",
-    "Spiritual Protection",
+    "Relationship Reconciliation",
+    "Marriage & Family Harmony",
+    "Prosperity & Career Focus",
+    "Spiritual Protection & Shielding",
     "Ancestral Guidance",
-    "Wiccan Spells",
-    "Psychic Healing",
-    "Fertility Rituals",
-    "Gay Love Spells",
-    "Business Success",
-    "Traditional Healer"
+    "Traditional Shielding UK",
+    "Psychic Guidance Canada",
+    "Inclusive Relationship Guidance",
+    "Business Blessings",
+    "Traditional Healer Uganda"
   ];
 
   const navItems: { label: string; tab: ActiveTab; hasDropdown?: boolean }[] = [
