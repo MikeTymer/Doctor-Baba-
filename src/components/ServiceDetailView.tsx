@@ -21,16 +21,16 @@ export const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({
 }) => {
   const getServiceIcon = () => {
     const name = serviceName.toLowerCase();
-    if (name.includes('love') || name.includes('marriage') || name.includes('reconciliation') || name.includes('binding') || name.includes('psychic')) {
+    if (name.includes('love') || name.includes('marriage') || name.includes('reconciliation') || name.includes('relationship') || name.includes('harmony')) {
       return <Heart className="w-12 h-12 text-amber-500" />;
     }
-    if (name.includes('healer') || name.includes('guidance') || name.includes('ancestral') || name.includes('herbalist')) {
+    if (name.includes('healer') || name.includes('guidance') || name.includes('ancestral') || name.includes('herbalist') || name.includes('lineage')) {
       return <Flame className="w-12 h-12 text-amber-500" />;
     }
-    if (name.includes('voodoo') || name.includes('magic') || name.includes('cleansing') || name.includes('protection') || name.includes('wiccan')) {
+    if (name.includes('heritage') || name.includes('cleansing') || name.includes('protection') || name.includes('shielding') || name.includes('aura')) {
       return <ShieldCheck className="w-12 h-12 text-amber-500" />;
     }
-    if (name.includes('money') || name.includes('wealth') || name.includes('business') || name.includes('success')) {
+    if (name.includes('prosperity') || name.includes('wealth') || name.includes('business') || name.includes('career') || name.includes('success')) {
       return <Award className="w-12 h-12 text-amber-500" />;
     }
     return <Sparkles className="w-12 h-12 text-amber-500" />;

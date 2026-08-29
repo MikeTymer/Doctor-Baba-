@@ -114,7 +114,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
             <div>
               <h4 className="text-xs font-bold text-amber-200 uppercase tracking-wider">Strict Privacy</h4>
-              <p className="text-[11px] text-slate-300">100% Confidential consultations</p>
+              <p className="text-[11px] text-slate-300">Confidential & discreet consultations</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-2">
@@ -203,7 +203,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-amber-100">Strictly Confidential</h4>
-                  <p className="text-[11px] text-slate-400">Private & secure consultations guaranteed.</p>
+                  <p className="text-[11px] text-slate-400">Private and confidential client discretion.</p>
                 </div>
               </div>
               <div className="flex gap-3">

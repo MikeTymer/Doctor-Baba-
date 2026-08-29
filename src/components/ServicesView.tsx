@@ -158,19 +158,19 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
               <h3 className="font-bold font-serif text-lg text-amber-100">Relationship Harmony & Counseling</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Love Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Relationship Guidance')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Relationship Reconciliation - Guidance for reconnecting with estranged partners.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Binding Love Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Relationship Commitment & Trust')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Couples Alignment - Deepening emotional understanding and mutual commitment.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Marriage Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Marriage & Family Harmony')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Marriage Mediation - Spiritual mediation to nurture peaceful communication.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Love Rituals')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Mindfulness & Emotional Balance')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Trust Restoration - Spiritual guidance to rebuild fidelity and mutual respect.</span>
               </li>
@@ -184,11 +184,11 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
               <h3 className="font-bold font-serif text-lg text-amber-100">Authentic Traditional Guidance</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Voodoo Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Traditional Herbal Heritage')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Ancestral Meditation - Traditional distance spiritual reflection.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Black Magic Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Spiritual Protection & Shielding')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Spiritual Shielding - Ancestral protection against negative vibrations.</span>
               </li>
@@ -210,19 +210,19 @@ export const ServicesView: React.FC<ServicesViewProps> = ({
               <h3 className="font-bold font-serif text-lg text-amber-100">Career & Prosperity Consultations</h3>
             </div>
             <ul className="text-xs text-slate-400 space-y-2.5">
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Prosperity Alignment')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Enterprise Blessings - Spiritual alignment for confident business management.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Prosperity Alignment')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Mindset & Prosperity Focus - Cultivating clarity for financial planning.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Prosperity Alignment')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Stress Relief Consultation - Spiritual peace during financial transitions.</span>
               </li>
-              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Money Spells')}>
+              <li className="flex items-start gap-2 group cursor-pointer" onClick={() => onSelectServiceDetail('Prosperity Alignment')}>
                 <ArrowRight className="w-3 h-3 text-amber-600 mt-0.5 group-hover:translate-x-1 transition-transform" />
                 <span>Career Confidence - Cultivating leadership and positive professional momentum.</span>
               </li>
