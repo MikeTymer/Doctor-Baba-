@@ -5,7 +5,7 @@ export const VIDEO_REGIONAL_SERVICES = [
     description: "Watch how traditional ancestral wisdom is shared to inspire harmony and emotional connection in New York, California, and across the UK.",
     region: "USA & UK",
     image: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
-    service: "Love Spells"
+    service: "Relationship Guidance"
   },
   {
     id: "v2",
@@ -13,7 +13,7 @@ export const VIDEO_REGIONAL_SERVICES = [
     description: "Detailed footage of traditional cultural preparations for business focus and enterprise mindset in Dubai and the Middle East.",
     region: "Dubai & UAE",
     image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=800&q=80",
-    service: "Money Spells"
+    service: "Prosperity Alignment"
   },
   {
     id: "v3",
@@ -21,7 +21,7 @@ export const VIDEO_REGIONAL_SERVICES = [
     description: "Spiritual mediation ceremonies designed to overcome disputes and restore marital peace for our European clients.",
     region: "Germany & Europe",
     image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
-    service: "Marriage Spells"
+    service: "Marriage & Family Harmony"
   },
   {
     id: "v4",

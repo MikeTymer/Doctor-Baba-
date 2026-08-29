@@ -43,9 +43,9 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- Categories -->
+  <!-- Policy-Compliant Categories -->
   <url>
-    <loc>https://doctorbabamukisa.com/category/love-and-marriage-spells</loc>
+    <loc>https://doctorbabamukisa.com/category/relationship-and-marriage-harmony</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -69,7 +69,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://doctorbabamukisa.com/category/magic-rings-and-luck-charms</loc>
+    <loc>https://doctorbabamukisa.com/category/traditional-tokens-and-cultural-items</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -81,9 +81,9 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Articles -->
+  <!-- Policy-Compliant Articles -->
   <url>
-    <loc>https://doctorbabamukisa.com/blog/powerful-lost-lover-spells-that-work-instantly</loc>
+    <loc>https://doctorbabamukisa.com/blog/traditional-spiritual-wisdom-for-relationship-reconciliation</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -101,19 +101,49 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://doctorbabamukisa.com/blog/spiritual-shielding-against-evil-eye-household-envy-and-sabotage</loc>
+    <loc>https://doctorbabamukisa.com/blog/spiritual-shielding-against-negative-energy-and-household-envy</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://doctorbabamukisa.com/blog/winning-difficult-court-cases-and-judicial-disputes</loc>
+    <loc>https://doctorbabamukisa.com/blog/traditional-spiritual-meditation-during-legal-disputes</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://doctorbabamukisa.com/blog/securing-land-protecting-property-and-resolving-estate-wrangles</loc>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctorbabamukisa.com/blog/traditional-spiritual-shielding-and-aura-defense</loc>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctorbabamukisa.com/blog/ancestral-family-blessings-and-generational-harmony</loc>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctorbabamukisa.com/blog/spiritual-cleansing-releasing-negativity-and-restoring-vitality</loc>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctorbabamukisa.com/blog/marriage-harmony-commitment-and-trust</loc>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://doctorbabamukisa.com/blog/mindfulness-inner-peace-and-emotional-grounding</loc>
     <lastmod>2026-08-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

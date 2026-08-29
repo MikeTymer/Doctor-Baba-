@@ -429,19 +429,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
             Global Spiritual Consultation Areas
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional spiritual services to clients in every country, worldwide. Seek <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-500 underline hover:text-amber-400">marital reconciliation</button>, <button onClick={() => onSelectServiceDetail('Money Spells')} className="text-amber-500 underline hover:text-amber-400">prosperity guidance</button>, and <button onClick={() => onSelectServiceDetail('Black Magic Spells')} className="text-amber-500 underline hover:text-amber-400">spiritual protection</button>.</p>
+          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional spiritual services to clients in every country, worldwide. Seek <button onClick={() => onSelectServiceDetail('Marriage & Family Harmony')} className="text-amber-500 underline hover:text-amber-400">marital reconciliation</button>, <button onClick={() => onSelectServiceDetail('Prosperity Alignment')} className="text-amber-500 underline hover:text-amber-400">prosperity guidance</button>, and <button onClick={() => onSelectServiceDetail('Spiritual Protection & Shielding')} className="text-amber-500 underline hover:text-amber-400">spiritual protection</button>.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {[
-            { name: "Marriage Harmony", service: "Marriage Spells", icon: Heart, desc: "Restore marital peace, improve communication, and overcome relationship conflicts." },
-            { name: "Prosperity Guidance", service: "Money Spells", icon: Award, desc: "Foster positive mindset, career focus, and spiritual alignment for business opportunities." },
-            { name: "Spiritual Protection", service: "Black Magic Spells", icon: Sparkles, desc: "Traditional African spiritual shielding and aura cleansing against negative energy." },
-            { name: "Same-Sex Harmony", service: "Gay Love Spells", icon: Heart, desc: "Specialized LGBTQ+ relationship guidance and emotional commitment rituals." },
-            { name: "Emotional Healing", service: "Love Healing Spells", icon: Flame, desc: "Heal past emotional wounds and restore romantic optimism and self-worth." },
-            { name: "Reconciliation Rituals", service: "Reconciliation Love Spells", icon: Star, desc: "Reignite communication and rebuild bonds of deep affection with a partner." },
-            { name: "Commitment Guidance", service: "Binding Love Spells", icon: ShieldCheck, desc: "Strengthen the bond of fidelity, mutual trust, and long-term partnership stability." },
-            { name: "Inner Peace Healing", service: "Love Rituals", icon: Heart, desc: "Soothe emotional separation pain and find the inner strength to love with confidence." }
+            { name: "Marriage Harmony", service: "Marriage & Family Harmony", icon: Heart, desc: "Restore marital peace, improve communication, and overcome relationship conflicts." },
+            { name: "Prosperity Guidance", service: "Prosperity Alignment", icon: Award, desc: "Foster positive mindset, career focus, and spiritual alignment for business opportunities." },
+            { name: "Spiritual Protection", service: "Spiritual Protection & Shielding", icon: Sparkles, desc: "Traditional African spiritual shielding and aura cleansing against negative energy." },
+            { name: "LGBTQ+ Relationship Harmony", service: "LGBTQ+ Relationship Harmony", icon: Heart, desc: "Specialized inclusive relationship guidance and emotional commitment consultations." },
+            { name: "Emotional Healing", service: "Emotional Healing & Reconciliation", icon: Flame, desc: "Heal past emotional wounds and restore romantic optimism and self-worth." },
+            { name: "Reconciliation Guidance", service: "Relationship Reconciliation", icon: Star, desc: "Reignite communication and rebuild bonds of deep affection with a partner." },
+            { name: "Commitment Guidance", service: "Relationship Commitment & Trust", icon: ShieldCheck, desc: "Strengthen the bond of fidelity, mutual trust, and long-term partnership stability." },
+            { name: "Inner Peace & Renewal", service: "Mindfulness & Emotional Balance", icon: Heart, desc: "Soothe emotional separation pain and find the inner strength to love with confidence." }
           ].map((service, idx) => (
             <button 
               key={idx} 
@@ -520,7 +520,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
             <div className="pt-2">
               <button 
-                onClick={() => onSelectServiceDetail('Marriage Spells')}
+                onClick={() => onSelectServiceDetail('Marriage & Family Harmony')}
                 className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3 rounded-full text-xs transition-all shadow-lg active:scale-95"
               >
                 Protect My Marriage
@@ -634,7 +634,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
             <div className="pt-2">
               <button 
-                onClick={() => onSelectServiceDetail('Money Spells')}
+                onClick={() => onSelectServiceDetail('Prosperity Alignment')}
                 className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3 rounded-full text-xs transition-all shadow-lg active:scale-95"
               >
                 Seek Guidance
@@ -700,25 +700,25 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-amber-100">
             Global Spiritual Reach
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional <button onClick={() => onSelectServiceDetail('Love Spells')} className="text-amber-500 underline hover:text-amber-400">relationship reconciliation</button>, <button onClick={() => onSelectServiceDetail('Marriage Spells')} className="text-amber-400 underline hover:text-amber-400">marriage rituals</button>, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-500 underline hover:text-amber-400">ancestral guidance</button> to clients in every corner of the world.</p>
+          <p className="text-xs text-slate-400 max-w-2xl mx-auto">Providing traditional <button onClick={() => onSelectServiceDetail('Relationship Reconciliation')} className="text-amber-500 underline hover:text-amber-400">relationship reconciliation</button>, <button onClick={() => onSelectServiceDetail('Marriage & Family Harmony')} className="text-amber-400 underline hover:text-amber-400">marriage rituals</button>, and <button onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="text-amber-500 underline hover:text-amber-400">ancestral guidance</button> to clients in every corner of the world.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">North America</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Guidance USA (New York, LA, Chicago)</li>
+              <li onClick={() => onSelectServiceDetail('Relationship Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Guidance USA (New York, LA, Chicago)</li>
               <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Cleansing Canada (Toronto, Vancouver)</li>
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Reconciliation Consultations California</li>
-              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Harmony Ontario</li>
+              <li onClick={() => onSelectServiceDetail('Relationship Reconciliation')} className="hover:text-amber-300 cursor-pointer transition-colors">Reconciliation Consultations California</li>
+              <li onClick={() => onSelectServiceDetail('Marriage & Family Harmony')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Harmony Ontario</li>
             </ul>
           </div>
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Europe & UK</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Reconciliation London & UK</li>
-              <li onClick={() => onSelectServiceDetail('Marriage Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Protection Germany (Berlin)</li>
-              <li onClick={() => onSelectServiceDetail('Voodoo Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Rituals France (Paris)</li>
+              <li onClick={() => onSelectServiceDetail('Relationship Reconciliation')} className="hover:text-amber-300 cursor-pointer transition-colors">Relationship Reconciliation London & UK</li>
+              <li onClick={() => onSelectServiceDetail('Marriage & Family Harmony')} className="hover:text-amber-300 cursor-pointer transition-colors">Marriage Protection Germany (Berlin)</li>
+              <li onClick={() => onSelectServiceDetail('Traditional Herbal Heritage')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Rituals France (Paris)</li>
               <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Healing Ireland & Norway</li>
             </ul>
           </div>
@@ -728,15 +728,15 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <li onClick={() => onSelectServiceDetail('Traditional Healer')} className="hover:text-amber-300 cursor-pointer transition-colors">Traditional Healer South Africa (Soweto, Joburg)</li>
               <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Guidance Kenya (Nairobi, Mombasa)</li>
               <li onClick={() => onSelectServiceDetail('Ancestral Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Ancestral Wisdom Uganda (Kampala)</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Prosperity Blessings Botswana & Namibia</li>
+              <li onClick={() => onSelectServiceDetail('Prosperity Alignment')} className="hover:text-amber-300 cursor-pointer transition-colors">Prosperity Blessings Botswana & Namibia</li>
             </ul>
           </div>
           <div className="bg-slate-900/60 p-6 rounded-3xl border border-amber-900/30 text-center space-y-4 shadow-xl">
             <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider font-serif">Middle East & Asia</h4>
             <ul className="text-[11px] text-slate-300 space-y-2">
-              <li onClick={() => onSelectServiceDetail('Love Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Love & Relationship Guidance Dubai & UAE</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Business Blessing Rituals Singapore & Malaysia</li>
-              <li onClick={() => onSelectServiceDetail('Money Spells')} className="hover:text-amber-300 cursor-pointer transition-colors">Career Focus Consultations Qatar & Kuwait</li>
+              <li onClick={() => onSelectServiceDetail('Relationship Guidance')} className="hover:text-amber-300 cursor-pointer transition-colors">Love & Relationship Guidance Dubai & UAE</li>
+              <li onClick={() => onSelectServiceDetail('Prosperity Alignment')} className="hover:text-amber-300 cursor-pointer transition-colors">Business Blessing Rituals Singapore & Malaysia</li>
+              <li onClick={() => onSelectServiceDetail('Prosperity Alignment')} className="hover:text-amber-300 cursor-pointer transition-colors">Career Focus Consultations Qatar & Kuwait</li>
               <li onClick={() => onSelectServiceDetail('Spiritual Cleansing')} className="hover:text-amber-300 cursor-pointer transition-colors">Spiritual Cleansing Oman & Bahrain</li>
             </ul>
           </div>
@@ -780,7 +780,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
             <div className="pt-2">
               <button 
-                onClick={() => onSelectServiceDetail('Spiritual Protection')}
+                onClick={() => onSelectServiceDetail('Spiritual Protection & Shielding')}
                 className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3 rounded-full text-xs transition-all shadow-lg active:scale-95"
               >
                 Get Protected
@@ -802,7 +802,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div 
-            onClick={() => onSelectServiceDetail('Binding Love Spells')} 
+            onClick={() => onSelectServiceDetail('Relationship Reconciliation')} 
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">
@@ -813,7 +813,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
           </div>
           <div 
-            onClick={() => onSelectServiceDetail('Marriage Spells')} 
+            onClick={() => onSelectServiceDetail('Marriage & Family Harmony')} 
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">
@@ -824,7 +824,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
           </div>
           <div 
-            onClick={() => onSelectServiceDetail('Money Spells')} 
+            onClick={() => onSelectServiceDetail('Prosperity Alignment')} 
             className="group p-8 bg-slate-900 border border-amber-900/40 rounded-3xl hover:border-amber-500/50 transition-all cursor-pointer"
           >
             <h3 className="text-xl font-bold text-amber-100 font-serif mb-4 flex items-center gap-2">

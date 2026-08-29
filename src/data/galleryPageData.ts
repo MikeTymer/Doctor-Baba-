@@ -5,7 +5,7 @@ export const GALLERY_REGIONAL_CARDS = [
     description: "Visual exploration of traditional cultural tokens used for relationship harmony and emotional bonding.",
     location: "Australia",
     image: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?auto=format&fit=crop&w=800&q=80",
-    service: "Love Spells"
+    service: "Relationship Guidance"
   },
   {
     id: "g-reg-2",
@@ -13,7 +13,7 @@ export const GALLERY_REGIONAL_CARDS = [
     description: "Photography of traditional African craftsmanship and symbols that inspire focus and prosperity in professional ventures.",
     location: "Oman & Bahrain",
     image: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=800&q=80",
-    service: "Money Spells"
+    service: "Prosperity Alignment"
   },
   {
     id: "g-reg-3",
@@ -21,7 +21,7 @@ export const GALLERY_REGIONAL_CARDS = [
     description: "Sacred traditional cultural symbols and herbs photographed during preparation for spiritual peace and mindful protection.",
     location: "Norway & Sweden",
     image: "https://images.unsplash.com/photo-1515023115689-589c33041d3c?auto=format&fit=crop&w=800&q=80",
-    service: "Spiritual Protection"
+    service: "Spiritual Protection & Shielding"
   }
 ];
 
