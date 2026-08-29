@@ -1,5 +1,58 @@
+# Google Search & All Web Crawlers
 User-agent: *
 Allow: /
+Allow: /about
+Allow: /services
+Allow: /blog
+Allow: /gallery
+Allow: /videos
+Allow: /contact
+Allow: /category/
+Allow: /service/
+Allow: /static/
+Allow: /ads.txt
+Disallow: /admin
 Disallow: /api/
 
+# Googlebot Specific Rules
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Google Search Inspection Tool
+User-agent: Google-InspectionTool
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Googlebot Images (Allow all photography, herbal visuals & media)
+User-agent: Googlebot-Image
+Allow: /
+Allow: /static/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+
+# Google Ads Bot
+User-agent: AdsBot-Google
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Google Ads Mobile Bot
+User-agent: AdsBot-Google-Mobile
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Google AdSense Crawler
+User-agent: Mediapartners-Google
+Allow: /
+
+# Canonical XML Sitemap & Host
 Sitemap: https://doctorbabamukisa.com/sitemap.xml
+Host: https://doctorbabamukisa.com
+
