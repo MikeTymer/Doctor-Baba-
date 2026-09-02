@@ -8,12 +8,87 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Rate limiting / Anti-DDoS store
+  const requestIpCounts = new Map<string, { count: number; firstRequest: number }>();
+  const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+  const MAX_REQUESTS_PER_WINDOW = 300; // max 300 requests/min per IP
 
-  // Security Headers Middleware for enhanced protection & Google search trust
+  // Cleanup rate limiter every 5 minutes
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, record] of requestIpCounts.entries()) {
+      if (now - record.firstRequest > RATE_LIMIT_WINDOW_MS) {
+        requestIpCounts.delete(ip);
+      }
+    }
+  }, 5 * 60 * 1000);
+
+  // Web Application Firewall (WAF) & DDoS Mitigation Middleware
   app.use((req, res, next) => {
+    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+
+    // 1. Anti-DDoS rate-limiting
+    const ipRecord = requestIpCounts.get(clientIp);
+    if (!ipRecord || (now - ipRecord.firstRequest > RATE_LIMIT_WINDOW_MS)) {
+      requestIpCounts.set(clientIp, { count: 1, firstRequest: now });
+    } else {
+      ipRecord.count++;
+      if (ipRecord.count > MAX_REQUESTS_PER_WINDOW) {
+        res.status(429).setHeader('Retry-After', '60').json({
+          error: 'Too Many Requests',
+          message: 'Rate limit exceeded. WAF DDoS mitigation active. Please try again shortly.'
+        });
+        return;
+      }
+    }
+
+    // 2. WAF Malicious Payload & Exploit Detection (SQLi, path traversal, command injection, RCE)
+    const rawUrl = decodeURIComponent(req.originalUrl || req.url || '');
+    const maliciousPattern = /((\.\.\/|\.\.\\)|(<script|<iframe|<object|<embed)|(union\s+select|select\s+.*\s+from|insert\s+into|drop\s+table|delete\s+from|benchmark\(|sleep\()|(\b(cmd\.exe|powershell|bin\/sh|bin\/bash)\b)|(etc\/passwd|proc\/self))/i;
+    
+    if (maliciousPattern.test(rawUrl)) {
+      console.warn(`[WAF Blocked] Suspicious URI signature from IP ${clientIp}: ${req.originalUrl}`);
+      res.status(403).json({
+        error: 'Forbidden',
+        message: 'Request blocked by Web Application Firewall (WAF) security inspection rule.'
+      });
+      return;
+    }
+
+    next();
+  });
+
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // Security Headers Middleware: ClickJacking, Anti-Sniffing, Strict CSP & Transport Security
+  app.use((req, res, next) => {
+    // 1. Anti-Sniffing Protection
     res.setHeader("X-Content-Type-Options", "nosniff");
+
+    // 2. ClickJacking Protection (X-Frame-Options + CSP frame-ancestors)
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+
+    // 3. Complete Content-Security-Policy (CSP) Directives
+    const cspPolicy = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://adservice.google.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "img-src 'self' data: blob: https: http:",
+      "media-src 'self' https: data: blob:",
+      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://pagead2.googlesyndication.com https://region1.google-analytics.com https://ipapi.co https://api.ipify.org https://api.country.is wss: ws:",
+      "frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self' https://api.whatsapp.com https://wa.me",
+      "frame-ancestors 'self' https://ai.studio https://*.google.com"
+    ].join("; ");
+
+    res.setHeader("Content-Security-Policy", cspPolicy);
+
+    // 4. Other Standard Security Headers
     res.setHeader("X-XSS-Protection", "1; mode=block");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     res.setHeader("X-DNS-Prefetch-Control", "on");
