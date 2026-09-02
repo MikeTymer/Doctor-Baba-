@@ -1,8 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
 import { normalizeImageUrl } from './utils/imageUtils';
 import { updateSEO, getSEOForView } from './utils/seo';
+import { 
+  getPathnameForState, 
+  resolveRouteFromPathname, 
+  trackGoogleAdsPageView 
+} from './utils/routes';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
@@ -21,12 +26,6 @@ import { AdminView } from './components/AdminView';
 import { ServiceDetailView } from './components/ServiceDetailView';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
-    if (typeof window !== 'undefined' && window.location.pathname === '/admin') {
-      return 'admin';
-    }
-    return 'home';
-  });
   const [blogs, setBlogs] = useState<BlogPost[]>(() => {
     try {
       const saved = localStorage.getItem('doctor_blogs');
@@ -65,6 +64,39 @@ export default function App() {
     }));
   });
 
+  // Calculate initial route based on initial URL
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    if (typeof window !== 'undefined') {
+      const initialRoute = resolveRouteFromPathname(window.location.pathname, INITIAL_BLOGS, INITIAL_CATEGORIES);
+      return initialRoute.tab;
+    }
+    return 'home';
+  });
+
+  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(() => {
+    if (typeof window !== 'undefined') {
+      const initialRoute = resolveRouteFromPathname(window.location.pathname, INITIAL_BLOGS, INITIAL_CATEGORIES);
+      return initialRoute.blog;
+    }
+    return null;
+  });
+
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(() => {
+    if (typeof window !== 'undefined') {
+      const initialRoute = resolveRouteFromPathname(window.location.pathname, INITIAL_BLOGS, INITIAL_CATEGORIES);
+      return initialRoute.category;
+    }
+    return null;
+  });
+
+  const [selectedServiceDetail, setSelectedServiceDetail] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const initialRoute = resolveRouteFromPathname(window.location.pathname, INITIAL_BLOGS, INITIAL_CATEGORIES);
+      return initialRoute.serviceName;
+    }
+    return null;
+  });
+
   useEffect(() => {
     try {
       localStorage.setItem('doctor_blogs', JSON.stringify(blogs));
@@ -96,20 +128,45 @@ export default function App() {
     }
   }, []);
 
-  const handleAddCategory = (newCategory: Category) => {
-    setCategories((prev) => {
-      if (prev.some((c) => c.slug === newCategory.slug)) return prev;
-      return [...prev, newCategory];
-    });
-  };
   const [comments, setComments] = useState<BlogComment[]>(INITIAL_COMMENTS);
   const [subscribers, setSubscribers] = useState<Subscriber[]>(INITIAL_SUBSCRIBERS);
 
-  const [selectedBlog, setSelectedBlog] = useState<BlogPost | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [selectedServiceDetail, setSelectedServiceDetail] = useState<string | null>(null);
+  // Centralized navigation function that updates URL and tracking
+  const navigateTo = useCallback((
+    tab: ActiveTab, 
+    options?: {
+      blog?: BlogPost | null;
+      category?: Category | null;
+      service?: string | null;
+      replace?: boolean;
+    }
+  ) => {
+    const blog = options?.blog !== undefined ? options.blog : (tab === 'blog-detail' ? selectedBlog : null);
+    const category = options?.category !== undefined ? options.category : (tab === 'category-detail' ? selectedCategory : null);
+    const service = options?.service !== undefined ? options.service : (tab === 'service-detail' ? selectedServiceDetail : null);
 
-  // Dynamically update document title, meta descriptions, and OpenGraph tags on navigation
+    setActiveTab(tab);
+    setSelectedBlog(blog);
+    setSelectedCategory(category);
+    setSelectedServiceDetail(service);
+
+    if (typeof window !== 'undefined') {
+      const targetPath = getPathnameForState(tab, blog, category, service);
+      if (window.location.pathname !== targetPath) {
+        if (options?.replace) {
+          window.history.replaceState({ tab, blogSlug: blog?.slug, categorySlug: category?.slug, service }, '', targetPath);
+        } else {
+          window.history.pushState({ tab, blogSlug: blog?.slug, categorySlug: category?.slug, service }, '', targetPath);
+        }
+      }
+
+      // Track Google Ads / Analytics PageView for this Asset URL
+      trackGoogleAdsPageView(targetPath);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [selectedBlog, selectedCategory, selectedServiceDetail]);
+
+  // Dynamically update document title, meta descriptions, canonical URLs, and OpenGraph tags
   useEffect(() => {
     const seoConfig = getSEOForView(
       activeTab,
@@ -118,30 +175,51 @@ export default function App() {
       selectedServiceDetail
     );
     updateSEO(seoConfig);
+
+    // Track on initial load / view changes
+    if (typeof window !== 'undefined') {
+      const currentPath = getPathnameForState(activeTab, selectedBlog, selectedCategory, selectedServiceDetail);
+      trackGoogleAdsPageView(currentPath, seoConfig.title);
+    }
   }, [activeTab, selectedBlog, selectedCategory, selectedServiceDetail]);
 
-  // Sync route /admin if user navigates directly or clicks Admin facilities
+  // Handle browser Back / Forward history navigation
   useEffect(() => {
     const handlePopState = () => {
-      if (window.location.pathname === '/admin') {
-        setActiveTab('admin');
-      } else {
-        setActiveTab('home');
-      }
+      if (typeof window === 'undefined') return;
+      const resolved = resolveRouteFromPathname(window.location.pathname, blogs, categories);
+      setActiveTab(resolved.tab);
+      setSelectedBlog(resolved.blog);
+      setSelectedCategory(resolved.category);
+      setSelectedServiceDetail(resolved.serviceName);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [blogs, categories]);
 
   const handleTabChange = (tab: ActiveTab) => {
-    setActiveTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (tab === 'admin') {
-      window.history.pushState({}, '', '/admin');
-    } else if (window.location.pathname === '/admin') {
-      window.history.pushState({}, '', '/');
-    }
+    navigateTo(tab, { blog: null, category: null, service: null });
+  };
+
+  const handleSelectBlog = (blog: BlogPost) => {
+    navigateTo('blog-detail', { blog, category: null, service: null });
+  };
+
+  const handleSelectCategory = (category: Category) => {
+    navigateTo('category-detail', { blog: null, category, service: null });
+  };
+
+  const handleSelectServiceDetail = (service: string) => {
+    navigateTo('service-detail', { blog: null, category: null, service });
+  };
+
+  const handleAddCategory = (newCategory: Category) => {
+    setCategories((prev) => {
+      if (prev.some((c) => c.slug === newCategory.slug)) return prev;
+      return [...prev, newCategory];
+    });
   };
 
   const handleAddBlog = (newBlog: BlogPost) => {
@@ -223,24 +301,6 @@ export default function App() {
 
   const handleDeleteSubscriber = (subscriberId: string) => {
     setSubscribers((prev) => prev.filter((s) => s.id !== subscriberId));
-  };
-
-  const handleSelectBlog = (blog: BlogPost) => {
-    setSelectedBlog(blog);
-    handleTabChange('blog-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSelectCategory = (category: Category) => {
-    setSelectedCategory(category);
-    handleTabChange('category-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSelectServiceDetail = (service: string) => {
-    setSelectedServiceDetail(service);
-    handleTabChange('service-detail');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleAddComment = (newComment: { author_name: string; description: string }) => {

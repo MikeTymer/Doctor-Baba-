@@ -1,5 +1,6 @@
 import { BlogPost, Category } from '../types';
 import { SERVICE_DESCRIPTIONS, REGIONAL_SEO_CONTENT } from '../data/serviceDetails';
+import { BASE_URL, getPathnameForState, slugify } from './routes';
 
 export interface SEOConfig {
   title: string;
@@ -15,7 +16,6 @@ export interface SEOConfig {
 }
 
 const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1545232979-fbfd42e0188d?auto=format&fit=crop&w=1200&q=80';
-const BASE_URL = 'https://doctorbabamukisa.com';
 
 /**
  * Utility to strip HTML tags from rich text descriptions
@@ -138,7 +138,8 @@ export function getSEOForView(
     case 'blog-detail': {
       if (selectedBlog) {
         const cleanDesc = selectedBlog.mini_description || stripHtml(selectedBlog.description).slice(0, 160);
-        const articleUrl = `${BASE_URL}/#blog/${selectedBlog.slug || selectedBlog.id}`;
+        const articlePath = getPathnameForState('blog-detail', selectedBlog, null, null);
+        const articleUrl = `${BASE_URL}${articlePath}`;
         return {
           title: `${selectedBlog.name} | Doctor Baba Mukisa Spiritual Blog`,
           description: cleanDesc.length > 160 ? `${cleanDesc.slice(0, 157)}...` : cleanDesc,
@@ -184,7 +185,8 @@ export function getSEOForView(
           SERVICE_DESCRIPTIONS[selectedServiceDetail] || 
           REGIONAL_SEO_CONTENT[selectedServiceDetail] || 
           `Authentic ${selectedServiceDetail} rituals and ancestral consultations conducted by Doctor Baba Mukisa to restore balance, love, and protection.`;
-        const serviceUrl = `${BASE_URL}/#service/${encodeURIComponent(selectedServiceDetail)}`;
+        const servicePath = getPathnameForState('service-detail', null, null, selectedServiceDetail);
+        const serviceUrl = `${BASE_URL}${servicePath}`;
 
         return {
           title: `${selectedServiceDetail} - Authentic Spiritual Consultations | Doctor Baba Mukisa`,
@@ -215,7 +217,8 @@ export function getSEOForView(
     case 'category-detail': {
       if (selectedCategory) {
         const catDesc = selectedCategory.description || `Specialized ${selectedCategory.name} spiritual rituals, articles, and herbal consultations by Doctor Baba Mukisa.`;
-        const catUrl = `${BASE_URL}/#category/${selectedCategory.slug || selectedCategory.id}`;
+        const catPath = getPathnameForState('category-detail', null, selectedCategory, null);
+        const catUrl = `${BASE_URL}${catPath}`;
 
         return {
           title: `${selectedCategory.name} - Spiritual Services & Wisdom | Doctor Baba Mukisa`,
@@ -241,7 +244,7 @@ export function getSEOForView(
         title: 'Spiritual Wisdom, Traditional Practices & Healing Blog | Doctor Baba Mukisa',
         description: 'Read authentic articles on African spiritual traditions, relationship reconciliation, marriage harmony, sacred herbal remedies, and ancestral guidance.',
         keywords: 'spiritual blog, traditional relationship guidance, herbal remedy articles, ancestral guidance blog, Doctor Baba Mukisa blog',
-        url: `${BASE_URL}/#blog`,
+        url: `${BASE_URL}/blog`,
         type: 'website'
       };
     }
@@ -251,7 +254,7 @@ export function getSEOForView(
         title: 'Spiritual Services & Sacred Ancestral Traditions | Doctor Baba Mukisa',
         description: 'Discover authentic spiritual services: Relationship Reconciliation, Marriage Harmony, Career & Business Guidance, Spiritual Protection, and Traditional Herbal Knowledge in Kampala.',
         keywords: 'spiritual guidance services, relationship reconciliation, marriage harmony, prosperity guidance, traditional healer Kampala Uganda',
-        url: `${BASE_URL}/#services`,
+        url: `${BASE_URL}/services`,
         type: 'website'
       };
     }
@@ -261,7 +264,7 @@ export function getSEOForView(
         title: 'About Doctor Baba Mukisa - African Herbalist & Ancestral Lineage',
         description: 'Learn about Doctor Baba Mukisa, a respected African traditional herbalist and ancestral guidance practitioner with decades of sacred healing experience in Kampala, Uganda.',
         keywords: 'About Doctor Baba Mukisa, African herbalist history, Digo ancestral lineage, traditional medicine master, Kampala spiritual temple',
-        url: `${BASE_URL}/#about`,
+        url: `${BASE_URL}/about`,
         type: 'website'
       };
     }
@@ -271,7 +274,7 @@ export function getSEOForView(
         title: 'Contact Doctor Baba Mukisa - Temple Consultation & WhatsApp',
         description: 'Book a confidential spiritual consultation with Doctor Baba Mukisa in Kampala, Uganda, or connect directly on WhatsApp +256767062834 for distance guidance.',
         keywords: 'Contact Doctor Baba Mukisa, WhatsApp spiritual advisor, book consultation Kampala, traditional healer phone number',
-        url: `${BASE_URL}/#contact`,
+        url: `${BASE_URL}/contact`,
         type: 'website'
       };
     }
@@ -281,7 +284,7 @@ export function getSEOForView(
         title: 'Sacred Ritual Videos & Ancestral Teachings | Doctor Baba Mukisa',
         description: 'Watch authentic spiritual ceremonies, herbal preparations, and client blessings recorded live at Doctor Baba Mukisa\'s temple sanctuary.',
         keywords: 'spiritual ritual videos, African healer ceremonies, traditional medicine videos, Doctor Baba Mukisa sanctuary',
-        url: `${BASE_URL}/#videos`,
+        url: `${BASE_URL}/videos`,
         type: 'website'
       };
     }
@@ -291,7 +294,7 @@ export function getSEOForView(
         title: 'Sanctuary & Sacred Herbal Gallery | Doctor Baba Mukisa',
         description: 'Explore photo captures of Doctor Baba Mukisa\'s spiritual temple, sacred shrines, consecrated artifacts, and herbal remedies in Kampala, Uganda.',
         keywords: 'spiritual temple photos, African altar gallery, herbal remedies pictures, Doctor Baba Mukisa',
-        url: `${BASE_URL}/#gallery`,
+        url: `${BASE_URL}/gallery`,
         type: 'website'
       };
     }
@@ -312,7 +315,7 @@ export function getSEOForView(
         description: 'Official sanctuary of Doctor Baba Mukisa. Authentic African traditional herbalist, ancestral guidance practitioner, and spiritual advisor for relationship harmony, traditional healing, and mindfulness in Kampala, Uganda.',
         keywords: 'Doctor Baba Mukisa, traditional herbalist Uganda, relationship reconciliation, marriage harmony, spiritual cleansing Africa, traditional healing, prosperity consultations, traditional advisor Kampala',
         image: DEFAULT_IMAGE,
-        url: BASE_URL,
+        url: `${BASE_URL}/`,
         type: 'website'
       };
     }
