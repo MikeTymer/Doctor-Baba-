@@ -1,6 +1,33 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Global window.fetch compatibility guard (prevents 'Cannot set property fetch of #<Window> which has only a getter') -->
+    <script>
+      (function() {
+        try {
+          if (typeof window !== 'undefined' && 'fetch' in window) {
+            var nativeFetch = window.fetch;
+            var currentFetch = typeof nativeFetch === 'function' ? function() {
+              return nativeFetch.apply(window, arguments);
+            } : nativeFetch;
+
+            Object.defineProperty(window, 'fetch', {
+              get: function() {
+                return currentFetch;
+              },
+              set: function(val) {
+                currentFetch = val;
+              },
+              configurable: true,
+              enumerable: true
+            });
+          }
+        } catch (e) {
+          // Graceful fallback if window property is sealed
+        }
+      })();
+    </script>
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18381371410"></script>
     <script>
