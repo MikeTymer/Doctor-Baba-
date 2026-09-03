@@ -2,6 +2,7 @@ import React from 'react';
 import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
 import { Home, MessageCircle, Phone, Mail } from 'lucide-react';
+import { useWhatsApp } from '../context/WhatsAppContext';
 
 interface MobileBottomNavProps {
   activeTab: ActiveTab;
@@ -9,6 +10,8 @@ interface MobileBottomNavProps {
 }
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveTab }) => {
+  const { openWhatsApp } = useWhatsApp();
+
   return (
     <div className="mobile-bottom-nav md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-950/95 border border-amber-800/60 shadow-2xl shadow-amber-950 rounded-full backdrop-blur-lg px-2 py-1.5 transition-all">
       <div className="flex items-center justify-around">
@@ -29,15 +32,16 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, set
         </button>
 
         {/* WhatsApp Chat Button */}
-        <a
-          href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20am%20reaching%20out%20for%20spiritual%20help`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex flex-col items-center justify-center py-1 px-3 rounded-full text-xs font-medium text-emerald-400 hover:text-emerald-300 min-h-[44px] transition-colors"
+        <button
+          type="button"
+          id="mobile-whatsapp-nav-btn"
+          onClick={() => openWhatsApp('Hello Doctor Baba Mukisa, I am reaching out for spiritual help')}
+          className="flex flex-col items-center justify-center py-1 px-3 rounded-full text-xs font-medium text-emerald-400 hover:text-emerald-300 min-h-[44px] transition-colors cursor-pointer"
+          aria-label="Open WhatsApp chat composer with Doctor Baba Mukisa"
         >
           <MessageCircle className="w-5 h-5 mb-0.5 text-emerald-400 animate-pulse" />
           <span className="font-semibold">Chat</span>
-        </a>
+        </button>
 
         {/* Contact Us Button */}
         <button

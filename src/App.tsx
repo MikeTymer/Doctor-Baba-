@@ -12,6 +12,8 @@ import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Footer } from './components/Footer';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { WhatsAppProvider } from './context/WhatsAppContext';
+import { WhatsAppModal } from './components/WhatsAppModal';
 
 import { HomeView } from './components/HomeView';
 import { BlogView } from './components/BlogView';
@@ -316,14 +318,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
-      
-      {/* Navbar Header */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={handleTabChange}
-        onSelectServiceDetail={handleSelectServiceDetail}
-      />
+    <WhatsAppProvider>
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950">
+        
+        {/* Navbar Header */}
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={handleTabChange}
+          onSelectServiceDetail={handleSelectServiceDetail}
+        />
 
       {/* Main App Content Viewport */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 md:pb-12">
@@ -442,6 +445,10 @@ export default function App() {
       {/* Floating Desktop WhatsApp Button */}
       <FloatingWhatsApp />
 
+      {/* Interactive WhatsApp Message Customizer Modal */}
+      <WhatsAppModal />
+
     </div>
+    </WhatsAppProvider>
   );
 }
