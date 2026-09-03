@@ -343,7 +343,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </p>
             <div className="pt-2">
               <button 
-                onClick={() => onSelectServiceDetail('Love Spells')}
+                onClick={() => onSelectServiceDetail('Relationship Reconciliation')}
                 className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-8 py-3 rounded-full text-xs transition-all shadow-lg active:scale-95"
               >
                 Consult Now

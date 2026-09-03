@@ -3,6 +3,7 @@ User-agent: *
 Allow: /
 Allow: /about
 Allow: /services
+Allow: /services/
 Allow: /blog
 Allow: /gallery
 Allow: /videos
@@ -10,7 +11,6 @@ Allow: /contact
 Allow: /category/
 Allow: /service/
 Allow: /static/
-Allow: /ads.txt
 Disallow: /admin
 Disallow: /api/
 

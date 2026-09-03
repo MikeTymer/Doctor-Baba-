@@ -102,8 +102,12 @@ async function startServer() {
   app.use('/static', express.static(path.join(process.cwd(), 'public', 'static')));
 
   app.get('/ads.txt', (req, res) => {
-    res.type('text/plain');
-    res.send('google.com, pub-9439344424124933, DIRECT, f08c47fec0942fa0\n');
+    const adsTxtPath = path.join(process.cwd(), 'public', 'ads.txt');
+    if (fs.existsSync(adsTxtPath)) {
+      res.type('text/plain');
+      return res.sendFile(adsTxtPath);
+    }
+    res.status(404).send('Not Found');
   });
 
   app.get('/robots.txt', (req, res) => {
