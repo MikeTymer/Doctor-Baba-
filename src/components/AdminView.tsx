@@ -2737,6 +2737,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         </button>
 
                         <a
+                          data-no-intercept="true"
                           href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: Spiritual Consultation - ${m.service || 'Doctor Baba Mukisa'}`)}&body=${encodeURIComponent(`Hello ${m.name},\n\nThank you for reaching out to Doctor Baba Mukisa regarding ${m.service || 'your request'}.\n\n`)}`}
                           className="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors"
                           title="Open in your default email app (PrivateEmail / Outlook / Apple Mail)"
@@ -3025,6 +3026,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   </a>
 
                   <a
+                    data-no-intercept="true"
                     href={`mailto:${selectedEmailMsg.email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
                     className="bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-600/40 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
                     title="Opens your device default mail program (Outlook, Apple Mail, Thunderbird)"

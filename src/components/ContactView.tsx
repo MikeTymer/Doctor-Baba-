@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { SITE_INFO } from '../data/initialData';
 import { Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, AlertCircle, ShieldCheck, Globe, Smartphone, ShieldAlert } from 'lucide-react';
 import { getClientMetadata } from '../utils/clientTracker';
+import { useEmail } from '../context/EmailContext';
 
 export const ContactView: React.FC = () => {
+  const { openEmail } = useEmail();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -188,13 +190,30 @@ export const ContactView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-950 border border-amber-700/60 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+              <div className="flex items-start gap-3 group">
+                <button
+                  type="button"
+                  onClick={() => openEmail()}
+                  className="w-9 h-9 rounded-xl bg-amber-950 border border-amber-700/60 flex items-center justify-center text-amber-400 shrink-0 mt-0.5 hover:bg-amber-900 transition-colors cursor-pointer"
+                  title="Click to compose an email to Doctor Baba Mukisa"
+                  aria-label="Email Doctor Baba Mukisa"
+                >
                   <Mail className="w-4 h-4" />
-                </div>
+                </button>
                 <div>
                   <h4 className="font-bold text-amber-200">Email Address</h4>
-                  <p className="text-amber-300">{SITE_INFO.email}</p>
+                  <a
+                    href={`mailto:${SITE_INFO.email}?subject=${encodeURIComponent('Spiritual Consultation Inquiry - Doctor Baba Mukisa')}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openEmail();
+                    }}
+                    className="text-amber-300 hover:text-amber-200 hover:underline font-semibold text-xs sm:text-sm break-all transition-colors cursor-pointer inline-block"
+                    title="Click to send an email with your emailing service"
+                  >
+                    {SITE_INFO.email}
+                  </a>
+                  <p className="text-[10px] text-slate-400">Click to compose in Gmail, Outlook, Yahoo, or Mail app.</p>
                 </div>
               </div>
 
@@ -210,15 +229,23 @@ export const ContactView: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-2">
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
               <a
                 href={`https://wa.me/${SITE_INFO.whatsapp}?text=Hello%20Doctor%20Baba%20Mukisa,%20I%20need%20urgent%20spiritual%20help`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow min-h-[44px]"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow min-h-[44px] cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" /> Open WhatsApp
               </a>
+              <button
+                type="button"
+                id="contact-send-email-btn"
+                onClick={() => openEmail()}
+                className="w-full bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow min-h-[44px] cursor-pointer"
+              >
+                <Mail className="w-4 h-4" /> Send Email
+              </button>
             </div>
           </div>
         </div>

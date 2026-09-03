@@ -3,6 +3,7 @@ import { ActiveTab } from '../types';
 import { SITE_INFO } from '../data/initialData';
 import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { ChevronDown, ChevronUp, Flame, ShieldAlert, Phone, Mail, MapPin, Send, CheckCircle2, AlertCircle, Globe, Map, Sparkles, Star, Heart } from 'lucide-react';
+import { useEmail } from '../context/EmailContext';
 
 interface FooterProps {
   setActiveTab: (tab: ActiveTab) => void;
@@ -11,6 +12,7 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDetail, onSubscribe }) => {
+  const { openEmail } = useEmail();
   const [disclaimerExpanded, setDisclaimerExpanded] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [subscribedMsg, setSubscribedMsg] = useState('');
@@ -140,7 +142,14 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                <span>{SITE_INFO.email}</span>
+                <button
+                  type="button"
+                  onClick={() => openEmail()}
+                  className="hover:text-amber-200 hover:underline transition-colors text-left break-all cursor-pointer"
+                  title="Click to compose an email with your service provider"
+                >
+                  {SITE_INFO.email}
+                </button>
               </div>
             </div>
           </div>
@@ -229,7 +238,14 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, onSelectServiceDet
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                <span>{SITE_INFO.email}</span>
+                <button
+                  type="button"
+                  onClick={() => openEmail()}
+                  className="hover:text-amber-200 hover:underline transition-colors text-left break-all cursor-pointer"
+                  title="Click to compose an email with your service provider"
+                >
+                  {SITE_INFO.email}
+                </button>
               </div>
               <div className="flex items-center gap-2 pt-1">
                 <a href="https://wa.me/256767062834" target="_blank" rel="noopener noreferrer" className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-[10px] font-bold">

@@ -5,6 +5,7 @@ import { ABOUT_SLIDER_ITEMS } from '../data/aboutSliderData';
 import { normalizeImageUrl, handleImageError } from '../utils/imageUtils';
 import { MapPin, Phone, Mail, Award, Flame, Heart, MessageSquare, ArrowRight, Sparkles, ShieldCheck, Star, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEmail } from '../context/EmailContext';
 
 interface AboutViewProps {
   onContact: () => void;
@@ -15,6 +16,8 @@ export const AboutView: React.FC<AboutViewProps> = ({
   onContact, 
   onSelectServiceDetail
 }) => {
+  const { openEmail } = useEmail();
+
   return (
     <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-300">
       
@@ -194,12 +197,19 @@ export const AboutView: React.FC<AboutViewProps> = ({
             <p className="text-[10px] text-slate-400">Call or message anytime for quick assistance.</p>
           </div>
 
-          <div className="bg-slate-950 border border-amber-900/30 rounded-xl p-4 space-y-2">
+          <div className="bg-slate-950 border border-amber-900/30 rounded-xl p-4 space-y-2 group">
             <div className="text-amber-400 font-bold text-sm flex items-center gap-2">
               <Mail className="w-4 h-4" /> Email Address
             </div>
-            <p className="text-amber-200 font-semibold">{SITE_INFO.email}</p>
-            <p className="text-[10px] text-slate-400">Send email inquiries or consultation notes.</p>
+            <button
+              type="button"
+              onClick={() => openEmail()}
+              className="text-amber-200 hover:text-amber-100 font-semibold text-left break-all hover:underline cursor-pointer block"
+              title="Click to compose with your email service provider"
+            >
+              {SITE_INFO.email}
+            </button>
+            <p className="text-[10px] text-slate-400">Click to compose with Gmail, Outlook, Yahoo, or Mail app.</p>
           </div>
 
           <div className="bg-slate-950 border border-amber-900/30 rounded-xl p-4 space-y-2">
