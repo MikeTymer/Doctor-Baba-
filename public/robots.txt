@@ -53,6 +53,6 @@ User-agent: Mediapartners-Google
 Allow: /
 
 # Canonical XML Sitemap & Host
-Sitemap: https://doctorbabamukisa.com/sitemap.xml
-Host: https://doctorbabamukisa.com
+Sitemap: https://www.doctorbabamukisa.com/sitemap.xml
+Host: https://www.doctorbabamukisa.com
 
