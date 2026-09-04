@@ -76,9 +76,9 @@ async function startServer() {
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://adservice.google.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https: http:",
+      "img-src 'self' data: blob: https:",
       "media-src 'self' https: data: blob:",
-      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://pagead2.googlesyndication.com https://region1.google-analytics.com https://ipapi.co https://api.ipify.org https://api.country.is wss: ws:",
+      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://pagead2.googlesyndication.com https://region1.google-analytics.com wss: ws:",
       "frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://pagead2.googlesyndication.com",
       "object-src 'none'",
       "base-uri 'self'",
@@ -117,7 +117,7 @@ async function startServer() {
       return res.sendFile(robotsPath);
     }
     res.type('text/plain');
-    res.send("User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: https://doctorbabamukisa.com/sitemap.xml\n");
+    res.send("User-agent: *\nAllow: /\nAllow: /admin\nDisallow: /api/\n\nSitemap: https://doctorbabamukisa.com/sitemap.xml\n");
   });
 
   app.get('/sitemap.xml', (req, res) => {

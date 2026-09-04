@@ -301,10 +301,11 @@ export function getSEOForView(
 
     case 'admin': {
       return {
-        title: 'Temple Administration Dashboard | Doctor Baba Mukisa',
-        description: 'Secure administration control panel for Doctor Baba Mukisa temple management.',
+        title: 'Temple Administration Dashboard & Management | Doctor Baba Mukisa',
+        description: 'Doctor Baba Mukisa spiritual temple content administration portal, publications management, and consultation logs.',
+        keywords: 'Doctor Baba Mukisa admin, temple dashboard, spiritual sanctuary portal',
         url: `${BASE_URL}/admin`,
-        noindex: true
+        noindex: false
       };
     }
 

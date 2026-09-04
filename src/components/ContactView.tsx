@@ -48,7 +48,7 @@ export const ContactView: React.FC = () => {
         os: 'Desktop / Mobile OS',
         deviceType: 'Mobile' as const,
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-        screenResolution: typeof window !== 'undefined' ? `${window.screen.width}x${window.screen.height}` : '1920x1080',
+        screenResolution: 'Standard',
         language: typeof navigator !== 'undefined' ? navigator.language : 'en-US',
         timezone: 'Africa/Kampala'
       };

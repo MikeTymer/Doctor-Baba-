@@ -1,6 +1,7 @@
 # Google Search & All Web Crawlers
 User-agent: *
 Allow: /
+Allow: /admin
 Allow: /about
 Allow: /services
 Allow: /services/
@@ -11,19 +12,18 @@ Allow: /contact
 Allow: /category/
 Allow: /service/
 Allow: /static/
-Disallow: /admin
 Disallow: /api/
 
 # Googlebot Specific Rules
 User-agent: Googlebot
 Allow: /
-Disallow: /admin
+Allow: /admin
 Disallow: /api/
 
 # Google Search Inspection Tool
 User-agent: Google-InspectionTool
 Allow: /
-Disallow: /admin
+Allow: /admin
 Disallow: /api/
 
 # Googlebot Images (Allow all photography, herbal visuals & media)
@@ -39,18 +39,19 @@ Allow: /*.svg$
 # Google Ads Bot
 User-agent: AdsBot-Google
 Allow: /
-Disallow: /admin
+Allow: /admin
 Disallow: /api/
 
 # Google Ads Mobile Bot
 User-agent: AdsBot-Google-Mobile
 Allow: /
-Disallow: /admin
+Allow: /admin
 Disallow: /api/
 
 # Google AdSense Crawler
 User-agent: Mediapartners-Google
 Allow: /
+Allow: /admin
 
 # Canonical XML Sitemap & Host
 Sitemap: https://www.doctorbabamukisa.com/sitemap.xml
