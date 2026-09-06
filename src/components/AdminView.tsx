@@ -91,7 +91,12 @@ import {
   Server,
   RefreshCw,
   EyeOff,
-  X
+  X,
+  Upload,
+  Folder,
+  HardDrive,
+  Image as ImageIcon,
+  FileDown
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -603,6 +608,126 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [editBody2, setEditBody2] = useState('');
   const [editSuccessMsg, setEditSuccessMsg] = useState('');
 
+  // Image Management & Local File Storage State
+  const [publicImages, setPublicImages] = useState<Array<{ filename: string; url: string; size: number; modified: string }>>([]);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [isUploadingCreateImg, setIsUploadingCreateImg] = useState(false);
+  const [createImgSavedPath, setCreateImgSavedPath] = useState<string>('');
+  const [isUploadingEditImg, setIsUploadingEditImg] = useState(false);
+  const [editImgSavedPath, setEditImgSavedPath] = useState<string>('');
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [galleryTarget, setGalleryTarget] = useState<'create' | 'edit'>('create');
+  const [isSubmittingBlog, setIsSubmittingBlog] = useState(false);
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+
+  // Fetch available images stored on the server's public file path
+  const fetchPublicImages = async () => {
+    setIsLoadingImages(true);
+    try {
+      const res = await fetch('/api/images');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.images)) {
+        setPublicImages(data.images);
+      }
+    } catch (err) {
+      console.warn('Could not fetch public images:', err);
+    } finally {
+      setIsLoadingImages(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPublicImages();
+  }, []);
+
+  // Handle direct file upload from local device into /public
+  const handleUploadImageFile = (file: File, target: 'create' | 'edit') => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file (JPG, PNG, WebP, etc.)');
+      return;
+    }
+
+    if (target === 'create') setIsUploadingCreateImg(true);
+    else setIsUploadingEditImg(true);
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const base64Data = e.target?.result as string;
+        const res = await fetch('/api/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            data: base64Data,
+            filename: file.name
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.url) {
+          if (target === 'create') {
+            setFeatureImage(data.url);
+            setCreateImgSavedPath(data.filePath || `public/${data.filename}`);
+          } else {
+            setEditFeatureImage(data.url);
+            setEditImgSavedPath(data.filePath || `public/${data.filename}`);
+          }
+          fetchPublicImages();
+        } else {
+          alert(`Failed to save image: ${data.error || 'Unknown error'}`);
+        }
+      } catch (err: any) {
+        alert(`Error uploading image: ${err.message}`);
+      } finally {
+        if (target === 'create') setIsUploadingCreateImg(false);
+        else setIsUploadingEditImg(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Download remote URL and save it directly into the /public directory
+  const handleDownloadAndSaveRemote = async (target: 'create' | 'edit') => {
+    const rawUrl = target === 'create' ? featureImage : editFeatureImage;
+    if (!rawUrl || (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://'))) {
+      alert('Please enter an HTTP or HTTPS image URL to download into the public folder.');
+      return;
+    }
+
+    if (target === 'create') setIsUploadingCreateImg(true);
+    else setIsUploadingEditImg(true);
+
+    try {
+      const slugBase = (target === 'create' ? title : editTitle).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30) || 'spiritual-post';
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: rawUrl,
+          filename: `${slugBase}.jpg`
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        if (target === 'create') {
+          setFeatureImage(data.url);
+          setCreateImgSavedPath(data.filePath || `public/${data.filename}`);
+        } else {
+          setEditFeatureImage(data.url);
+          setEditImgSavedPath(data.filePath || `public/${data.filename}`);
+        }
+        fetchPublicImages();
+      } else {
+        alert(`Failed to download and save image: ${data.error || 'Server error'}`);
+      }
+    } catch (err: any) {
+      alert(`Error saving image: ${err.message}`);
+    } finally {
+      if (target === 'create') setIsUploadingCreateImg(false);
+      else setIsUploadingEditImg(false);
+    }
+  };
+
   useEffect(() => {
     setLocalComments(comments);
   }, [comments]);
@@ -743,97 +868,133 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setConfirmPassInput('');
   };
 
-  const handleCreateBlog = (e: React.FormEvent) => {
+  const handleCreateBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || !miniDescription) {
       alert('Please fill in the blog title, mini description, and full description.');
       return;
     }
 
-    let finalCategorySlug = categorySlug;
-    let finalCategoryName = 'General';
+    setIsSubmittingBlog(true);
 
-    if (categorySlug === 'ADD_NEW_CATEGORY' || isAddingCustomCategory) {
-      if (!customCategoryName.trim()) {
-        alert('Please enter a custom category name.');
-        return;
+    try {
+      let finalCategorySlug = categorySlug;
+      let finalCategoryName = 'General';
+
+      if (categorySlug === 'ADD_NEW_CATEGORY' || isAddingCustomCategory) {
+        if (!customCategoryName.trim()) {
+          alert('Please enter a custom category name.');
+          setIsSubmittingBlog(false);
+          return;
+        }
+        const trimmedName = customCategoryName.trim();
+        const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+        let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+
+        if (!existingCat) {
+          existingCat = {
+            id: `cat-${Date.now()}`,
+            name: trimmedName,
+            slug: generatedSlug,
+            description: `Spiritual guidance and rituals for ${trimmedName}`,
+            image: '/baba.jpg'
+          };
+          setLocalCategories((prev) => [...prev, existingCat!]);
+          if (onAddCategory) {
+            onAddCategory(existingCat);
+          }
+        }
+
+        finalCategorySlug = existingCat.slug;
+        finalCategoryName = existingCat.name;
+      } else {
+        const selectedCatObj = localCategories.find((c) => c.slug === categorySlug);
+        finalCategoryName = selectedCatObj ? selectedCatObj.name : 'General';
       }
-      const trimmedName = customCategoryName.trim();
-      const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-      let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+      const contentSections = [];
+      if (heading1 && body1) {
+        contentSections.push({ heading: heading1, body: body1 });
+      }
+      if (heading2 && body2) {
+        contentSections.push({ heading: heading2, body: body2 });
+      }
 
-      if (!existingCat) {
-        existingCat = {
-          id: `cat-${Date.now()}`,
-          name: trimmedName,
-          slug: generatedSlug,
-          description: `Spiritual guidance and rituals for ${trimmedName}`,
-          image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80'
-        };
-        setLocalCategories((prev) => [...prev, existingCat!]);
-        if (onAddCategory) {
-          onAddCategory(existingCat);
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      let cleanImageUrl = normalizeImageUrl(featureImage);
+      let imageFilePathSaved = createImgSavedPath;
+
+      // Ensure the image being used is saved on the server file path where the other images are (/public/)
+      if (cleanImageUrl && (cleanImageUrl.startsWith('data:') || cleanImageUrl.startsWith('http://') || cleanImageUrl.startsWith('https://'))) {
+        try {
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              data: cleanImageUrl.startsWith('data:') ? cleanImageUrl : undefined,
+              url: !cleanImageUrl.startsWith('data:') ? cleanImageUrl : undefined,
+              filename: `${slug.substring(0, 30)}.jpg`
+            })
+          });
+          const uploadRes = await res.json();
+          if (uploadRes.success && uploadRes.url) {
+            cleanImageUrl = uploadRes.url;
+            imageFilePathSaved = uploadRes.filePath || `public/${uploadRes.filename}`;
+            setFeatureImage(uploadRes.url);
+            setCreateImgSavedPath(imageFilePathSaved);
+            fetchPublicImages();
+          }
+        } catch (imgErr) {
+          console.warn('Could not auto-save external image to public directory:', imgErr);
         }
       }
 
-      finalCategorySlug = existingCat.slug;
-      finalCategoryName = existingCat.name;
-    } else {
-      const selectedCatObj = localCategories.find((c) => c.slug === categorySlug);
-      finalCategoryName = selectedCatObj ? selectedCatObj.name : 'General';
+      const newBlogObj: BlogPost = {
+        id: `blog-${Date.now()}`,
+        name: title,
+        slug,
+        author: author || 'Doctor Baba Mukisa',
+        views: 100,
+        description,
+        mini_description: miniDescription,
+        content_sections: contentSections.length > 0 ? contentSections : undefined,
+        post_date: new Date().toISOString().split('T')[0],
+        feature_image: cleanImageUrl,
+        category_slug: finalCategorySlug,
+        category_name: finalCategoryName
+      };
+
+      onAddBlog(newBlogObj);
+      setFormSuccess(`New spiritual blog post published successfully! Image saved in: ${imageFilePathSaved || 'public image storage'}`);
+      addAuditLog(
+        'CREATE_BLOG',
+        'SUCCESS',
+        'help@doctorbabamukisa.com',
+        `Published new spiritual article: "${title}" (Category: ${finalCategoryName}, Image: ${cleanImageUrl}).`
+      );
+      
+      // Reset form
+      setTitle('');
+      setMiniDescription('');
+      setDescription('');
+      setHeading1('');
+      setBody1('');
+      setHeading2('');
+      setBody2('');
+      setCustomCategoryName('');
+      setIsAddingCustomCategory(false);
+      setCreateImgSavedPath('');
+
+      setTimeout(() => {
+        setFormSuccess('');
+        setActiveAdminTab('blogs');
+      }, 1500);
+    } catch (err: any) {
+      alert(`Error publishing blog post: ${err.message}`);
+    } finally {
+      setIsSubmittingBlog(false);
     }
-
-    const contentSections = [];
-    if (heading1 && body1) {
-      contentSections.push({ heading: heading1, body: body1 });
-    }
-    if (heading2 && body2) {
-      contentSections.push({ heading: heading2, body: body2 });
-    }
-
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    const cleanImageUrl = normalizeImageUrl(featureImage);
-
-    const newBlogObj: BlogPost = {
-      id: `blog-${Date.now()}`,
-      name: title,
-      slug,
-      author: author || 'Doctor Baba Mukisa',
-      views: 100,
-      description,
-      mini_description: miniDescription,
-      content_sections: contentSections.length > 0 ? contentSections : undefined,
-      post_date: new Date().toISOString().split('T')[0],
-      feature_image: cleanImageUrl,
-      category_slug: finalCategorySlug,
-      category_name: finalCategoryName
-    };
-
-    onAddBlog(newBlogObj);
-    setFormSuccess('New spiritual blog post published successfully!');
-    addAuditLog(
-      'CREATE_BLOG',
-      'SUCCESS',
-      'help@doctorbabamukisa.com',
-      `Published new spiritual article: "${title}" (Category: ${finalCategoryName}).`
-    );
-    
-    // Reset form
-    setTitle('');
-    setMiniDescription('');
-    setDescription('');
-    setHeading1('');
-    setBody1('');
-    setHeading2('');
-    setBody2('');
-    setCustomCategoryName('');
-    setIsAddingCustomCategory(false);
-
-    setTimeout(() => {
-      setFormSuccess('');
-      setActiveAdminTab('blogs');
-    }, 1500);
   };
 
   const handleStartEditBlog = (blog: BlogPost) => {
@@ -846,6 +1007,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setEditMiniDescription(blog.mini_description || '');
     setEditDescription(blog.description || '');
     setEditFeatureImage(blog.feature_image || '');
+    setEditImgSavedPath(blog.feature_image?.startsWith('/') ? `public${blog.feature_image}` : '');
     setEditHeading1(blog.content_sections?.[0]?.heading || '');
     setEditBody1(blog.content_sections?.[0]?.body || '');
     setEditHeading2(blog.content_sections?.[1]?.heading || '');
@@ -853,82 +1015,118 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setEditSuccessMsg('');
   };
 
-  const handleSaveEditedBlog = (e: React.FormEvent) => {
+  const handleSaveEditedBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingBlog) return;
 
-    let finalCatSlug = editCategorySlug;
-    let finalCatName = 'Spiritual Rituals';
+    setIsSubmittingEdit(true);
 
-    if (editCategorySlug === 'ADD_NEW_CATEGORY' || isEditAddingCustomCategory) {
-      if (!editCustomCategoryName.trim()) {
-        alert('Please enter a custom category name.');
-        return;
+    try {
+      let finalCatSlug = editCategorySlug;
+      let finalCatName = 'Spiritual Rituals';
+
+      if (editCategorySlug === 'ADD_NEW_CATEGORY' || isEditAddingCustomCategory) {
+        if (!editCustomCategoryName.trim()) {
+          alert('Please enter a custom category name.');
+          setIsSubmittingEdit(false);
+          return;
+        }
+        const trimmedName = editCustomCategoryName.trim();
+        const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+        let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+
+        if (!existingCat) {
+          existingCat = {
+            id: `cat-${Date.now()}`,
+            name: trimmedName,
+            slug: generatedSlug,
+            description: `Spiritual guidance and rituals for ${trimmedName}`,
+            image: '/baba.jpg'
+          };
+          setLocalCategories((prev) => [...prev, existingCat!]);
+          if (onAddCategory) {
+            onAddCategory(existingCat);
+          }
+        }
+
+        finalCatSlug = existingCat.slug;
+        finalCatName = existingCat.name;
+      } else {
+        const selectedCategory = localCategories.find((c) => c.slug === editCategorySlug);
+        finalCatName = selectedCategory ? selectedCategory.name : 'Spiritual Rituals';
       }
-      const trimmedName = editCustomCategoryName.trim();
-      const generatedSlug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-      let existingCat = localCategories.find((c) => c.slug === generatedSlug || c.name.toLowerCase() === trimmedName.toLowerCase());
+      const contentSections = [];
+      if (editHeading1.trim() || editBody1.trim()) {
+        contentSections.push({ heading: editHeading1.trim(), body: editBody1.trim() });
+      }
+      if (editHeading2.trim() || editBody2.trim()) {
+        contentSections.push({ heading: editHeading2.trim(), body: editBody2.trim() });
+      }
 
-      if (!existingCat) {
-        existingCat = {
-          id: `cat-${Date.now()}`,
-          name: trimmedName,
-          slug: generatedSlug,
-          description: `Spiritual guidance and rituals for ${trimmedName}`,
-          image: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80'
-        };
-        setLocalCategories((prev) => [...prev, existingCat!]);
-        if (onAddCategory) {
-          onAddCategory(existingCat);
+      let cleanEditImageUrl = normalizeImageUrl(editFeatureImage);
+      let editImagePathSaved = editImgSavedPath;
+
+      // Ensure the image being used is saved on the server file path where the other images are (/public/)
+      if (cleanEditImageUrl && (cleanEditImageUrl.startsWith('data:') || cleanEditImageUrl.startsWith('http://') || cleanEditImageUrl.startsWith('https://'))) {
+        try {
+          const editSlug = editTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30) || 'article';
+          const res = await fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              data: cleanEditImageUrl.startsWith('data:') ? cleanEditImageUrl : undefined,
+              url: !cleanEditImageUrl.startsWith('data:') ? cleanEditImageUrl : undefined,
+              filename: `${editSlug}.jpg`
+            })
+          });
+          const uploadRes = await res.json();
+          if (uploadRes.success && uploadRes.url) {
+            cleanEditImageUrl = uploadRes.url;
+            editImagePathSaved = uploadRes.filePath || `public/${uploadRes.filename}`;
+            setEditFeatureImage(uploadRes.url);
+            setEditImgSavedPath(editImagePathSaved);
+            fetchPublicImages();
+          }
+        } catch (imgErr) {
+          console.warn('Could not auto-save edited image to public directory:', imgErr);
         }
       }
 
-      finalCatSlug = existingCat.slug;
-      finalCatName = existingCat.name;
-    } else {
-      const selectedCategory = localCategories.find((c) => c.slug === editCategorySlug);
-      finalCatName = selectedCategory ? selectedCategory.name : 'Spiritual Rituals';
+      const updatedBlog: BlogPost = {
+        ...editingBlog,
+        name: editTitle.trim(),
+        slug: editTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+        author: editAuthor.trim() || 'Doctor Baba Mukisa',
+        category_slug: finalCatSlug,
+        category_name: finalCatName,
+        mini_description: editMiniDescription.trim(),
+        description: editDescription.trim(),
+        feature_image: cleanEditImageUrl,
+        content_sections: contentSections.length > 0 ? contentSections : undefined,
+      };
+
+      if (onUpdateBlog) {
+        onUpdateBlog(updatedBlog);
+      }
+
+      setEditSuccessMsg(`Article updated successfully! Image saved in: ${editImagePathSaved || 'public image storage'}`);
+      addAuditLog(
+        'UPDATE_BLOG',
+        'SUCCESS',
+        'help@doctorbabamukisa.com',
+        `Updated article content & image for: "${updatedBlog.name}". Image: ${cleanEditImageUrl}`
+      );
+      setTimeout(() => {
+        setEditingBlog(null);
+        setEditSuccessMsg('');
+      }, 1200);
+    } catch (err: any) {
+      alert(`Error updating article: ${err.message}`);
+    } finally {
+      setIsSubmittingEdit(false);
     }
-
-    const contentSections = [];
-    if (editHeading1.trim() || editBody1.trim()) {
-      contentSections.push({ heading: editHeading1.trim(), body: editBody1.trim() });
-    }
-    if (editHeading2.trim() || editBody2.trim()) {
-      contentSections.push({ heading: editHeading2.trim(), body: editBody2.trim() });
-    }
-
-    const cleanEditImageUrl = normalizeImageUrl(editFeatureImage);
-
-    const updatedBlog: BlogPost = {
-      ...editingBlog,
-      name: editTitle.trim(),
-      slug: editTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-      author: editAuthor.trim() || 'Doctor Baba Mukisa',
-      category_slug: finalCatSlug,
-      category_name: finalCatName,
-      mini_description: editMiniDescription.trim(),
-      description: editDescription.trim(),
-      feature_image: cleanEditImageUrl,
-      content_sections: contentSections.length > 0 ? contentSections : undefined,
-    };
-
-    if (onUpdateBlog) {
-      onUpdateBlog(updatedBlog);
-    }
-
-    setEditSuccessMsg('Article updated successfully!');
-    addAuditLog(
-      'UPDATE_BLOG',
-      'SUCCESS',
-      'help@doctorbabamukisa.com',
-      `Updated article content & image for: "${updatedBlog.name}".`
-    );
-    setTimeout(() => {
-      setEditingBlog(null);
-      setEditSuccessMsg('');
-    }, 1200);
   };
 
   const handleAddManualSubscriber = (e: React.FormEvent) => {
@@ -2179,18 +2377,80 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   )}
                 </div>
 
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-semibold text-amber-200">Feature Image URL *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editFeatureImage}
-                    onChange={(e) => setEditFeatureImage(e.target.value)}
-                    placeholder="e.g. https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y"
-                    className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
-                  />
-                  <div className="bg-slate-950/90 border border-amber-900/50 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 mt-1.5 text-xs">
-                    <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-900 border border-amber-700/50 shrink-0 relative shadow">
+                <div className="space-y-2 sm:col-span-2 bg-slate-950/80 border border-amber-900/60 rounded-2xl p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <label className="text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                        <ImageIcon className="w-4 h-4 text-amber-400" /> Feature Image &amp; Storage
+                      </label>
+                      <p className="text-[11px] text-slate-400">
+                        Saved in <code className="text-amber-300 font-mono bg-slate-900 px-1 py-0.5 rounded">public/</code> alongside other temple images.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-all shadow active:scale-95">
+                        <Upload className="w-3.5 h-3.5" />
+                        {isUploadingEditImg ? 'Saving...' : 'Upload Image'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isUploadingEditImg}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleUploadImageFile(file, 'edit');
+                          }}
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setGalleryTarget('edit');
+                          setShowGalleryModal(true);
+                        }}
+                        className="bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-700/60 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                      >
+                        <Folder className="w-3.5 h-3.5 text-amber-400" />
+                        Browse Folder ({publicImages.length})
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      value={editFeatureImage}
+                      onChange={(e) => {
+                        setEditFeatureImage(e.target.value);
+                        if (e.target.value.startsWith('/')) {
+                          setEditImgSavedPath(`public${e.target.value}`);
+                        } else {
+                          setEditImgSavedPath('');
+                        }
+                      }}
+                      placeholder="e.g. /baba.jpg or https://unsplash.com/photos/..."
+                      className="admin-input flex-1 w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none"
+                    />
+
+                    {(editFeatureImage.startsWith('http://') || editFeatureImage.startsWith('https://')) && (
+                      <button
+                        type="button"
+                        disabled={isUploadingEditImg}
+                        onClick={() => handleDownloadAndSaveRemote('edit')}
+                        title="Download and save this image into the local public/ directory"
+                        className="bg-amber-900/40 hover:bg-amber-800/60 text-amber-200 border border-amber-700/60 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 shrink-0 transition-colors"
+                      >
+                        <FileDown className="w-3.5 h-3.5 text-amber-400" />
+                        Save to public/
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 text-xs">
+                    <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-950 border border-amber-700/50 shrink-0 relative shadow">
                       <img
                         src={normalizeImageUrl(editFeatureImage)}
                         alt="Feature preview"
@@ -2198,10 +2458,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
                       />
                     </div>
-                    <div className="space-y-0.5 text-slate-300 min-w-0">
-                      <p className="font-semibold text-amber-300">💡 Image Link Helper &amp; Live Preview</p>
+                    <div className="space-y-1 text-slate-300 min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-amber-300">File Path Status:</span>
+                        {editFeatureImage.startsWith('/') ? (
+                          <span className="inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            public{editFeatureImage}
+                          </span>
+                        ) : editImgSavedPath ? (
+                          <span className="inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            {editImgSavedPath}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 bg-amber-950/80 text-amber-300 border border-amber-700/50 px-2 py-0.5 rounded-md text-[11px]">
+                            <Sparkles className="w-3 h-3 text-amber-400" />
+                            Will auto-save to public/ upon update
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Supports Unsplash page links (e.g. <span className="text-amber-200 font-mono">https://unsplash.com/photos/...</span>), direct image links, or Google Drive share links. Unsplash webpage links are automatically transformed into direct image CDN URLs!
+                        Images are saved directly on the website's server file path (<span className="text-amber-200 font-mono">public/</span>).
                       </p>
                     </div>
                   </div>
@@ -2376,17 +2654,79 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 />
               </div>
 
-              <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-semibold text-amber-200">Feature Image URL</label>
-                <input
-                  type="text"
-                  value={featureImage}
-                  onChange={(e) => setFeatureImage(e.target.value)}
-                  placeholder="e.g. https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y"
-                  className="admin-input w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
-                />
-                <div className="bg-slate-950/90 border border-amber-900/50 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 mt-1.5 text-xs">
-                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-900 border border-amber-700/50 shrink-0 relative shadow">
+              <div className="space-y-2 sm:col-span-2 bg-slate-950/80 border border-amber-900/60 rounded-2xl p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                      <ImageIcon className="w-4 h-4 text-amber-400" /> Article Feature Image &amp; Storage
+                    </label>
+                    <p className="text-[11px] text-slate-400">
+                      Saved directly on the server file path (<code className="text-amber-300 font-mono bg-slate-900 px-1 py-0.5 rounded">public/</code>) where the other images are.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-all shadow active:scale-95">
+                      <Upload className="w-3.5 h-3.5" />
+                      {isUploadingCreateImg ? 'Saving...' : 'Upload Image'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={isUploadingCreateImg}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadImageFile(file, 'create');
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGalleryTarget('create');
+                        setShowGalleryModal(true);
+                      }}
+                      className="bg-slate-900 hover:bg-slate-800 text-amber-300 border border-amber-700/60 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      <Folder className="w-3.5 h-3.5 text-amber-400" />
+                      Browse Folder ({publicImages.length})
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={featureImage}
+                    onChange={(e) => {
+                      setFeatureImage(e.target.value);
+                      if (e.target.value.startsWith('/')) {
+                        setCreateImgSavedPath(`public${e.target.value}`);
+                      } else {
+                        setCreateImgSavedPath('');
+                      }
+                    }}
+                    placeholder="e.g. /baba.jpg or https://unsplash.com/photos/..."
+                    className="admin-input flex-1 w-full bg-slate-950 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                  />
+
+                  {(featureImage.startsWith('http://') || featureImage.startsWith('https://')) && (
+                    <button
+                      type="button"
+                      disabled={isUploadingCreateImg}
+                      onClick={() => handleDownloadAndSaveRemote('create')}
+                      title="Download and save this image into the local public/ directory"
+                      className="bg-amber-900/40 hover:bg-amber-800/60 text-amber-200 border border-amber-700/60 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1 shrink-0 transition-colors"
+                    >
+                      <FileDown className="w-3.5 h-3.5 text-amber-400" />
+                      Save to public/
+                    </button>
+                  )}
+                </div>
+
+                <div className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-3 flex flex-col sm:flex-row items-center gap-3 text-xs">
+                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-slate-950 border border-amber-700/50 shrink-0 relative shadow">
                     <img
                       src={normalizeImageUrl(featureImage)}
                       alt="Feature image preview"
@@ -2394,10 +2734,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
                     />
                   </div>
-                  <div className="space-y-0.5 text-slate-300 min-w-0">
-                    <p className="font-semibold text-amber-300">💡 Image Link Helper &amp; Live Preview</p>
+                  <div className="space-y-1 text-slate-300 min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-amber-300">File Storage Status:</span>
+                      {featureImage.startsWith('/') ? (
+                        <span className="inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          public{featureImage}
+                        </span>
+                      ) : createImgSavedPath ? (
+                        <span className="inline-flex items-center gap-1 bg-emerald-950/80 text-emerald-300 border border-emerald-700/50 px-2 py-0.5 rounded-md text-[11px] font-mono">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          {createImgSavedPath}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 bg-amber-950/80 text-amber-300 border border-amber-700/50 px-2 py-0.5 rounded-md text-[11px]">
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                          Will auto-save to public/ upon publish
+                        </span>
+                      )}
+                    </div>
                     <p className="text-[11px] text-slate-400 leading-relaxed">
-                      You can paste Unsplash webpage links (e.g. <span className="text-amber-200 font-mono">https://unsplash.com/photos/woman-in-red-and-gold-dress-ZDMms8xjS6Y</span>), direct image links, or Google Drive share links. Unsplash web links are automatically transformed into direct image CDN URLs!
+                      Upload from your phone/computer, select an existing file from <code className="text-amber-200">public/</code>, or paste any web link.
                     </p>
                   </div>
                 </div>
@@ -3213,6 +3571,160 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   {savingSmtpConfig ? 'Saving...' : 'Save Settings'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PUBLIC IMAGES GALLERY MODAL */}
+      {showGalleryModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border-2 border-amber-600/80 rounded-3xl p-6 sm:p-8 max-w-4xl w-full my-8 shadow-2xl space-y-6 max-h-[88vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-amber-900/50 pb-4 shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                  <Folder className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold font-serif text-amber-100 flex items-center gap-2">
+                    Server Image Storage Directory
+                    <span className="text-xs font-mono font-normal text-amber-400/80 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-800/40">
+                      public/ ({publicImages.length} files)
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400">
+                    Select any image stored on the website server file path, or upload a new image.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowGalleryModal(false)}
+                className="text-slate-400 hover:text-slate-100 p-2 rounded-xl hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Actions Bar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-950/70 border border-amber-900/40 rounded-xl p-3 shrink-0">
+              <div className="flex items-center gap-2">
+                <label className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-3.5 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-all shadow active:scale-95">
+                  <Upload className="w-3.5 h-3.5" />
+                  {isUploadingCreateImg || isUploadingEditImg ? 'Saving...' : 'Upload New File to public/'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={isUploadingCreateImg || isUploadingEditImg}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleUploadImageFile(file, galleryTarget);
+                      }
+                    }}
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  onClick={fetchPublicImages}
+                  disabled={isLoadingImages}
+                  className="bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-amber-400 ${isLoadingImages ? 'animate-spin' : ''}`} />
+                  Refresh
+                </button>
+              </div>
+
+              <p className="text-[11px] text-slate-400">
+                Targeting: <span className="text-amber-300 font-semibold">{galleryTarget === 'create' ? 'New Article Post' : 'Editing Article'}</span>
+              </p>
+            </div>
+
+            {/* Images Grid */}
+            <div className="flex-1 overflow-y-auto pr-1">
+              {isLoadingImages ? (
+                <div className="py-16 text-center text-slate-400 text-xs flex flex-col items-center justify-center gap-2">
+                  <RefreshCw className="w-6 h-6 text-amber-400 animate-spin" />
+                  <span>Loading server images...</span>
+                </div>
+              ) : publicImages.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 text-xs">
+                  <HardDrive className="w-8 h-8 text-amber-500/50 mx-auto mb-2" />
+                  No image files found in server storage yet. Upload your first image above.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {publicImages.map((img) => {
+                    const isSelected = galleryTarget === 'create'
+                      ? featureImage === img.url
+                      : editFeatureImage === img.url;
+
+                    return (
+                      <div
+                        key={img.filename}
+                        onClick={() => {
+                          if (galleryTarget === 'create') {
+                            setFeatureImage(img.url);
+                            setCreateImgSavedPath(`public/${img.filename}`);
+                          } else {
+                            setEditFeatureImage(img.url);
+                            setEditImgSavedPath(`public/${img.filename}`);
+                          }
+                          setShowGalleryModal(false);
+                        }}
+                        className={`group relative rounded-xl overflow-hidden border cursor-pointer transition-all duration-150 p-2 flex flex-col justify-between ${
+                          isSelected
+                            ? 'bg-amber-950/60 border-amber-500 shadow-lg ring-2 ring-amber-500/50'
+                            : 'bg-slate-950/80 border-amber-900/40 hover:border-amber-500/80 hover:bg-slate-900'
+                        }`}
+                      >
+                        <div className="aspect-video w-full rounded-lg overflow-hidden bg-slate-900 relative mb-2">
+                          <img
+                            src={img.url}
+                            alt={img.filename}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            onError={(e) => handleImageError(e, DEFAULT_FALLBACK_IMAGE)}
+                          />
+                          {isSelected && (
+                            <div className="absolute top-1 right-1 bg-amber-500 text-slate-950 p-0.5 rounded-full shadow">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-0.5 min-w-0">
+                          <p className="text-[11px] font-mono text-slate-200 truncate font-semibold">
+                            {img.filename}
+                          </p>
+                          <div className="flex items-center justify-between text-[10px] text-slate-400">
+                            <span>{(img.size / 1024).toFixed(0)} KB</span>
+                            <span className="text-amber-400/90 font-medium group-hover:underline">
+                              {isSelected ? 'Selected' : 'Use Image'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-amber-900/50 pt-4 flex items-center justify-between shrink-0">
+              <p className="text-xs text-slate-400">
+                Images are saved in the project's root <code className="text-amber-300 font-mono">public/</code> folder and served automatically.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowGalleryModal(false)}
+                className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition-colors shadow"
+              >
+                Done
+              </button>
             </div>
           </div>
         </div>

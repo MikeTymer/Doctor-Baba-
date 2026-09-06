@@ -165,7 +165,7 @@ export const WhatsAppModal: React.FC = () => {
 
           {/* Quick context topic presets */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-2">
+            <label className="whatsapp-topic-label block text-xs font-semibold text-white mb-2">
               Select or switch inquiry topic:
             </label>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -176,10 +176,10 @@ export const WhatsAppModal: React.FC = () => {
                     key={topic.label}
                     type="button"
                     onClick={() => setMessage(topic.text)}
-                    className={`text-xs px-3 py-2 min-h-[38px] rounded-lg border transition-all text-left flex items-center cursor-pointer ${
+                    className={`whatsapp-topic-btn text-xs px-3 py-2 min-h-[38px] rounded-lg border transition-all text-left flex items-center cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-900/70 border-emerald-400 text-emerald-200 font-semibold shadow-sm ring-1 ring-emerald-500/30'
-                        : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-amber-500/40 active:scale-[0.98]'
+                        ? 'bg-emerald-900/80 border-emerald-400 text-emerald-100 font-semibold shadow-sm ring-1 ring-emerald-500/30'
+                        : 'bg-slate-800/90 border-slate-700 text-slate-100 hover:bg-slate-800 hover:text-white hover:border-amber-500/40 active:scale-[0.98]'
                     }`}
                   >
                     {topic.label}
@@ -192,14 +192,18 @@ export const WhatsAppModal: React.FC = () => {
           {/* Textarea editor */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label htmlFor="whatsapp-message-input" className="text-xs font-semibold text-slate-200">
+              <label 
+                htmlFor="whatsapp-message-input" 
+                id="whatsapp-message-label"
+                className="whatsapp-message-label text-xs font-bold text-white tracking-wide"
+              >
                 Message Content:
               </label>
               {isModified && (
                 <button
                   type="button"
                   onClick={resetMessage}
-                  className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors min-h-[32px] px-1 cursor-pointer"
+                  className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors min-h-[32px] px-1 cursor-pointer font-medium"
                   title="Restore button's initial contextual message"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -216,13 +220,13 @@ export const WhatsAppModal: React.FC = () => {
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
                 placeholder="Write your personal message to Doctor Baba Mukisa..."
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-y leading-relaxed font-sans"
+                className="whatsapp-message-textarea w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all resize-y leading-relaxed font-sans"
               />
               <div className="flex items-center justify-between mt-1 px-1">
-                <span className="text-[11px] text-slate-400 hidden sm:inline">
-                  Tip: Press <kbd className="px-1.5 py-0.5 text-[10px] bg-slate-800 rounded border border-slate-700 font-mono">⌘/Ctrl + Enter</kbd> to send
+                <span className="text-[11px] text-slate-300 hidden sm:inline">
+                  Tip: Press <kbd className="px-1.5 py-0.5 text-[10px] bg-slate-800 text-white rounded border border-slate-700 font-mono">⌘/Ctrl + Enter</kbd> to send
                 </span>
-                <span className="text-[11px] text-slate-400 ml-auto">
+                <span className="text-[11px] text-slate-300 ml-auto font-mono">
                   {message.length} characters
                 </span>
               </div>
@@ -230,7 +234,7 @@ export const WhatsAppModal: React.FC = () => {
           </div>
 
           {/* Security & Confidentiality assurance */}
-          <div className="flex items-center gap-2 text-[11px] text-slate-400 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/80">
+          <div className="flex items-center gap-2 text-[11px] text-slate-300 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/90">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
             <span>End-to-end encrypted direct connection. No personal data is stored on this website.</span>
           </div>

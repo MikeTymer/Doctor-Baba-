@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ActiveTab, BlogPost, Category, BlogComment, Subscriber } from './types';
 import { INITIAL_BLOGS, INITIAL_CATEGORIES, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/initialData';
 import { normalizeImageUrl } from './utils/imageUtils';
@@ -132,6 +132,96 @@ export default function App() {
     }
   }, []);
 
+  // Fetch blogs from server to synchronize any newly published articles or view counts
+  useEffect(() => {
+    fetch('/api/blogs')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.blogs) && data.blogs.length > 0) {
+          setBlogs((prev) => {
+            const serverMap = new Map<string, BlogPost>(data.blogs.map((b: BlogPost) => [b.id, b]));
+            const merged = prev.map((localB) => {
+              const serverB = serverMap.get(localB.id);
+              if (serverB) {
+                return {
+                  ...serverB,
+                  views: Math.max(Number(serverB.views) || 0, Number(localB.views) || 0),
+                  feature_image: normalizeImageUrl(serverB.feature_image || localB.feature_image)
+                };
+              }
+              return localB;
+            });
+            const existingIds = new Set(prev.map((b) => b.id));
+            for (const sb of data.blogs) {
+              if (!existingIds.has(sb.id)) {
+                merged.push({
+                  ...sb,
+                  views: Number(sb.views) || 100,
+                  feature_image: normalizeImageUrl(sb.feature_image)
+                });
+              }
+            }
+            return merged;
+          });
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not sync blogs from server API:', err);
+      });
+  }, []);
+
+  // Track visited blog post to increment views when visited
+  const lastVisitedBlogIdRef = useRef<string | null>(null);
+
+  const handleIncrementBlogViews = useCallback(async (blogId: string) => {
+    // 1. Immediately increment in React blogs state
+    setBlogs((prev) =>
+      prev.map((b) => (b.id === blogId ? { ...b, views: (Number(b.views) || 0) + 1 } : b))
+    );
+
+    // 2. Immediately increment in selectedBlog state so current screen reflects +1
+    setSelectedBlog((prev) => {
+      if (prev && (prev.id === blogId || prev.slug === blogId)) {
+        return { ...prev, views: (Number(prev.views) || 0) + 1 };
+      }
+      return prev;
+    });
+
+    // 3. Persist increment to server store
+    try {
+      const res = await fetch(`/api/blogs/${encodeURIComponent(blogId)}/view`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (data.success && typeof data.views === 'number') {
+        setBlogs((prev) =>
+          prev.map((b) => (b.id === blogId ? { ...b, views: Math.max(Number(b.views) || 0, data.views) } : b))
+        );
+        setSelectedBlog((prev) => {
+          if (prev && (prev.id === blogId || prev.slug === blogId)) {
+            return { ...prev, views: Math.max(Number(prev.views) || 0, data.views) };
+          }
+          return prev;
+        });
+      }
+    } catch {
+      // Local state and localStorage already updated
+    }
+  }, []);
+
+  // Whenever a blog post is visited, add a view count
+  useEffect(() => {
+    if (activeTab === 'blog-detail' && selectedBlog) {
+      if (lastVisitedBlogIdRef.current !== selectedBlog.id) {
+        lastVisitedBlogIdRef.current = selectedBlog.id;
+        handleIncrementBlogViews(selectedBlog.id);
+      }
+    } else {
+      // Reset ref when user navigates away from the blog detail view
+      lastVisitedBlogIdRef.current = null;
+    }
+  }, [activeTab, selectedBlog?.id, handleIncrementBlogViews]);
+
   const [comments, setComments] = useState<BlogComment[]>(INITIAL_COMMENTS);
   const [subscribers, setSubscribers] = useState<Subscriber[]>(INITIAL_SUBSCRIBERS);
 
@@ -226,19 +316,44 @@ export default function App() {
     });
   };
 
-  const handleAddBlog = (newBlog: BlogPost) => {
-    setBlogs((prev) => [newBlog, ...prev]);
-  };
-
-  const handleUpdateBlog = (updatedBlog: BlogPost) => {
-    setBlogs((prev) => prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
-    if (selectedBlog && selectedBlog.id === updatedBlog.id) {
-      setSelectedBlog(updatedBlog);
+  const handleAddBlog = async (newBlog: BlogPost) => {
+    setBlogs((prev) => [newBlog, ...prev.filter((b) => b.id !== newBlog.id)]);
+    try {
+      await fetch('/api/blogs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBlog)
+      });
+    } catch (err) {
+      console.warn('Could not persist new blog to server API:', err);
     }
   };
 
-  const handleDeleteBlog = (blogId: string) => {
+  const handleUpdateBlog = async (updatedBlog: BlogPost) => {
+    setBlogs((prev) => prev.map((b) => (b.id === updatedBlog.id ? updatedBlog : b)));
+    if (selectedBlog && (selectedBlog.id === updatedBlog.id || selectedBlog.slug === updatedBlog.slug)) {
+      setSelectedBlog(updatedBlog);
+    }
+    try {
+      await fetch(`/api/blogs/${encodeURIComponent(updatedBlog.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedBlog)
+      });
+    } catch (err) {
+      console.warn('Could not update blog on server API:', err);
+    }
+  };
+
+  const handleDeleteBlog = async (blogId: string) => {
     setBlogs((prev) => prev.filter((b) => b.id !== blogId));
+    try {
+      await fetch(`/api/blogs/${encodeURIComponent(blogId)}`, {
+        method: 'DELETE'
+      });
+    } catch (err) {
+      console.warn('Could not delete blog on server API:', err);
+    }
   };
 
   const handleDeleteComment = (commentId: string) => {

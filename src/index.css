@@ -565,6 +565,89 @@ html.light .fixed.z-50 button svg {
   color: #ffffff !important;
 }
 
+/* WHATSAPP CHAT BOX / COMPOSER MODAL IN LIGHT MODE: SOLID WHITE MESSAGE CONTENT & TEXT */
+html.light #whatsapp-composer-modal,
+html.light .whatsapp-composer-modal {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #f59e0b !important;
+}
+
+html.light #whatsapp-composer-modal label,
+html.light #whatsapp-composer-modal .whatsapp-message-label,
+html.light label[for="whatsapp-message-input"],
+html.light #whatsapp-message-label {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+html.light #whatsapp-composer-modal textarea,
+html.light #whatsapp-message-input,
+html.light .whatsapp-message-textarea {
+  background-color: #020617 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  border-color: #475569 !important;
+}
+
+html.light #whatsapp-composer-modal textarea::placeholder,
+html.light #whatsapp-message-input::placeholder,
+html.light .whatsapp-message-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.65) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.65) !important;
+}
+
+html.light #whatsapp-composer-modal textarea:focus,
+html.light #whatsapp-message-input:focus,
+html.light .whatsapp-message-textarea:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3) !important;
+}
+
+html.light #whatsapp-composer-modal h3,
+html.light #whatsapp-composer-modal p,
+html.light #whatsapp-composer-modal span,
+html.light #whatsapp-composer-modal kbd {
+  color: #ffffff !important;
+}
+
+html.light #whatsapp-composer-modal .text-emerald-400,
+html.light #whatsapp-composer-modal p.text-emerald-400 {
+  color: #34d399 !important;
+}
+
+html.light #whatsapp-composer-modal .text-amber-300,
+html.light #whatsapp-composer-modal .text-amber-400 {
+  color: #fbbf24 !important;
+}
+
+html.light #whatsapp-composer-modal .text-slate-300,
+html.light #whatsapp-composer-modal .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+html.light #whatsapp-composer-modal button.whatsapp-topic-btn,
+html.light #whatsapp-composer-modal button.bg-slate-800\/90,
+html.light #whatsapp-composer-modal button.bg-slate-800\/80 {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+
+html.light #whatsapp-composer-modal button.whatsapp-topic-btn:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+  border-color: #f59e0b !important;
+}
+
+html.light #whatsapp-composer-modal button.bg-emerald-900\/80,
+html.light #whatsapp-composer-modal button.bg-emerald-900\/70 {
+  background-color: #064e3b !important;
+  color: #d1fae5 !important;
+  border-color: #34d399 !important;
+}
+
 /* FOOTER LIGHT MODE STYLING */
 html.light .site-footer {
   background-color: #ffffff !important;

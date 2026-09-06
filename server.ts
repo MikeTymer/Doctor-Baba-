@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { sendInquiryEmail, sendReplyEmail, checkEmailConfiguration, setRuntimeSmtpConfig, getActiveSmtpConfig } from "./server/mailer";
+import { INITIAL_BLOGS } from "./src/data/initialData";
 
 async function startServer() {
   const app = express();
@@ -231,6 +232,48 @@ async function startServer() {
       fs.writeFileSync(messagesFilePath, JSON.stringify(contactMessages, null, 2));
     } catch (e) {
       console.warn('Could not save messages_store.json:', e);
+    }
+  };
+
+  // Blogs File Store (saved in server/blogs_store.json)
+  const blogsFilePath = path.join(process.cwd(), 'server', 'blogs_store.json');
+
+  const loadBlogsFromDisk = (): Array<any> => {
+    try {
+      if (fs.existsSync(blogsFilePath)) {
+        const raw = fs.readFileSync(blogsFilePath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Could not read blogs_store.json:', e);
+    }
+    // Initialize with default INITIAL_BLOGS if not yet saved on disk
+    try {
+      const dir = path.dirname(blogsFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(blogsFilePath, JSON.stringify(INITIAL_BLOGS, null, 2));
+    } catch (e) {
+      console.warn('Could not write initial blogs_store.json:', e);
+    }
+    return [...INITIAL_BLOGS];
+  };
+
+  let serverBlogs: Array<any> = loadBlogsFromDisk();
+
+  const saveBlogsToDisk = () => {
+    try {
+      const dir = path.dirname(blogsFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(blogsFilePath, JSON.stringify(serverBlogs, null, 2));
+    } catch (e) {
+      console.warn('Could not save blogs_store.json:', e);
     }
   };
 
@@ -474,6 +517,240 @@ async function startServer() {
         success: true,
         message: "Thank you for subscribing!"
       });
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // IMAGES & MEDIA API ENDPOINTS (Images saved in /public alongside other images)
+  // --------------------------------------------------------------------------
+
+  // List all images stored in the public images directory
+  app.get("/api/images", (req, res) => {
+    try {
+      const publicDir = path.join(process.cwd(), 'public');
+      if (!fs.existsSync(publicDir)) {
+        return res.json({ success: true, images: [] });
+      }
+      const files = fs.readdirSync(publicDir);
+      const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif']);
+      const images = files
+        .filter((f) => imageExtensions.has(path.extname(f).toLowerCase()))
+        .map((f) => {
+          try {
+            const stat = fs.statSync(path.join(publicDir, f));
+            return {
+              filename: f,
+              url: `/${encodeURI(f)}`,
+              size: stat.size,
+              modified: stat.mtime
+            };
+          } catch {
+            return null;
+          }
+        })
+        .filter(Boolean)
+        .sort((a: any, b: any) => new Date(b.modified).getTime() - new Date(a.modified).getTime());
+
+      return res.json({ success: true, images });
+    } catch (err: any) {
+      console.error("Error reading images directory:", err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Upload or download an image and save it directly into the public directory (where other images are)
+  app.post("/api/upload-image", async (req, res) => {
+    try {
+      const { data, url, filename: requestedName } = req.body;
+      const publicDir = path.join(process.cwd(), 'public');
+
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
+
+      let buffer: Buffer | null = null;
+      let ext = '.jpg';
+      let baseName = requestedName || 'blog-image';
+
+      if (data && typeof data === 'string') {
+        // Base64 Data URL or raw base64 string
+        const matches = data.match(/^data:image\/([a-zA-Z0-9+.-]+);base64,(.+)$/);
+        if (matches) {
+          let mimeExt = matches[1].toLowerCase();
+          if (mimeExt === 'jpeg') mimeExt = 'jpg';
+          ext = `.${mimeExt}`;
+          buffer = Buffer.from(matches[2], 'base64');
+        } else {
+          buffer = Buffer.from(data, 'base64');
+        }
+      } else if (url && typeof url === 'string') {
+        // If the URL already refers to a local file in /public/
+        const cleanUrlPath = decodeURIComponent(url.replace(/^\//, '').split('?')[0]);
+        const localCandidate = path.join(publicDir, cleanUrlPath);
+        if (fs.existsSync(localCandidate) && fs.statSync(localCandidate).isFile()) {
+          return res.json({
+            success: true,
+            url: `/${cleanUrlPath}`,
+            filename: cleanUrlPath,
+            filePath: `public/${cleanUrlPath}`,
+            alreadyExists: true
+          });
+        }
+
+        // If remote URL, fetch and download into public folder
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+          const remoteResp = await fetch(url, {
+            headers: { 'User-Agent': 'Doctor-Baba-Mukisa-Server/1.0' }
+          });
+          if (!remoteResp.ok) {
+            return res.status(400).json({ success: false, error: `Failed to download image from URL (${remoteResp.status})` });
+          }
+          const cType = remoteResp.headers.get('content-type') || '';
+          if (cType.includes('png')) ext = '.png';
+          else if (cType.includes('webp')) ext = '.webp';
+          else if (cType.includes('gif')) ext = '.gif';
+          else if (cType.includes('svg')) ext = '.svg';
+          else ext = '.jpg';
+
+          const arrayBuf = await remoteResp.arrayBuffer();
+          buffer = Buffer.from(arrayBuf);
+        } else {
+          return res.status(400).json({ success: false, error: 'Invalid image URL or base64 data provided.' });
+        }
+      } else {
+        return res.status(400).json({ success: false, error: 'Please provide image base64 data or an image URL.' });
+      }
+
+      if (!buffer || buffer.length === 0) {
+        return res.status(400).json({ success: false, error: 'Image buffer is empty.' });
+      }
+
+      // Format safe filename
+      const sanitizedBase = path.basename(baseName, path.extname(baseName))
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, '-')
+        .substring(0, 40)
+        .replace(/^-+|-+$/g, '') || 'spiritual-post';
+
+      const finalFilename = `blog-${Date.now()}-${sanitizedBase}${ext}`;
+      const targetFilePath = path.join(publicDir, finalFilename);
+
+      fs.writeFileSync(targetFilePath, buffer);
+
+      // Also copy to dist/ if dist folder exists (for production static serving)
+      try {
+        const distDir = path.join(process.cwd(), 'dist');
+        if (fs.existsSync(distDir)) {
+          fs.writeFileSync(path.join(distDir, finalFilename), buffer);
+        }
+      } catch (e) {
+        console.warn('Could not copy image to dist:', e);
+      }
+
+      console.log(`[Image Uploaded] Saved new image to ${targetFilePath} (${buffer.length} bytes)`);
+
+      return res.json({
+        success: true,
+        url: `/${finalFilename}`,
+        filename: finalFilename,
+        filePath: `public/${finalFilename}`,
+        size: buffer.length
+      });
+    } catch (err: any) {
+      console.error('Error saving image:', err);
+      return res.status(500).json({ success: false, error: err.message || 'Failed to save image to public folder.' });
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // BLOG POSTS & VIEWS COUNTER API ENDPOINTS
+  // --------------------------------------------------------------------------
+
+  // Get all blog posts
+  app.get("/api/blogs", (req, res) => {
+    return res.json({ success: true, blogs: serverBlogs });
+  });
+
+  // Publish new blog post
+  app.post("/api/blogs", (req, res) => {
+    try {
+      const newBlog = req.body;
+      if (!newBlog || !newBlog.name) {
+        return res.status(400).json({ success: false, error: "Article title and details are required." });
+      }
+
+      // Ensure proper structure and views count
+      newBlog.id = newBlog.id || `blog-${Date.now()}`;
+      newBlog.views = Number(newBlog.views) || 100;
+      newBlog.post_date = newBlog.post_date || new Date().toISOString().split('T')[0];
+
+      serverBlogs = [newBlog, ...serverBlogs.filter((b) => b.id !== newBlog.id)];
+      saveBlogsToDisk();
+
+      console.log(`[Blog Created] Published new article "${newBlog.name}" (ID: ${newBlog.id}, Image: ${newBlog.feature_image})`);
+      return res.json({ success: true, blog: newBlog });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Update existing blog post
+  app.put("/api/blogs/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedData = req.body;
+      const index = serverBlogs.findIndex((b) => b.id === id || b.slug === id);
+
+      if (index !== -1) {
+        serverBlogs[index] = { ...serverBlogs[index], ...updatedData };
+        saveBlogsToDisk();
+        console.log(`[Blog Updated] Updated article "${serverBlogs[index].name}" (ID: ${id})`);
+        return res.json({ success: true, blog: serverBlogs[index] });
+      }
+      return res.status(404).json({ success: false, error: "Blog post not found." });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Delete blog post
+  app.delete("/api/blogs/:id", (req, res) => {
+    try {
+      const { id } = req.params;
+      serverBlogs = serverBlogs.filter((b) => b.id !== id && b.slug !== id);
+      saveBlogsToDisk();
+      console.log(`[Blog Deleted] Deleted article ID: ${id}`);
+      return res.json({ success: true, message: "Blog post deleted successfully." });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Add view count to a blog post whenever visited
+  app.post("/api/blogs/:id/view", (req, res) => {
+    try {
+      const { id } = req.params;
+      let blog = serverBlogs.find((b) => b.id === id || b.slug === id);
+
+      if (!blog) {
+        // Search in INITIAL_BLOGS if not yet loaded in serverBlogs
+        const initBlog = INITIAL_BLOGS.find((b) => b.id === id || b.slug === id);
+        if (initBlog) {
+          blog = { ...initBlog };
+          serverBlogs.push(blog);
+        }
+      }
+
+      if (blog) {
+        blog.views = (Number(blog.views) || 0) + 1;
+        saveBlogsToDisk();
+        console.log(`[Blog View Counted] "${blog.name}" now has ${blog.views} views.`);
+        return res.json({ success: true, views: blog.views, blogId: blog.id });
+      }
+
+      return res.status(404).json({ success: false, error: "Blog post not found to increment view." });
+    } catch (err: any) {
+      return res.status(500).json({ success: false, error: err.message });
     }
   });
 
