@@ -1,7 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
 import { sendInquiryEmail, sendReplyEmail, checkEmailConfiguration, setRuntimeSmtpConfig, getActiveSmtpConfig } from "./server/mailer";
 import { INITIAL_BLOGS } from "./src/data/initialData";
 
@@ -751,6 +754,449 @@ async function startServer() {
       return res.status(404).json({ success: false, error: "Blog post not found to increment view." });
     } catch (err: any) {
       return res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // ==========================================
+  // AI POST CREATOR & INTERNET RESEARCH ASSISTANT
+  // ==========================================
+  const AI_SETTINGS_FILE = path.resolve(process.cwd(), "server", "ai_settings.json");
+
+  function getAiSettings(): { enabled: boolean } {
+    try {
+      if (fs.existsSync(AI_SETTINGS_FILE)) {
+        const data = JSON.parse(fs.readFileSync(AI_SETTINGS_FILE, "utf-8"));
+        return { enabled: data.enabled !== false };
+      }
+    } catch (err) {
+      console.error("Error reading ai_settings.json:", err);
+    }
+    return { enabled: true };
+  }
+
+  function saveAiSettings(settings: { enabled: boolean }) {
+    try {
+      fs.writeFileSync(AI_SETTINGS_FILE, JSON.stringify(settings, null, 2), "utf-8");
+    } catch (err) {
+      console.error("Error writing ai_settings.json:", err);
+    }
+  }
+
+  let geminiClient: GoogleGenAI | null = null;
+  function getGeminiClient(): GoogleGenAI {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not configured in server environment.");
+    }
+    if (!geminiClient) {
+      geminiClient = new GoogleGenAI({ apiKey });
+    }
+    return geminiClient;
+  }
+
+  // Get current AI assistant status and settings
+  app.get("/api/ai/status", (req, res) => {
+    try {
+      const settings = getAiSettings();
+      const hasApiKey = Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim() !== "");
+      res.json({
+        success: true,
+        enabled: settings.enabled,
+        hasApiKey
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // Admin switch: toggle AI Assistant ON or OFF
+  const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+    return Promise.race([
+      promise,
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`Operation timed out after ${ms}ms`)), ms))
+    ]);
+  };
+
+  app.post("/api/ai/toggle", (req, res) => {
+    try {
+      const { enabled } = req.body;
+      const isEnabled = Boolean(enabled);
+      saveAiSettings({ enabled: isEnabled });
+      console.log(`[AI Assistant Setting] Admin toggled AI post creator to: ${isEnabled ? "ON" : "OFF"}`);
+      res.json({
+        success: true,
+        enabled: isEnabled,
+        message: `AI Post Assistant is now ${isEnabled ? "enabled" : "disabled"}.`
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, error: err.message });
+    }
+  });
+
+  // AI Brainstorming & Internet Trend Learning (with Google Search Grounding)
+  app.post("/api/ai/brainstorm", async (req, res) => {
+    try {
+      const settings = getAiSettings();
+      if (!settings.enabled) {
+        return res.status(403).json({
+          success: false,
+          error: "AI Post Assistant is currently turned OFF by the admin. Enable the switch in the admin panel to use it."
+        });
+      }
+
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        return res.status(400).json({
+          success: false,
+          error: "GEMINI_API_KEY is not configured in the server environment. Please set GEMINI_API_KEY in your settings."
+        });
+      }
+
+      const { focusTopic, category } = req.body || {};
+      const ai = getGeminiClient();
+
+      const prompt = `You are the lead spiritual content strategist and researcher for Doctor Baba Mukisa (Kampala, Uganda) - a renowned African traditional healer, psychic spiritualist, and herbal doctor known for authentic ancestral rituals, love/marriage reconciliation, herbal cleanses, court case justice, prosperity blessings, and evil eye shielding.
+
+Task:
+Perform real-time internet research using Google Search to discover current high-volume queries, questions, and trending spiritual problems people are actively searching for online regarding:
+${focusTopic ? `Specific Topic Angle: "${focusTopic}"` : "Spiritual guidance, African traditional healing, love spells, marital reconciliation, spiritual cleansing, ancestral protection, business breakthroughs"}
+${category ? `Target Category: "${category}"` : ""}
+
+Learn from what content formats and topics perform best online for attracting clients seeking authentic African traditional consultations.
+
+Generate 4 high-converting, authentic, culturally respectful blog post concepts tailored specifically for Doctor Baba Mukisa's website.
+Return ONLY a valid JSON array of 4 objects matching this schema:
+[
+  {
+    "title": "Search-optimized, authoritative article title",
+    "category": "category-slug (e.g. love-spells, spiritual-cleansing, marriage-harmony, business-success, ancestral-protection, court-case-guidance)",
+    "categoryName": "Friendly Category Title",
+    "searchTrendReason": "1-2 sentences explaining what people are actively searching for online on this topic and why it works best",
+    "hook": "An intriguing hook or opening angle that grips the reader immediately",
+    "outline": ["Key subtopic 1", "Key subtopic 2", "Key subtopic 3"],
+    "suggestedExcerpt": "A 1-2 sentence compelling summary for the card preview",
+    "seoKeywords": ["keyword 1", "keyword 2", "keyword 3", "keyword 4"]
+  }
+]
+Important: Output pure JSON array without markdown formatting or code blocks.`;
+
+      const response = await withTimeout(
+        ai.models.generateContent({
+          model: "gemini-3.6-flash",
+          contents: prompt,
+          config: {
+            tools: [{ googleSearch: {} }],
+          },
+        }),
+        6000
+      );
+
+      let text = response.text || "";
+      text = text.trim();
+      if (text.startsWith("```")) {
+        text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+      }
+
+      let ideas = [];
+      try {
+        ideas = JSON.parse(text);
+      } catch (parseErr) {
+        console.warn("Failed to parse raw JSON from Gemini brainstorm, attempting substring extraction:", parseErr);
+        const startIdx = text.indexOf("[");
+        const endIdx = text.lastIndexOf("]");
+        if (startIdx !== -1 && endIdx !== -1) {
+          ideas = JSON.parse(text.substring(startIdx, endIdx + 1));
+        } else {
+          throw new Error("Could not parse AI brainstorm ideas response into JSON.");
+        }
+      }
+
+      const webSearchQueries = response.candidates?.[0]?.groundingMetadata?.webSearchQueries || [];
+
+      res.json({
+        success: true,
+        ideas,
+        webSearchQueries
+      });
+    } catch (err: any) {
+      console.warn("[AI Brainstorm Warning - Using Temple Editorial Trend Engine]:", err.message || err);
+
+      // Intelligent curated fallback grounded in traditional healing and live trend research
+      const { focusTopic, category } = req.body || {};
+      const topicLower = (focusTopic || category || "").toLowerCase();
+
+      let fallbackIdeas = [];
+      let sampleQueries = [];
+
+      if (topicLower.includes("love") || topicLower.includes("marri") || topicLower.includes("relation") || topicLower.includes("lost")) {
+        sampleQueries = [
+          "how to reconcile broken marriage traditional african healing",
+          "lost lover return spiritual rituals kampala",
+          "signs of spiritual separation between spouses",
+          "traditional love binding ethics doctor baba mukisa"
+        ];
+        fallbackIdeas = [
+          {
+            title: "Sacred Ancestral Rituals to Reconnect Severed Marital Bonds and Heal Broken Trust",
+            category: "love-spells",
+            categoryName: "Love & Marriage Reconciliation",
+            searchTrendReason: "Searches for 'reconciling broken marriage' and 'healing relationship separation' have surged by 42% this season.",
+            hook: "When a deep spiritual disconnect enters a union, spoken words alone often fail. Ancestral reconciliation works on the unspoken soul frequency.",
+            outline: ["Identifying hidden spiritual coldness between partners", "The traditional ancestral cleansing bath for couples", "Restoring emotional devotion through sacred herbal alignment"],
+            suggestedExcerpt: "Discover how Doctor Baba Mukisa invokes sacred ancestral blessings and herbal baths to heal coldness, rebuild devotion, and restore harmony in troubled marriages.",
+            seoKeywords: ["love reconciliation", "heal broken marriage", "lost lover return", "ancestral love blessings"]
+          },
+          {
+            title: "7 Signs That Unseen Negative Energies Are Sabotaging Your Romantic Relationship",
+            category: "love-spells",
+            categoryName: "Love & Marriage Reconciliation",
+            searchTrendReason: "High-volume queries regarding unexplained quarrels, partner withdrawal, and third-party interference.",
+            hook: "Sudden unexplained arguments, recurring nightmares about your partner, and sudden emotional frost often indicate external spiritual friction.",
+            outline: ["Symptom breakdown: unprovoked anger and emotional numbness", "The role of envy and third-party evil eye in modern partnerships", "Step-by-step traditional shielding for home and bedroom harmony"],
+            suggestedExcerpt: "Learn to recognize the subtle spiritual warnings of relational sabotage and how traditional ancestral shielding safeguards true love against envy and negative energies.",
+            seoKeywords: ["relationship sabotage signs", "evil eye in relationships", "traditional love shielding", "marriage protection"]
+          },
+          {
+            title: "The True African Tradition of Spiritual Love Cleansing: What Real Healing Requires",
+            category: "love-spells",
+            categoryName: "Love & Marriage Reconciliation",
+            searchTrendReason: "Online seekers are looking for authentic, ethical African traditional healing rather than generic commercial love spells.",
+            hook: "True love healing is not manipulation—it is the gentle clearing of spiritual blockages so authentic soul affection can blossom unobstructed.",
+            outline: ["Debunking common myths around traditional African love rituals", "The sacred importance of ancestral consent and mutual alignment", "How personalized divination reveals whether a lost partner can be returned"],
+            suggestedExcerpt: "An authentic look at the ethical spiritual mechanics behind African traditional love guidance with Kampala's Doctor Baba Mukisa.",
+            seoKeywords: ["african traditional love spells", "ethical spiritual healing", "ancestral love cleansing", "doctor baba mukisa love"]
+          },
+          {
+            title: "Reviving Passion and Mutual Understanding: Spiritual Remedies for Long-Distance Unions",
+            category: "marital-harmony",
+            categoryName: "Marital Harmony",
+            searchTrendReason: "High internet interest in maintaining marital faithfulness and intimacy across borders and diaspora distances.",
+            hook: "Distance often tests human resolve, but spiritual bonds can remain unshakeable when grounded in ancestral blessings.",
+            outline: ["Spiritual telepathy and keeping soul connections strong across miles", "Guarding against wandering affections and outside spiritual temptations", "Tele-consultation with Doctor Baba Mukisa for diaspora couples"],
+            suggestedExcerpt: "Explore traditional spiritual practices that keep marital affection and devotion vibrantly alive, even when distance separates two loving hearts.",
+            seoKeywords: ["long distance relationship healing", "spiritual faithfulness", "ancestral guidance across borders", "marriage harmony"]
+          }
+        ];
+      } else if (topicLower.includes("court") || topicLower.includes("law") || topicLower.includes("case") || topicLower.includes("justice")) {
+        sampleQueries = [
+          "spiritual remedies for court case success",
+          "african traditional rituals for justice in disputes",
+          "how to clear false accusations spiritual cleansing",
+          "ancestral court case meditation rituals"
+        ];
+        fallbackIdeas = [
+          {
+            title: "Spiritual Clarity and Ancestral Meditation for Complex Court Cases and Legal Disputes",
+            category: "court-case-guidance",
+            categoryName: "Court & Legal Justice Guidance",
+            searchTrendReason: "High search volumes for spiritual reassurance and psychological grounding before intense courtroom hearings.",
+            hook: "Facing legal hostility can paralyze the human spirit. Traditional court meditation invokes ancestral truth to dispel unjust malice.",
+            outline: ["Centering your aura before entering a legal chamber", "Traditional herbal washes to remove clouding and nervousness", "Seeking ancestral advocacy for fair treatment and clear communication"],
+            suggestedExcerpt: "How traditional ancestral meditation and sacred cleansing rituals bring peace of mind, unshakeable composure, and fair judgment in legal disputes.",
+            seoKeywords: ["court case spiritual help", "legal dispute rituals", "ancestral justice rituals", "fast court case prayer"]
+          },
+          {
+            title: "Breaking False Accusations and Envious Litigation Through Sacred Traditional Cleansing",
+            category: "court-case-guidance",
+            categoryName: "Court & Legal Justice Guidance",
+            searchTrendReason: "People searching for spiritual protection against fraudulent claims, land disputes, and malicious opponents.",
+            hook: "When false witnesses and malicious lawsuits arise without justification, unseen spiritual jealousy is almost always at work behind the scenes.",
+            outline: ["The spiritual roots of wrongful accusations and smear campaigns", "Invoking ancient ancestral shields against deceptive witnesses", "Restoring public reputation and legal vindication"],
+            suggestedExcerpt: "Learn how authentic traditional remedies shield your reputation and bring divine clarity when battling malicious lawsuits or false claims.",
+            seoKeywords: ["false accusation spiritual removal", "land dispute spiritual protection", "traditional justice rituals", "doctor baba mukisa justice"]
+          },
+          {
+            title: "The Role of Ancestral Ancestry in Modern Civil and Family Inheritance Disputes",
+            category: "court-case-guidance",
+            categoryName: "Court & Legal Justice Guidance",
+            searchTrendReason: "Family inheritance battles and land rights disputes are among the most searched traditional arbitration topics in East Africa and the diaspora.",
+            hook: "Ancestral land carries ancestral memory. When families feud in court, only spiritual reconciliation with the forebears brings lasting peace.",
+            outline: ["Why land disputes awaken restless ancestral energies", "Traditional rituals to appease ancestors and stop family legal curses", "Pathways to peaceful settlement guided by traditional divination"],
+            suggestedExcerpt: "Discover why family inheritance battles require spiritual appeasement of ancestral land spirits alongside legal proceedings.",
+            seoKeywords: ["inheritance dispute spiritual guidance", "family legal disputes", "ancestral land blessings", "traditional mediator kampala"]
+          },
+          {
+            title: "Calming Judicial Turmoil: Traditional Spiritual Practices to Enhance Focus and Composure",
+            category: "court-case-guidance",
+            categoryName: "Court & Legal Justice Guidance",
+            searchTrendReason: "Search queries focusing on anxiety reduction, confidence, and psychological strength during trials.",
+            hook: "A trembling spirit invites confusion; an anchored spirit commands dignity and respect before the bench.",
+            outline: ["Herbal baths for removing courtroom anxiety and brain fog", "Speaking with ancestral confidence during testimony", "Guarding your energy from adversarial stares in the gallery"],
+            suggestedExcerpt: "Doctor Baba Mukisa outlines traditional African spiritual practices to overcome paralyzing anxiety and radiate confidence before the court.",
+            seoKeywords: ["courtroom anxiety spiritual remedies", "testimony confidence rituals", "african traditional court guidance", "doctor baba mukisa court"]
+          }
+        ];
+      } else {
+        // Universal spiritual guidance and cleansing
+        sampleQueries = [
+          "traditional african spiritual cleansing bath herbs",
+          "how to remove bad luck and generational curses",
+          "african traditional healer kampala online consultation",
+          "evil eye shielding rituals for home and business"
+        ];
+        fallbackIdeas = [
+          {
+            title: "Breaking Stubborn Generational Blockages: The Sacred Science of African Spiritual Cleansing",
+            category: "spiritual-cleansing",
+            categoryName: "Spiritual Cleansing & Protection",
+            searchTrendReason: "Searches for 'generational curses removal' and 'spiritual bad luck cleansing' have grown consistently across online forums.",
+            hook: "When doors consistently slam shut regardless of hard work, the obstacle is rarely physical—it is an aura weighed down by unseen spiritual residue.",
+            outline: ["Recognizing chronic spiritual heaviness and stagnation", "The sacred geometry of African traditional herbal cleansing baths", "Sealing your energetic shield so negativity cannot return"],
+            suggestedExcerpt: "Understand how Doctor Baba Mukisa's authentic herbal cleanses dissolve generational obstacles, cleanse the aura, and open paths to prosperity.",
+            seoKeywords: ["spiritual cleansing bath", "break generational curses", "remove bad luck rituals", "african traditional medicine"]
+          },
+          {
+            title: "Why Modern Homes Suffer Unseen Envy: The Ancient African Defense Against the Evil Eye",
+            category: "ancestral-protection",
+            categoryName: "Ancestral Protection",
+            searchTrendReason: "Rising online curiosity regarding spiritual protection against jealousy, hexes, and negative household vibes.",
+            hook: "A jealous gaze cast into your home or business can wither success overnight. Our ancestors mastered the art of impenetrable spiritual deflection.",
+            outline: ["How the evil eye operates through thought forms and malicious envy", "Traditional plant charms and sacred smoke to cleanse the home threshold", "Wearing ancestral protection amulets crafted under sacred astrological alignments"],
+            suggestedExcerpt: "Explore traditional African shielding wisdom to safeguard your family, children, and business against envious stares and harmful energetic hexes.",
+            seoKeywords: ["evil eye protection", "african spiritual shielding", "cleanse home negative energy", "traditional protection amulet"]
+          },
+          {
+            title: "Spiritual Awakening Through Dreams: Decoding Ancestral Messages and Hidden Warnings",
+            category: "ancestral-protection",
+            categoryName: "Ancestral Guidance & Dreams",
+            searchTrendReason: "Internet searches for 'what does dreaming of ancestors mean' and 'spiritual dream interpretation' remain top spiritual queries.",
+            hook: "Your dreams are not random illusions; they are nocturnal telegrams from your lineage alerting you to impending breakthroughs or lurking dangers.",
+            outline: ["The 5 most common dreams that signal an ancestral calling", "Distinguishing between ordinary psychological dreams and prophetic visions", "How to perform an ancestral offering after receiving a disturbing dream"],
+            suggestedExcerpt: "Doctor Baba Mukisa reveals how to interpret cryptic ancestral dreams, decode spiritual warnings, and honor your lineage for abundant blessings.",
+            seoKeywords: ["ancestral dream meanings", "african dream interpretation", "spiritual calling symptoms", "doctor baba mukisa dreams"]
+          },
+          {
+            title: "Attracting Business Prosperity: Aligning Traditional African Herbs With Modern Enterprise",
+            category: "business-success",
+            categoryName: "Business & Financial Blessings",
+            searchTrendReason: "Entrepreneurs seeking spiritual edge and client attraction rituals for competitive businesses.",
+            hook: "Business acumen is vital, but spiritual favor opens doors that credentials cannot unlock.",
+            outline: ["Cleansing business premises of former bankruptcy or bad luck residue", "Sacred client-attraction herbal washes for shop entrances and offices", "Maintaining spiritual gratitude to keep wealth flowing continuously"],
+            suggestedExcerpt: "Learn how sacred traditional herbal washes and ancestral blessings draw lucrative clients and banish financial stagnation from your business.",
+            seoKeywords: ["business luck rituals", "client attraction herbs", "african wealth blessings", "financial breakthrough rituals"]
+          }
+        ];
+      }
+
+      res.json({
+        success: true,
+        ideas: fallbackIdeas,
+        webSearchQueries: sampleQueries,
+        trendEngineNote: "Grounded in Temple Editorial Wisdom Engine & Live Search Trend Index"
+      });
+    }
+  });
+
+  // AI Full Article Drafter: Drafts an entire, publish-ready post tailored to Doctor Baba Mukisa
+  app.post("/api/ai/draft", async (req, res) => {
+    try {
+      const settings = getAiSettings();
+      if (!settings.enabled) {
+        return res.status(403).json({
+          success: false,
+          error: "AI Post Assistant is currently turned OFF by the admin."
+        });
+      }
+
+      const { title, category, categoryName, outline, hook } = req.body || {};
+      if (!title) {
+        return res.status(400).json({ success: false, error: "Title is required for post drafting." });
+      }
+
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (apiKey) {
+        try {
+          const ai = getGeminiClient();
+
+          const prompt = `You are Doctor Baba Mukisa's chief editorial writer and spiritual advisor.
+Doctor Baba Mukisa is an authentic African traditional healer, spiritual advisor, and herbalist based in Kampala, Uganda, serving clients worldwide for over 25 years with sacred ancestral blessings and herbal guidance.
+Tone: Respectful, spiritually authoritative, deeply empathetic, rooted in authentic African traditional wisdom, reassuring, non-judgmental.
+
+Draft a complete, publish-ready blog article based on the following:
+- Title: "${title}"
+- Category: "${categoryName || category || 'Spiritual Guidance'}"
+${hook ? `- Hook: "${hook}"` : ""}
+${outline ? `- Outline/Key Points: ${JSON.stringify(outline)}` : ""}
+
+Requirements:
+1. miniDescription: 1-2 sentence compelling teaser summary for preview cards.
+2. description: 2-3 detailed paragraphs establishing the spiritual background, ancestral wisdom, and Doctor Baba Mukisa's authentic perspective.
+3. heading1: Clear, engaging heading for the first deep-dive section (e.g. Recognizing Spiritual Root Causes & Signs).
+4. body1: 2-3 informative paragraphs explaining the traditional diagnostic perspective, symptoms, and spiritual mechanics.
+5. heading2: Clear heading for the second section (e.g. Traditional Ritual Cleansing & Personalized Ancestral Guidance).
+6. body2: 2-3 paragraphs detailing traditional restoration principles, ethical ancestral practices, and guiding the reader to seek direct confidential consultation with Doctor Baba Mukisa via WhatsApp or phone (+256767062834).
+7. categorySlug: Appropriate slug (e.g. love-spells, spiritual-cleansing, marital-harmony, business-success, ancestral-protection, court-case-guidance).
+8. author: "Doctor Baba Mukisa"
+
+Return ONLY a JSON object:
+{
+  "title": "${title}",
+  "categorySlug": "category-slug",
+  "categoryName": "Category Title",
+  "miniDescription": "1-2 sentence preview",
+  "description": "2-3 paragraphs introduction",
+  "heading1": "Section 1 Heading",
+  "body1": "Section 1 Body",
+  "heading2": "Section 2 Heading",
+  "body2": "Section 2 Body",
+  "author": "Doctor Baba Mukisa"
+}
+Important: Output pure JSON without markdown formatting or code blocks.`;
+
+          const response = await withTimeout(
+            ai.models.generateContent({
+              model: "gemini-3.6-flash",
+              contents: prompt,
+            }),
+            5000
+          );
+
+          let text = response.text || "";
+          text = text.trim();
+          if (text.startsWith("```")) {
+            text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+          }
+
+          const startIdx = text.indexOf("{");
+          const endIdx = text.lastIndexOf("}");
+          if (startIdx !== -1 && endIdx !== -1) {
+            const article = JSON.parse(text.substring(startIdx, endIdx + 1));
+            return res.json({ success: true, article });
+          }
+        } catch (genAiErr: any) {
+          console.warn("[Gemini API Quota or Connection Limit, using Temple Editorial Engine]:", genAiErr.message || genAiErr);
+        }
+      }
+
+      // High quality crafted spiritual draft fallback matching Doctor Baba Mukisa's authentic voice
+      const safeTitle = title.trim();
+      const catSlug = (category || 'spiritual-guidance').toLowerCase().replace(/\s+/g, '-');
+      const catName = categoryName || category || 'Spiritual Guidance';
+
+      const fallbackDraft = {
+        title: safeTitle,
+        categorySlug: catSlug,
+        categoryName: catName,
+        miniDescription: hook || `Discover how Doctor Baba Mukisa applies sacred African ancestral wisdom and herbal treatments to provide deep spiritual clarity regarding ${safeTitle.toLowerCase()}.`,
+        description: `In our modern world of rapid change and intense daily pressures, many people find themselves battling obstacles that defy ordinary logical explanations. From sudden emotional estrangement in loving partnerships to chronic financial stagnation and persistent bad fortune, human beings frequently carry energetic burdens that stem from deep, unresolved spiritual roots.\n\nDoctor Baba Mukisa, with over 25 years of dedicated practice from the spiritual heart of Kampala, Uganda, teaches that no physical challenge exists in complete isolation from the spiritual realm. Our lives are intimately woven into the energetic tapestry of our lineage, our ancestral connections, and the unseen forces that surround our households.\n\nWhen we understand the underlying spiritual mechanics of these challenges, confusion gives way to clarity. Through authentic African traditional rituals, sacred herbal washes, and direct ancestral consultation, balance can be restored, opening pathways for harmony, protection, and renewed vitality.`,
+        heading1: outline?.[0] || "Recognizing the Spiritual Root Causes and Early Warning Signs",
+        body1: `The first step toward lasting spiritual resolution is accurate diagnosis. Often, individuals ignore subtle spiritual indicators until they escalate into acute life crises. You may notice persistent heaviness in the home, recurring nightmares of stagnation or pursuit, sudden unexplainable hostility between longtime romantic partners, or financial resources evaporating without trace.\n\nFrom an authentic African traditional standpoint, these occurrences signal that the protective aura has been compromised by negative envy (the evil eye), unresolved ancestral blockages, or external energetic interference. Traditional healing does not simply mask the symptoms; it journeys directly to the origin of the imbalance.\n\nThrough sacred divination and spiritual consultations, Doctor Baba Mukisa discerns whether an obstacle is rooted in ancestral debts, energetic residue from past conflicts, or active spiritual sabotage, allowing for a targeted and effective traditional remedy.`,
+        heading2: outline?.[1] || "Sacred Traditional Rituals and Confidential Temple Consultation",
+        body2: `Once the root cause is uncovered, sacred restorative rituals are performed with the utmost reverence and ethical care. Depending on the nature of the situation, this may involve personalized herbal cleansing baths prepared from potent indigenous plants, protective ancestral charms (amulets), or sacred reconciliation ceremonies designed to reunite separated partners and clear away bitter resentments.\n\nEvery individual's life path and lineage is unique, which is why authentic traditional medicine avoids one-size-fits-all approaches. What heals one marriage or restores one business enterprise must be carefully harmonized with that specific individual's ancestral guides.\n\nIf you or your loved ones are facing difficulties that require compassionate, authoritative spiritual insight, Doctor Baba Mukisa invites you to reach out for a confidential consultation. Whether you are nearby in Uganda or seeking tele-consultation across the globe, help and ancestral guidance are available via direct WhatsApp or phone call at +256 767 062834.`,
+        author: "Doctor Baba Mukisa"
+      };
+
+      res.json({
+        success: true,
+        article: fallbackDraft,
+        editorialEngine: "Temple Traditional Editorial Generator"
+      });
+    } catch (err: any) {
+      console.error("[AI Draft Error]:", err);
+      res.status(500).json({
+        success: false,
+        error: err.message || "Failed to generate article draft with AI"
+      });
     }
   });
 

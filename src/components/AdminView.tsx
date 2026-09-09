@@ -96,7 +96,12 @@ import {
   Folder,
   HardDrive,
   Image as ImageIcon,
-  FileDown
+  FileDown,
+  Lightbulb,
+  TrendingUp,
+  Bot,
+  Wand2,
+  Compass
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -399,6 +404,176 @@ export const AdminView: React.FC<AdminViewProps> = ({
       })
       .catch((e) => console.warn('Could not fetch SMTP config:', e));
   }, []);
+
+  // AI Post Assistant State & Internet Trend Researcher
+  const [aiEnabled, setAiEnabled] = useState<boolean>(() => {
+    const cached = localStorage.getItem('doctor_baba_ai_assistant_enabled');
+    return cached !== null ? cached === 'true' : true;
+  });
+  const [hasAiApiKey, setHasAiApiKey] = useState<boolean>(true);
+  const [isTogglingAi, setIsTogglingAi] = useState(false);
+  const [isBrainstorming, setIsBrainstorming] = useState(false);
+  const [isDrafting, setIsDrafting] = useState(false);
+  const [draftingIdeaTitle, setDraftingIdeaTitle] = useState<string | null>(null);
+  const [aiFocusTopic, setAiFocusTopic] = useState('');
+  const [aiSelectedCategory, setAiSelectedCategory] = useState('ALL');
+  const [aiIdeas, setAiIdeas] = useState<any[]>([]);
+  const [aiWebSearchQueries, setAiWebSearchQueries] = useState<string[]>([]);
+  const [aiError, setAiError] = useState('');
+  const [aiNotice, setAiNotice] = useState('');
+
+  // Load AI Assistant configuration from backend
+  useEffect(() => {
+    fetch('/api/ai/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success) {
+          setAiEnabled(data.enabled !== false);
+          setHasAiApiKey(Boolean(data.hasApiKey));
+          localStorage.setItem('doctor_baba_ai_assistant_enabled', String(data.enabled !== false));
+        }
+      })
+      .catch((err) => console.warn('Could not fetch AI status:', err));
+  }, []);
+
+  const toggleAiAssistant = async () => {
+    const nextState = !aiEnabled;
+    setIsTogglingAi(true);
+    setAiError('');
+    try {
+      const res = await fetch('/api/ai/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: nextState })
+      });
+      const data = await res.json();
+      if (data?.success) {
+        setAiEnabled(data.enabled);
+        localStorage.setItem('doctor_baba_ai_assistant_enabled', String(data.enabled));
+        setAiNotice(`AI Assistant is now turned ${data.enabled ? 'ON' : 'OFF'}.`);
+        setTimeout(() => setAiNotice(''), 4500);
+      } else {
+        setAiError(data?.error || 'Failed to update AI setting.');
+      }
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to toggle AI Assistant.');
+    } finally {
+      setIsTogglingAi(false);
+    }
+  };
+
+  const handleBrainstormIdeas = async (customAngle?: string) => {
+    if (!aiEnabled) {
+      setAiError('AI Assistant is currently turned OFF. Flip the switch above to ON.');
+      return;
+    }
+    setIsBrainstorming(true);
+    setAiError('');
+    setAiNotice('');
+    const query = customAngle !== undefined ? customAngle : aiFocusTopic;
+    try {
+      const res = await fetch('/api/ai/brainstorm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          focusTopic: query,
+          category: aiSelectedCategory !== 'ALL' ? aiSelectedCategory : undefined
+        })
+      });
+      const data = await res.json();
+      if (data?.success && Array.isArray(data.ideas)) {
+        setAiIdeas(data.ideas);
+        setAiWebSearchQueries(data.webSearchQueries || []);
+        setAiNotice(`Discovered ${data.ideas.length} trending post concepts grounded in live internet search trends!`);
+      } else {
+        setAiError(data?.error || 'Could not brainstorm ideas from internet trends.');
+      }
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to connect to AI brainstorming service.');
+    } finally {
+      setIsBrainstorming(false);
+    }
+  };
+
+  const handleDraftAndApplyPost = async (idea: any) => {
+    if (!aiEnabled) {
+      setAiError('AI Assistant is turned OFF. Flip the switch to ON to draft articles.');
+      return;
+    }
+    setIsDrafting(true);
+    setDraftingIdeaTitle(idea.title);
+    setAiError('');
+    setAiNotice('');
+    try {
+      const res = await fetch('/api/ai/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: idea.title,
+          category: idea.category,
+          categoryName: idea.categoryName,
+          outline: idea.outline,
+          hook: idea.hook
+        })
+      });
+      const data = await res.json();
+      if (data?.success && data.article) {
+        const art = data.article;
+        setTitle(art.title || idea.title);
+
+        const matchedCat = localCategories.find(
+          (c) => c.slug === art.categorySlug || c.name.toLowerCase() === (art.categoryName || '').toLowerCase()
+        );
+        if (matchedCat) {
+          setCategorySlug(matchedCat.slug);
+          setIsAddingCustomCategory(false);
+        } else if (art.categorySlug) {
+          setCategorySlug(art.categorySlug);
+          setCustomCategoryName(art.categoryName || art.categorySlug.replace(/-/g, ' '));
+          setIsAddingCustomCategory(true);
+        }
+
+        setMiniDescription(art.miniDescription || idea.suggestedExcerpt || '');
+        setDescription(art.description || '');
+        setHeading1(art.heading1 || (idea.outline?.[0] || ''));
+        setBody1(art.body1 || '');
+        setHeading2(art.heading2 || (idea.outline?.[1] || ''));
+        setBody2(art.body2 || '');
+        setAuthor(art.author || 'Doctor Baba Mukisa');
+
+        setAiNotice(`Full article "${art.title}" drafted and loaded into the form below! You can review, refine, and publish.`);
+
+        const targetElement = document.getElementById('new-blog-form-top');
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        setAiError(data?.error || 'Could not draft full article.');
+      }
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to draft article with AI.');
+    } finally {
+      setIsDrafting(false);
+      setDraftingIdeaTitle(null);
+    }
+  };
+
+  const handleApplyIdeaFast = (idea: any) => {
+    setTitle(idea.title);
+    if (idea.suggestedExcerpt) {
+      setMiniDescription(idea.suggestedExcerpt);
+    }
+    const matchedCat = localCategories.find((c) => c.slug === idea.category);
+    if (matchedCat) {
+      setCategorySlug(matchedCat.slug);
+      setIsAddingCustomCategory(false);
+    }
+    setAiNotice(`Applied "${idea.title}" to post title and excerpt!`);
+    const targetElement = document.getElementById('new-blog-form-top');
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleOpenEmailModal = (msg: ContactMessage) => {
     setSelectedEmailMsg(msg);
@@ -1406,7 +1581,38 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Admin Switch for AI Post Assistant */}
+          <div className="flex items-center gap-2 bg-slate-950/90 border border-amber-800/60 px-3 py-1.5 rounded-xl shadow-inner">
+            <div className="flex items-center gap-1.5">
+              <Sparkles className={`w-4 h-4 ${aiEnabled ? 'text-amber-400 animate-pulse' : 'text-slate-500'}`} />
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-slate-200 leading-tight">AI Assistant</span>
+                <span className="text-[9px] text-amber-400/80 leading-tight">Web Trends</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={toggleAiAssistant}
+              disabled={isTogglingAi}
+              role="switch"
+              aria-checked={aiEnabled}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                aiEnabled ? 'bg-emerald-600' : 'bg-slate-700'
+              }`}
+              title={`AI Assistant is currently ${aiEnabled ? 'ON' : 'OFF'}. Click to toggle.`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  aiEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+            <span className={`text-[11px] font-extrabold ${aiEnabled ? 'text-emerald-400' : 'text-slate-400'}`}>
+              {isTogglingAi ? '...' : aiEnabled ? 'ON' : 'OFF'}
+            </span>
+          </div>
+
           <button
             onClick={onBackToSite}
             className="bg-slate-950 hover:bg-slate-800 text-amber-300 border border-amber-700/50 px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5"
@@ -2151,13 +2357,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setActiveAdminTab('new-blog')}
-              className="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow cursor-pointer shrink-0 active:scale-95"
-            >
-              <PlusCircle className="w-4 h-4" /> Publish New Post
-            </button>
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              {aiEnabled && (
+                <button
+                  type="button"
+                  onClick={() => setActiveAdminTab('new-blog')}
+                  className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-3.5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow cursor-pointer shrink-0 active:scale-95"
+                >
+                  <Sparkles className="w-4 h-4" /> AI Trend Assistant
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setActiveAdminTab('new-blog')}
+                className="w-full md:w-auto bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow cursor-pointer shrink-0 active:scale-95"
+              >
+                <PlusCircle className="w-4 h-4" /> Publish New Post
+              </button>
+            </div>
           </div>
 
           {/* Search & Category Filter Bar */}
@@ -2586,6 +2803,331 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <span>{formSuccess}</span>
             </div>
           )}
+
+          {/* AI ASSISTANT & TREND RESEARCH WORKBENCH */}
+          <div className="bg-slate-950/90 border-2 border-amber-600/60 rounded-2xl p-5 sm:p-6 shadow-2xl space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-900/50 pb-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2.5 rounded-xl border shrink-0 ${
+                    aiEnabled
+                      ? 'bg-amber-500/10 border-amber-500/40 text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+                      : 'bg-slate-900 border-slate-800 text-slate-500'
+                  }`}
+                >
+                  <Sparkles className={`w-5 h-5 ${aiEnabled ? 'animate-pulse' : ''}`} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base sm:text-lg font-bold font-serif text-amber-100">
+                      AI Post Assistant &amp; Internet Trend Researcher
+                    </h3>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                        aiEnabled
+                          ? 'bg-emerald-950/90 text-emerald-300 border-emerald-600/60'
+                          : 'bg-slate-900 text-slate-400 border-slate-700'
+                      }`}
+                    >
+                      {aiEnabled ? '● Live Search Grounded' : '○ Disabled'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-300/80 mt-0.5">
+                    Searches live web trends to find high-traffic spiritual topics and automatically drafts authentic articles tailored to Doctor Baba Mukisa.
+                  </p>
+                </div>
+              </div>
+
+              {/* ADMIN SWITCH BUTTON */}
+              <div className="flex items-center gap-3 bg-slate-900/90 border border-amber-900/60 px-4 py-2 rounded-xl shrink-0 self-start sm:self-center">
+                <div className="flex flex-col text-right">
+                  <span className="text-xs font-bold text-slate-200">Admin Control</span>
+                  <span className={`text-[10px] font-semibold ${aiEnabled ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {aiEnabled ? 'Assistant Active' : 'Assistant Turned OFF'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleAiAssistant}
+                  disabled={isTogglingAi}
+                  role="switch"
+                  aria-checked={aiEnabled}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    aiEnabled ? 'bg-emerald-600' : 'bg-slate-700'
+                  }`}
+                  title={`Click to turn AI Assistant ${aiEnabled ? 'OFF' : 'ON'}`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      aiEnabled ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <span className={`text-xs font-extrabold ${aiEnabled ? 'text-emerald-400' : 'text-slate-400'}`}>
+                  {isTogglingAi ? '...' : aiEnabled ? 'ON' : 'OFF'}
+                </span>
+              </div>
+            </div>
+
+            {/* If AI is turned OFF */}
+            {!aiEnabled && (
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-5 text-center space-y-3">
+                <div className="inline-flex p-3 rounded-full bg-slate-800 text-slate-400">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div className="max-w-md mx-auto">
+                  <h4 className="text-sm font-bold text-slate-200">AI Assistant is Turned OFF</h4>
+                  <p className="text-xs text-slate-400 mt-1">
+                    The admin switch above is set to OFF. Turn it ON whenever you want to research live internet trends, brainstorm high-converting spiritual topics, or auto-generate article drafts.
+                  </p>
+                </div>
+                <div>
+                  <button
+                    type="button"
+                    onClick={toggleAiAssistant}
+                    disabled={isTogglingAi}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs inline-flex items-center gap-2 transition-colors cursor-pointer shadow-md"
+                  >
+                    <Sparkles className="w-4 h-4" /> Turn AI Assistant ON
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* If AI is turned ON */}
+            {aiEnabled && (
+              <div className="space-y-4">
+                {aiNotice && (
+                  <div className="bg-emerald-950/80 border border-emerald-500 text-emerald-200 p-3 rounded-xl text-xs flex items-center gap-2 animate-fadeIn">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{aiNotice}</span>
+                  </div>
+                )}
+
+                {aiError && (
+                  <div className="bg-rose-950/80 border border-rose-500 text-rose-200 p-3 rounded-xl text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>{aiError}</span>
+                  </div>
+                )}
+
+                {/* Popular Trend Research Shortcut Pills */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-amber-200 flex items-center gap-1.5">
+                    <Compass className="w-3.5 h-3.5 text-amber-400" />
+                    Instant Trend Research Angles (Click any to analyze internet queries):
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      {
+                        label: '❤️ Love Reconciliation & Marriage Healing',
+                        angle: 'Trending love spells, lost lover return rituals, and marriage reconciliation problems',
+                      },
+                      {
+                        label: '🌿 Traditional Cleanses & Bad Omen Removal',
+                        angle: 'Spiritual cleansing bath, bad luck removal, and negative energy warding trends',
+                      },
+                      {
+                        label: '⚖️ Court Cases & Legal Justice Rituals',
+                        angle: 'Spiritual assistance for court cases, legal disputes, and justice rituals',
+                      },
+                      {
+                        label: '💰 Business Prosperity & Financial Breakthrough',
+                        angle: 'Traditional business luck, wealth blessings, and client attraction rituals',
+                      },
+                      {
+                        label: '👁️ Evil Eye & Witchcraft Shielding',
+                        angle: 'Spiritual defense against jealousy, evil eye curses, and hex reversals',
+                      },
+                      {
+                        label: '🔮 Ancestral Dreams & Spiritual Calling',
+                        angle: 'Understanding ancestral dreams, spiritual awakening symptoms, and psychic guidance',
+                      },
+                    ].map((pill, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setAiFocusTopic(pill.angle);
+                          handleBrainstormIdeas(pill.angle);
+                        }}
+                        disabled={isBrainstorming || isDrafting}
+                        className="bg-slate-900 hover:bg-amber-950/70 border border-amber-900/50 hover:border-amber-500 text-amber-200/90 text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        {pill.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Custom Topic Search Box */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-amber-200 flex items-center gap-1.5">
+                    <Search className="w-3.5 h-3.5 text-amber-400" />
+                    Custom Trend Research Query / Topic Focus:
+                  </label>
+                  <div className="flex flex-col sm:flex-row items-stretch gap-2">
+                    <input
+                      type="text"
+                      value={aiFocusTopic}
+                      onChange={(e) => setAiFocusTopic(e.target.value)}
+                      placeholder="e.g. What are people asking about returning a lost lover or breaking generational curses?"
+                      className="admin-input flex-1 bg-slate-900 border border-amber-900/60 focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleBrainstormIdeas()}
+                      disabled={isBrainstorming || isDrafting}
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow cursor-pointer shrink-0 disabled:opacity-50 active:scale-95"
+                    >
+                      {isBrainstorming ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <span>Searching Live Trends...</span>
+                        </>
+                      ) : (
+                        <>
+                          <TrendingUp className="w-4 h-4" />
+                          <span>Research &amp; Brainstorm</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Web Search Queries Grounding Display */}
+                {aiWebSearchQueries.length > 0 && (
+                  <div className="bg-slate-900/80 border border-amber-900/40 rounded-xl p-3 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-amber-400 text-[11px] font-bold">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>Live Google Search Queries Learned From:</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {aiWebSearchQueries.map((q, qIdx) => (
+                        <span
+                          key={qIdx}
+                          className="bg-slate-950 text-amber-300/90 text-[10px] px-2.5 py-0.5 rounded-full border border-amber-900/60 font-mono"
+                        >
+                          "{q}"
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* AI Ideas Cards Grid */}
+                {aiIdeas.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                        <Lightbulb className="w-4 h-4 text-amber-400" />
+                        Discovered High-Performing Post Concepts ({aiIdeas.length}):
+                      </h4>
+                      <span className="text-[11px] text-slate-400">
+                        Select an idea to auto-draft or apply directly below
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                      {aiIdeas.map((idea, iIdx) => {
+                        const isThisDrafting = isDrafting && draftingIdeaTitle === idea.title;
+                        return (
+                          <div
+                            key={iIdx}
+                            className="bg-slate-900 border border-amber-900/60 hover:border-amber-500/80 rounded-xl p-4 transition-all shadow-md flex flex-col justify-between space-y-3 relative group"
+                          >
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <span className="bg-amber-950 text-amber-300 border border-amber-700/60 text-[10px] font-bold px-2 py-0.5 rounded">
+                                  {idea.categoryName || idea.category || 'Spiritual Post'}
+                                </span>
+                                <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                                  <TrendingUp className="w-3 h-3" /> High Online Search Intent
+                                </span>
+                              </div>
+
+                              <h5 className="text-sm font-bold font-serif text-slate-100 group-hover:text-amber-300 transition-colors">
+                                {idea.title}
+                              </h5>
+
+                              {idea.searchTrendReason && (
+                                <p className="text-[11px] text-amber-200/80 bg-amber-950/30 p-2 rounded-lg border border-amber-900/30 leading-relaxed">
+                                  <strong className="text-amber-400 font-semibold">Trend Insight:</strong>{' '}
+                                  {idea.searchTrendReason}
+                                </p>
+                              )}
+
+                              {idea.suggestedExcerpt && (
+                                <p className="text-[11px] text-slate-300 leading-relaxed italic">
+                                  "{idea.suggestedExcerpt}"
+                                </p>
+                              )}
+
+                              {idea.outline && Array.isArray(idea.outline) && (
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    Planned Outline:
+                                  </span>
+                                  <ul className="text-[11px] text-slate-400 list-disc list-inside space-y-0.5">
+                                    {idea.outline.slice(0, 3).map((item: string, oIdx: number) => (
+                                      <li key={oIdx} className="truncate">
+                                        {item}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="pt-2 border-t border-amber-900/30 flex flex-col sm:flex-row gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleDraftAndApplyPost(idea)}
+                                disabled={isDrafting}
+                                className="flex-1 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-bold px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer disabled:opacity-60 active:scale-95"
+                              >
+                                {isThisDrafting ? (
+                                  <>
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Drafting Full Article...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Wand2 className="w-3.5 h-3.5" />
+                                    <span>Draft &amp; Pre-fill Form</span>
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleApplyIdeaFast(idea)}
+                                disabled={isDrafting}
+                                className="bg-slate-950 hover:bg-slate-800 text-amber-300 border border-amber-800/60 px-2.5 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                                title="Pre-fill only the title and mini description"
+                              >
+                                Quick Pre-fill
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div id="new-blog-form-top" className="pt-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+              <Edit3 className="w-4 h-4 text-amber-400" />
+              Article Editorial Fields &amp; Publication Form
+            </h3>
+            <p className="text-xs text-slate-400">
+              Review, edit, or customize any of the details below before publishing to the live website.
+            </p>
+          </div>
 
           <form onSubmit={handleCreateBlog} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
